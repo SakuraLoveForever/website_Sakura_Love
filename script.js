@@ -580,22 +580,107 @@ const applyVisitorLocationGreeting = async () => {
   if (!visitorLocationGreeting) {
     return;
   }
-  try {
-    const response = await fetch("https://ipapi.co/json/");
-    if (!response.ok) {
-      throw new Error("ip lookup failed");
+  const readCachedLocation = () => {
+    try {
+      const raw = localStorage.getItem("visitorLocationCache");
+      if (!raw) return "";
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return "";
+      const name = typeof parsed.name === "string" ? parsed.name.trim() : "";
+      const ts = Number(parsed.ts || 0);
+      const isFresh = Date.now() - ts < 24 * 60 * 60 * 1000;
+      return isFresh ? name : "";
+    } catch (error) {
+      return "";
     }
-    const data = await response.json();
-    const city = (data && data.city ? String(data.city).trim() : "") || "";
-    const region = (data && data.region ? String(data.region).trim() : "") || "";
-    const locationName = city || region;
+  };
+
+  const writeCachedLocation = (name) => {
+    if (!name) return;
+    try {
+      localStorage.setItem(
+        "visitorLocationCache",
+        JSON.stringify({
+          name,
+          ts: Date.now(),
+        }),
+      );
+    } catch (error) {}
+  };
+
+  const fetchJson = async (url, timeoutMs = 3200) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+    if (!response.ok) {
+      throw new Error(`request failed: ${response.status}`);
+    }
+    return response.json();
+  };
+
+  const resolveLocationName = async () => {
+    // 1) ipapi
+    try {
+      const data = await fetchJson("https://ipapi.co/json/");
+      const city = (data?.city ? String(data.city).trim() : "") || "";
+      const region = (data?.region ? String(data.region).trim() : "") || "";
+      const country = (data?.country_name ? String(data.country_name).trim() : "") || "";
+      const name = city || region || country;
+      if (name) return name;
+    } catch (error) {}
+
+    // 2) ipwho.is
+    try {
+      const data = await fetchJson("https://ipwho.is/");
+      if (data?.success === false) {
+        throw new Error("ipwhois failed");
+      }
+      const city = (data?.city ? String(data.city).trim() : "") || "";
+      const region = (data?.region ? String(data.region).trim() : "") || "";
+      const country = (data?.country ? String(data.country).trim() : "") || "";
+      const name = city || region || country;
+      if (name) return name;
+    } catch (error) {}
+
+    // 3) ipinfo
+    try {
+      const data = await fetchJson("https://ipinfo.io/json");
+      const city = (data?.city ? String(data.city).trim() : "") || "";
+      const region = (data?.region ? String(data.region).trim() : "") || "";
+      const country = (data?.country ? String(data.country).trim() : "") || "";
+      const name = city || region || country;
+      if (name) return name;
+    } catch (error) {}
+
+    // 4) geolocation-db
+    try {
+      const data = await fetchJson("https://geolocation-db.com/json/");
+      const city = (data?.city ? String(data.city).trim() : "") || "";
+      const region = (data?.state ? String(data.state).trim() : "") || "";
+      const country = (data?.country_name ? String(data.country_name).trim() : "") || "";
+      const name = city || region || country;
+      if (name) return name;
+    } catch (error) {}
+
+    return "";
+  };
+
+  try {
+    const cached = readCachedLocation();
+    if (cached) {
+      visitorLocationGreeting.textContent = `欢迎来自${cached}的朋友！`;
+      return;
+    }
+    const locationName = await resolveLocationName();
     if (locationName) {
+      writeCachedLocation(locationName);
       visitorLocationGreeting.textContent = `欢迎来自${locationName}的朋友！`;
       return;
     }
-    visitorLocationGreeting.textContent = "欢迎来到这里的朋友！";
+    visitorLocationGreeting.textContent = "欢迎来自远方的朋友！";
   } catch (error) {
-    visitorLocationGreeting.textContent = "欢迎来到这里的朋友！";
+    visitorLocationGreeting.textContent = "欢迎来自远方的朋友！";
   }
 };
 
