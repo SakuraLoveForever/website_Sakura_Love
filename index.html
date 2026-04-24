@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sakura_Love | 个人主页</title>
+    <meta
+      name="description"
+      content="一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="page-top"></div>
+    <div class="bg-stage" aria-hidden="true">
+      <div id="bg-layer-a" class="bg-layer"></div>
+      <div id="bg-layer-b" class="bg-layer"></div>
+    </div>
+
+    <header class="site-header">
+      <nav class="nav container">
+        <a class="logo" href="#hero">Sakura_Love</a>
+        <div class="nav-right">
+          <div class="social-links social-links-top">
+            <button id="page-mute-toggle" class="btn mute-icon-btn" type="button" aria-label="网页静音开关">
+              <span class="mute-icon-note" aria-hidden="true"></span>
+            </button>
+            <input
+              id="music-volume"
+              class="header-volume"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="60"
+              aria-label="调节音乐音量"
+              title="音量"
+            />
+            <button id="header-music-next" class="btn header-next-btn" type="button" aria-label="切换当前角色下一首歌曲" title="切歌">
+              <span class="header-next-icon" aria-hidden="true"></span>
+            </button>
+            <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书</a>
+            <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer">Bilibili</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <aside class="floating-controls floating-controls-open" aria-label="快捷设置">
+      <div class="floating-controls-header">
+        <button id="controls-toggle" class="btn control-toggle-btn" type="button" aria-label="展开或收起设置面板">◀</button>
+        <label class="pin-wrap" for="controls-pin">
+          <input id="controls-pin" type="checkbox" />
+          <span>固定</span>
+        </label>
+      </div>
+
+      <div class="floating-controls-body">
+        <div class="control-group">
+          <div class="control-title">风格</div>
+          <select id="style-select" aria-label="切换网站风格">
+            <option value="warm">温馨</option>
+            <option value="tech">科技</option>
+            <option value="minimal">极简</option>
+            <option value="melancholy">伤感</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <div class="control-title">背景图</div>
+          <label class="check-row" for="bg-toggle">
+            <input id="bg-toggle" type="checkbox" aria-label="显示背景图像" />
+            <span>开启</span>
+          </label>
+        </div>
+
+        <div id="bg-character-wrap" class="control-group">
+          <div class="control-title">角色</div>
+          <select id="bg-character-select" aria-label="选择背景角色">
+            <option value="02">02</option>
+            <option value="chitanda">千反田爱瑠</option>
+            <option value="kaguya">辉夜姬</option>
+            <option value="yachiyo">八千代</option>
+            <option value="iroha">彩叶</option>
+            <option value="eriyi">绘梨衣</option>
+            <option value="elaina">伊雷娜</option>
+            <option value="chtholly">珂朵莉</option>
+            <option value="sora">春日野穹</option>
+            <option value="akame">赤瞳</option>
+            <option value="mine">玛茵</option>
+            <option value="esdeath">艾斯德斯</option>
+            <option value="krul">克鲁鲁</option>
+            <option value="shinoa">柊筱娅</option>
+            <option value="violet">薇尔莉特</option>
+            <option value="toki">蝶祈</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <div class="control-title">播放模式</div>
+          <select id="bg-play-mode" aria-label="背景播放模式">
+            <option value="single">单角色</option>
+            <option value="all">全角色</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <div class="control-title">音乐</div>
+          <label class="check-row" for="music-toggle">
+            <input id="music-toggle" type="checkbox" aria-label="开启或关闭角色音乐" checked />
+            <span>开启</span>
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <section id="hero" class="hero container">
+        <p class="tag">你好，我是</p>
+        <h1>Sakura_Love</h1>
+        <p class="intro">
+          一名前端 / 全栈开发者，热爱用代码把想法变成产品。欢迎来到我的个人网页。
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#projects">查看项目</a>
+          <a class="btn" href="#contact">联系我</a>
+        </div>
+      </section>
+
+      <section id="about" class="section container">
+        <h2>关于我</h2>
+        <p>
+          我专注于 Web 开发，喜欢构建高质量、用户体验友好的产品。平时关注工程化、性能优化和 AI
+          应用落地。
+        </p>
+      </section>
+
+      <section id="skills" class="section container">
+        <h2>技能</h2>
+        <ul class="chips">
+          <li>HTML5</li>
+          <li>CSS3</li>
+          <li>JavaScript</li>
+          <li>TypeScript</li>
+          <li>React</li>
+          <li>Node.js</li>
+          <li>Git</li>
+        </ul>
+      </section>
+
+      <section id="projects" class="section container">
+        <h2>项目</h2>
+        <div class="project-grid">
+          <article class="card">
+            <h3>
+              <a class="project-title-btn" href="https://sakuraloveforever.github.io/Life-Insights/" target="_blank" rel="noreferrer" aria-label="查看卷里山河，心头月色">卷里山河，心头月色</a>
+            </h3>
+            <p>阅读与长夜随记，支持目录导航与夜间模式，适合沉浸式阅读与记录灵感。</p>
+          </article>
+          <article class="card">
+            <h3>
+              <a class="project-title-btn" href="https://sakuraloveforever.github.io/soul_quotes_archive/" target="_blank" rel="noreferrer" aria-label="查看心灵鸡汤 - 互动语录">心灵鸡汤 - 互动语录</a>
+            </h3>
+            <p>可交互的语录归档网站，支持分类展开收起和目录快速跳转浏览。</p>
+          </article>
+          <article class="card">
+            <h3>
+              <a class="project-title-btn" href="https://sakuraloveforever.github.io/kindle-notes-exporter/" target="_blank" rel="noreferrer" aria-label="查看Kindle笔记导出工具">Kindle笔记导出工具</a>
+            </h3>
+            <p>免费在线工具，支持上传 My Clippings.txt 并本地处理导出，保护隐私。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="contact" class="section container">
+        <h2>联系我</h2>
+        <p>
+          邮箱：<a href="mailto:1052418689@qq.com">1052418689@qq.com</a> |
+          GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div id="page-bottom" class="container">
+        <div class="social-links social-links-bottom">
+          <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书主页</a>
+          <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub主页</a>
+          <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer">Bilibili主页</a>
+        </div>
+        <p>© <span id="year"></span> Sakura_Love. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <div class="quick-jump">
+      <a class="jump-btn" href="#page-top" aria-label="回到顶部">顶部</a>
+      <a class="jump-btn" href="#page-bottom" aria-label="跳到底部">底部</a>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
