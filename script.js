@@ -16,6 +16,7 @@ const controlsPinInput = document.querySelector("#controls-pin");
 const bgLayerA = document.querySelector("#bg-layer-a");
 const bgLayerB = document.querySelector("#bg-layer-b");
 const heroActionLinks = document.querySelectorAll(".hero-actions a[href^='#']");
+const visitorLocationGreeting = document.querySelector("#visitor-location-greeting");
 const BG_ROTATE_MS = 3000;
 let bgRotationTimer = null;
 let activeBgLayer = null;
@@ -575,11 +576,37 @@ const ensurePlaybackOnRefresh = () => {
   playRoleMusic(selectedCharacter);
 };
 
+const applyVisitorLocationGreeting = async () => {
+  if (!visitorLocationGreeting) {
+    return;
+  }
+  try {
+    const response = await fetch("https://ipapi.co/json/");
+    if (!response.ok) {
+      throw new Error("ip lookup failed");
+    }
+    const data = await response.json();
+    const city = (data && data.city ? String(data.city).trim() : "") || "";
+    const region = (data && data.region ? String(data.region).trim() : "") || "";
+    const locationName = city || region;
+    if (locationName) {
+      visitorLocationGreeting.textContent = `欢迎来自${locationName}的朋友！`;
+      return;
+    }
+    visitorLocationGreeting.textContent = "欢迎来到这里的朋友！";
+  } catch (error) {
+    visitorLocationGreeting.textContent = "欢迎来到这里的朋友！";
+  }
+};
+
 document.addEventListener("pointerdown", tryResumeAfterGesture, { passive: true });
 document.addEventListener("keydown", tryResumeAfterGesture);
 window.addEventListener("load", ensurePlaybackOnRefresh);
 window.addEventListener("pageshow", ensurePlaybackOnRefresh);
 window.addEventListener("focus", ensurePlaybackOnRefresh);
+window.addEventListener("load", () => {
+  applyVisitorLocationGreeting();
+});
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     ensurePlaybackOnRefresh();
