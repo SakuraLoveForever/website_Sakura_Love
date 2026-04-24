@@ -18,14 +18,13 @@ const bgLayerB = document.querySelector("#bg-layer-b");
 const heroActionLinks = document.querySelectorAll(".hero-actions a[href^='#']");
 const BG_ROTATE_MS = 3000;
 let bgRotationTimer = null;
-let lastBgIndex = null;
 let activeBgLayer = null;
-let bgShuffleQueue = [];
+const bgSequenceIndexByRole = {};
 let bgPlayMode = localStorage.getItem("bgPlayMode") || "single";
 const savedMusicEnabledRaw = localStorage.getItem("musicEnabled");
 let isMusicEnabled = savedMusicEnabledRaw === null ? true : savedMusicEnabledRaw === "true";
 let currentMusicKey = null;
-let musicShuffleQueue = [];
+const musicSequenceIndexByRole = {};
 let musicVolume = localStorage.getItem("musicVolume");
 let globalRoleShuffleQueue = [];
 let currentGlobalRole = null;
@@ -212,30 +211,12 @@ const pickRandomCharacterKey = () => {
   return keys[idx];
 };
 
-const buildShuffledQueue = (characterKey) => {
-  const safeCharacter = characterFolders[characterKey] ? characterKey : "02";
-  const maxCount = Math.max(1, Number(characterImageCount[safeCharacter]) || 1);
-
-  const queue = Array.from({ length: maxCount }, (_, idx) => idx + 1);
-  for (let i = queue.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [queue[i], queue[j]] = [queue[j], queue[i]];
-  }
-
-  // When entering a new round, avoid repeating last image immediately.
-  if (maxCount > 1 && lastBgIndex && queue[0] === lastBgIndex) {
-    [queue[0], queue[1]] = [queue[1], queue[0]];
-  }
-
-  return queue;
-};
-
 const pickNextImageIndex = (characterKey) => {
-  if (bgShuffleQueue.length === 0) {
-    bgShuffleQueue = buildShuffledQueue(characterKey);
-  }
-  const nextIndex = bgShuffleQueue.shift();
-  lastBgIndex = nextIndex;
+  const safeCharacter = characterFolders[characterKey] ? characterKey : "02";
+  const maxCount = getImageCount(safeCharacter);
+  const currentIndex = Number(bgSequenceIndexByRole[safeCharacter] || 0);
+  const nextIndex = currentIndex >= maxCount ? 1 : currentIndex + 1;
+  bgSequenceIndexByRole[safeCharacter] = nextIndex;
   return nextIndex;
 };
 
@@ -277,22 +258,13 @@ const getMusicTrackCount = (characterKey) => {
   return Math.max(1, Number(characterMusicTrackCount[safeCharacter]) || 1);
 };
 
-const buildMusicShuffledQueue = (characterKey) => {
+const pickNextMusicTrackIndex = (characterKey) => {
   const safeCharacter = characterMusicFolders[characterKey] ? characterKey : "02";
   const maxCount = getMusicTrackCount(safeCharacter);
-  const queue = Array.from({ length: maxCount }, (_, idx) => idx + 1);
-  for (let i = queue.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [queue[i], queue[j]] = [queue[j], queue[i]];
-  }
-  return queue;
-};
-
-const pickNextMusicTrackIndex = (characterKey) => {
-  if (musicShuffleQueue.length === 0) {
-    musicShuffleQueue = buildMusicShuffledQueue(characterKey);
-  }
-  return musicShuffleQueue.shift();
+  const currentIndex = Number(musicSequenceIndexByRole[safeCharacter] || 0);
+  const nextIndex = currentIndex >= maxCount ? 1 : currentIndex + 1;
+  musicSequenceIndexByRole[safeCharacter] = nextIndex;
+  return nextIndex;
 };
 
 const buildMusicPath = (characterKey, trackIndex) => {
@@ -307,7 +279,6 @@ const playRoleMusic = (characterKey) => {
 
   if (currentMusicKey !== safeCharacter) {
     currentMusicKey = safeCharacter;
-    musicShuffleQueue = [];
   }
 
   if (!isMusicEnabled) {
@@ -349,8 +320,6 @@ const playNextTrackNow = () => {
     if (bgCharacterSelect) {
       bgCharacterSelect.value = nextRole;
     }
-    bgShuffleQueue = [];
-    lastBgIndex = null;
     if (isMusicEnabled) {
       roleMusicPlayer.pause();
       roleMusicPlayer.currentTime = 0;
@@ -389,9 +358,7 @@ const switchToRoleNow = (roleKey) => {
     bgCharacterSelect.value = safeRole;
   }
 
-  // Restart image shuffle for this role and show an image immediately.
-  bgShuffleQueue = [];
-  lastBgIndex = null;
+  // Switch image to the next sequential frame for this role immediately.
   const count = getImageCount(safeRole);
   if (count <= 1) {
     setBackgroundInstant(buildBackgroundPath(safeRole, 1));
@@ -426,9 +393,6 @@ roleMusicPlayer.addEventListener("ended", () => {
     if (bgCharacterSelect) {
       bgCharacterSelect.value = nextRole;
     }
-    // Restart images for new role, keep 3s rotation.
-    bgShuffleQueue = [];
-    lastBgIndex = null;
     playRoleMusic(nextRole);
     return;
   }
@@ -500,8 +464,6 @@ const setBackgroundInstant = (imagePath) => {
 const startBackgroundRotation = (characterKey) => {
   const safeCharacter = characterFolders[characterKey] ? characterKey : "02";
   stopBackgroundRotation();
-  lastBgIndex = null;
-  bgShuffleQueue = [];
   globalRoleShuffleQueue = [];
 
   if (bgPlayMode === "all") {
