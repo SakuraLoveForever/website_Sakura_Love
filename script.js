@@ -565,7 +565,8 @@ const applyCharacterBackground = (enabled, characterKey) => {
   }
 };
 
-const savedBgEnabled = localStorage.getItem("bgEnabled") === "true";
+const savedBgEnabledRaw = localStorage.getItem("bgEnabled");
+const savedBgEnabled = savedBgEnabledRaw === null ? true : savedBgEnabledRaw === "true";
 const initialRandomCharacter = pickRandomCharacterKey();
 applyCharacterBackground(savedBgEnabled, initialRandomCharacter);
 applyMusicState(isMusicEnabled, initialRandomCharacter);
