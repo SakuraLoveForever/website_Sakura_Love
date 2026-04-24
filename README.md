@@ -2,7 +2,7 @@
 这是我的个人网站，汇集了我的精华项目，充斥着绚丽的背景和曼妙的BGM，恭迎莅临！！！
 
 ## 食用指南
-
+https://sakuraloveforever.github.io/website_Sakura_Love/
 
 ## Star History
 
