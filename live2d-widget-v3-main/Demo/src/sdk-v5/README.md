@@ -1,0 +1,10 @@
++ **appdefine.ts**: 定义基本的参数
++ **lappdelegate.ts**: 初始化，释放资源，事件绑定
++ **lapplive2dmanager.ts**: 模型的管理类，进行模型生成和废弃、事件的处理、模型切换。
++ **lappmodel.ts**: 模型类，定义模型的基本属性
++ **lappal.ts**: 读取文件，抽象文件数据（算是工具类）
++ **lappsprite.ts**: 动画精灵类，（学python时知道了精灵类和精灵组）
++ **lapptexturemanager.ts**: 纹理管理类,进行图像读取和管理的类
++ **lappview.ts**: 视图类，生成模型的图像被lapplive2dmanager管理
++ **main.ts**: 主程序启动程序
++ **touchmanager.ts**: 事件的管理类（比如移动鼠标，点击鼠标，触摸屏触碰等）

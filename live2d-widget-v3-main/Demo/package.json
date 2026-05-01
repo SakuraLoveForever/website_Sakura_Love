@@ -1,0 +1,32 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "node copy_resources.js && vite --host",
+    "build": "node copy_resources.js && vite build --mode development && esbuild ./src/waifu-tips/waifu-tips.js --bundle --loader:.svg=text --minify --outfile=./dist/assets/waifu-tips.js && esbuild ./src/sdk-v5/main.ts --bundle --minify --outfile=./dist/assets/live2d-sdk.js",
+    "build-sdk": "esbuild ./src/sdk-v5/main.ts --bundle --minify --outfile=../live2d-sdk.js",
+    "build-tips": "esbuild ./src/waifu-tips/waifu-tips.js --bundle --loader:.svg=text --minify --outfile=../waifu-tips.js",
+    "build:prod": "node copy_resources.js && vite build",
+    "copy_resources": "node copy_resources.js",
+    "test": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "serve": "vite preview --port 5000 --host",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.6",
+    "@fortawesome/fontawesome-free": "^6.2.0",
+    "esbuild": "^0.24.0"
+  },
+  "optionalDependencies": {
+    "fsevents": ">=1.2.11"
+  }
+}

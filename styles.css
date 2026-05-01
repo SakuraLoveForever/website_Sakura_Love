@@ -62,10 +62,27 @@ html,
 body {
   margin: 0;
   padding: 0;
+  max-width: 100%;
+  min-height: 100%;
+  overflow-x: clip;
   font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   background-color: var(--bg);
   color: var(--text);
   scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+.site-footer {
+  flex-shrink: 0;
 }
 
 .bg-stage {
@@ -97,9 +114,98 @@ body {
   opacity: 1;
 }
 
-body > *:not(.bg-stage):not(.floating-controls):not(.quick-jump) {
+body > *:not(.bg-stage):not(.floating-controls):not(.quick-jump):not(.live2d-widget) {
   position: relative;
   z-index: 1;
+}
+
+.live2d-widget {
+  position: fixed;
+  left: var(--live2d-x, 8px);
+  top: var(--live2d-y, auto);
+  right: auto;
+  bottom: var(--live2d-bottom, 0);
+  width: min(calc(280px * var(--live2d-size, 1)), 48vw);
+  height: min(calc(560px * var(--live2d-size, 1)), 82vh);
+  z-index: 9997;
+  pointer-events: auto;
+  overflow: visible;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.live2d-widget.dragging {
+  cursor: grabbing;
+}
+
+.live2d-widget canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.live2d-dialog {
+  position: absolute;
+  left: var(--live2d-dialog-x, 50%);
+  top: clamp(48px, var(--live2d-dialog-y, 72px), calc(100% - 8px));
+  max-width: min(220px, 70vw);
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--primary) 55%, var(--border));
+  border-radius: 14px 14px 14px 4px;
+  background: color-mix(in srgb, var(--bg-soft) 88%, #000 12%);
+  color: var(--text);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+  opacity: 0;
+  transform: translate(-50%, calc(-100% + 6px)) scale(0.96);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.live2d-dialog.visible {
+  opacity: 1;
+  transform: translate(-50%, calc(-100% - 8px)) scale(1);
+}
+
+.click-pop-text {
+  position: fixed;
+  z-index: 9996;
+  max-width: min(320px, calc(100vw - 32px));
+  overflow-wrap: anywhere;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
+  background: color-mix(in srgb, var(--bg-soft) 86%, #000 14%);
+  color: var(--text);
+  font-size: 0.86rem;
+  line-height: 1.4;
+  pointer-events: none;
+  white-space: normal;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  animation: clickPopText 1.4s ease forwards;
+}
+
+@keyframes clickPopText {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.92);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -4px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -42px) scale(0.98);
+  }
+}
+
+.live2d-widget.live2d-hidden {
+  display: none;
 }
 
 a {
@@ -783,6 +889,14 @@ h1 {
   margin-bottom: 14px;
 }
 
+.page-bottom-anchor {
+  position: relative;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
 .quick-jump {
   position: fixed !important;
   inset: auto 14px 14px auto !important;
@@ -851,6 +965,15 @@ h1 {
 
   .floating-controls.floating-controls-open {
     transform: translateX(-8px);
+  }
+
+  .live2d-widget {
+    width: min(calc(160px * var(--live2d-size, 1)), 44vw);
+    height: min(calc(320px * var(--live2d-size, 1)), 58vh);
+    left: var(--live2d-x, -10px);
+    top: var(--live2d-y, auto);
+    right: auto;
+    bottom: var(--live2d-bottom, 0);
   }
 
   .anime-mascot {

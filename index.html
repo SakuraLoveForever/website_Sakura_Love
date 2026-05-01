@@ -8,7 +8,7 @@
       name="description"
       content="一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=202605020108" />
   </head>
   <body>
     <div id="page-top"></div>
@@ -112,6 +112,31 @@
             <span>开启</span>
           </label>
         </div>
+
+        <div class="control-group">
+          <div class="control-title">看板娘角色</div>
+          <select id="live2d-model" aria-label="选择看板娘角色">
+            <option value="tutu">草莓兔兔</option>
+            <option value="mao">Mao</option>
+            <option value="hiyori">Hiyori</option>
+            <option value="haru">Haru</option>
+            <option value="natori">Natori</option>
+            <option value="mark">Mark</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <div class="control-title">看板娘大小 <span id="live2d-size-value">100%</span></div>
+          <input
+            id="live2d-size"
+            type="range"
+            min="60"
+            max="160"
+            step="5"
+            value="100"
+            aria-label="调节看板娘大小"
+          />
+        </div>
       </div>
     </aside>
 
@@ -208,7 +233,7 @@
     </main>
 
     <footer class="site-footer">
-      <div id="page-bottom" class="container">
+      <div class="container">
         <div class="social-links social-links-bottom">
           <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书主页</a>
           <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub主页</a>
@@ -218,11 +243,21 @@
       </div>
     </footer>
 
+    <div id="live2d-widget" class="live2d-widget" aria-hidden="true">
+      <canvas id="live2d-canvas"></canvas>
+      <div id="live2d-dialog" class="live2d-dialog" aria-hidden="true"></div>
+    </div>
+
     <div class="quick-jump">
       <a class="jump-btn" href="#page-top" aria-label="回到顶部">顶部</a>
       <a class="jump-btn" href="#page-bottom" aria-label="跳到底部">底部</a>
     </div>
 
-    <script src="script.js"></script>
+    <div id="page-bottom" class="page-bottom-anchor" aria-hidden="true"></div>
+
+    <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
+    <script src="script.js?v=202605020108"></script>
   </body>
 </html>
