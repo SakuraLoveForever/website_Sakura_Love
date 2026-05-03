@@ -8,7 +8,7 @@
       name="description"
       content="一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。"
     />
-    <link rel="stylesheet" href="styles.css?v=202605020108" />
+    <link rel="stylesheet" href="styles.css?v=202605032005" />
   </head>
   <body>
     <div id="page-top"></div>
@@ -177,6 +177,7 @@
           <details class="about-sub-panel" open>
             <summary>计算机程序设计类</summary>
             <ul class="about-list">
+              <li><span class="about-key">2024</span><span class="about-value">第49届ICPC国际大学生程序设计竞赛区域赛上海站铜牌。</span></li>
               <li><span class="about-key">2025</span><span class="about-value">2025年中国大学生程序设计竞赛CCPC福建省邀请赛银奖。</span></li>
               <li><span class="about-key">2024/2025</span><span class="about-value">2024、2025年团体程序设计天梯赛GPLT全国个人三等奖。</span></li>
               <li><span class="about-key">2025</span><span class="about-value">2025年百度之星程序设计大赛省赛银奖。</span></li>
@@ -255,9 +256,18 @@
 
     <div id="page-bottom" class="page-bottom-anchor" aria-hidden="true"></div>
 
+    <script>
+      (() => {
+        if (window.location.protocol !== "file:") return;
+        const localUrl = "http://127.0.0.1:8000/";
+        fetch(localUrl, { mode: "no-cors", cache: "no-store" })
+          .then(() => window.location.replace(localUrl))
+          .catch(() => {});
+      })();
+    </script>
     <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
-    <script src="script.js?v=202605020108"></script>
+    <script src="script.js?v=202605032005"></script>
   </body>
 </html>

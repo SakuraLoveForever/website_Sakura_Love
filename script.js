@@ -9,6 +9,20 @@ const live2dModels={
   natori:{name:"Natori",path:"live2d-widget-v3-main/Resources/model/Natori/Natori.model3.json",scale:0.92},
   mark:{name:"Mark",path:"live2d-widget-v3-main/Resources/model/Mark/Mark.model3.json",scale:0.92}
 };
+const live2dCdnBase="https://cdn.jsdelivr.net/gh/SakuraLoveForever/website_Sakura_Love@main/";
+const live2dFileMode=window.location.protocol==="file:";
+const live2dDefaultModel=live2dFileMode?"hiyori":"tutu";
+const getLive2dModelKey=(key)=>live2dModels[key]?(live2dFileMode&&key==="tutu"?live2dDefaultModel:key):live2dDefaultModel;
+const live2dCdnUrl=(path)=>live2dCdnBase+path.split("/").map(encodeURIComponent).join("/");
+const live2dModelSources=(config)=>live2dFileMode?[live2dCdnUrl(config.path)]:[config.path,live2dCdnUrl(config.path)];
+const loadLive2dModel=async(config)=>{
+  let lastError=null;
+  for(const source of live2dModelSources(config)){
+    try{return await PIXI.live2d.Live2DModel.from(source)}
+    catch(error){lastError=error;console.warn("Live2D model source failed:",source,error)}
+  }
+  throw lastError;
+};
 const live2dFocusParams={angleX:"ParamAngleX",angleY:"ParamAngleY",angleZ:"ParamAngleZ",bodyAngleX:"ParamBodyAngleX",bodyAngleY:"ParamBodyAngleY",bodyAngleZ:"ParamBodyAngleZ",eyeBallX:"ParamEyeBallX",eyeBallY:"ParamEyeBallY",mouseX:"Param83",mouseY:"Param84"};
 const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
 const names={"02":"02",chitanda:"千反田爱瑠",kaguya:"辉夜姬",yachiyo:"八千代",iroha:"彩叶",eriyi:"绘梨衣",elaina:"伊雷娜",chtholly:"珂朵莉",sora:"春日野穹",akame:"赤瞳",mine:"玛茵",esdeath:"艾斯德斯",krul:"克鲁鲁",shinoa:"柊筱娅",violet:"薇尔莉特",toki:"蝶祈"};
@@ -40,7 +54,7 @@ if(bgCharacterSelect)bgCharacterSelect.addEventListener("change",e=>{localStorag
 if(bgPlayModeSelect)bgPlayModeSelect.addEventListener("change",e=>{bgPlayMode=e.target.value==="all"?"all":"single";localStorage.setItem("bgPlayMode",bgPlayMode);playModeUI();applyBg(bgToggle?bgToggle.checked:false,bgCharacterSelect?bgCharacterSelect.value:"02")});
 if(musicToggle)musicToggle.addEventListener("change",()=>{musicEnabled=musicToggle.checked;localStorage.setItem("musicEnabled",String(musicEnabled));if(musicEnabled){clearInterval(bgTimer);if(bgToggle&&bgToggle.checked)showScene(currentRole,{withMusic:true});else playNext()}else{player.pause();scheduleBgOnly()}});
 if(musicVolumeInput)musicVolumeInput.addEventListener("input",()=>{const v=Math.min(100,Math.max(0,Number(musicVolumeInput.value)||0));player.volume=v/100;localStorage.setItem("musicVolume",String(player.volume));musicVolumeInput.style.setProperty("--vol",`${v}%`)});
-if(live2dModelSelect)live2dModelSelect.addEventListener("change",()=>{const modelKey=live2dModels[live2dModelSelect.value]?live2dModelSelect.value:"tutu";localStorage.setItem("live2dModel",modelKey);if(typeof switchLive2dModel==="function")switchLive2dModel(modelKey)});
+if(live2dModelSelect)live2dModelSelect.addEventListener("change",()=>{const modelKey=getLive2dModelKey(live2dModelSelect.value);localStorage.setItem("live2dModel",modelKey);if(typeof switchLive2dModel==="function")switchLive2dModel(modelKey)});
 if(live2dSizeInput)live2dSizeInput.addEventListener("input",()=>{const size=Math.min(160,Math.max(60,Number(live2dSizeInput.value)||100));localStorage.setItem("live2dSize",String(size));applyLive2dSettings()});
 if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",playNext);
 if(pageMuteToggleButton)pageMuteToggleButton.addEventListener("click",()=>{isPageMuted=!isPageMuted;player.muted=isPageMuted;localStorage.setItem("pageMuted",String(isPageMuted));controls()});
@@ -49,10 +63,37 @@ if(controlsPinInput)controlsPinInput.addEventListener("change",()=>{controlsPinn
 if(floatingControls)document.addEventListener("click",e=>{if(controlsPinned||!controlsOpen||floatingControls.contains(e.target))return;controlsOpen=false;localStorage.setItem("controlsOpen","false");controls()});
 player.addEventListener("timeupdate",progress);player.addEventListener("ended",playNext);
 if(yearSpan)yearSpan.textContent=String(new Date().getFullYear());
+const glowButtons=document.querySelectorAll(".hero-actions .btn,.project-title-btn,.social-links a,.jump-btn");
+const updateButtonEdgeGlow=(button,event)=>{
+  const rect=button.getBoundingClientRect();
+  const x=event.clientX-rect.left;
+  const y=event.clientY-rect.top;
+  const label=button.querySelector(".glow-label");
+  const labelRect=label?label.getBoundingClientRect():rect;
+  const textX=event.clientX-labelRect.left;
+  const textY=event.clientY-labelRect.top;
+  button.style.setProperty("--button-x",`${x.toFixed(2)}px`);
+  button.style.setProperty("--button-y",`${y.toFixed(2)}px`);
+  button.style.setProperty("--text-x",`${textX.toFixed(2)}px`);
+  button.style.setProperty("--text-y",`${textY.toFixed(2)}px`);
+  button.classList.add("edge-glowing");
+};
+glowButtons.forEach(button=>{
+  if(!button.querySelector(".glow-label")){
+    const label=document.createElement("span");
+    label.className="glow-label";
+    while(button.firstChild)label.appendChild(button.firstChild);
+    button.appendChild(label);
+  }
+  button.addEventListener("pointermove",event=>updateButtonEdgeGlow(button,event),{passive:true});
+  button.addEventListener("mousemove",event=>updateButtonEdgeGlow(button,event),{passive:true});
+  button.addEventListener("pointerleave",()=>button.classList.remove("edge-glowing"));
+  button.addEventListener("mouseleave",()=>button.classList.remove("edge-glowing"));
+});
 const live2dCanvas=$("#live2d-canvas"),live2dWidget=$("#live2d-widget"),live2dDialog=$("#live2d-dialog");
 const live2dMessages=["好久不见，日子过得好快呢……","大坏蛋！你都多久没理人家了呀，嘤嘤嘤～","嗨～快来逗我玩吧！","拿小拳拳锤你胸口！","记得把小家加入收藏夹哦！","今天也要元气满满。","别戳啦，我在认真看家。","要不要听一首歌放松一下？","背景和音乐现在会一起换啦。","欢迎来到 Sakura_Love 的小窝。","偷偷告诉你，点击背景也有惊喜。","哼，你刚刚是不是又在偷看我？","要摸头的话……只能一下下哦。","今天也要陪我玩一会儿嘛。"];
 const getCurrentLive2dName=()=>{
-  const selected=live2dModelSelect&&live2dModels[live2dModelSelect.value]?live2dModelSelect.value:localStorage.getItem("live2dModel")||"tutu";
+  const selected=getLive2dModelKey(live2dModelSelect&&live2dModels[live2dModelSelect.value]?live2dModelSelect.value:localStorage.getItem("live2dModel"));
   return live2dModels[selected]?.name||"看板娘";
 };
 const live2dHoverMessages=["干嘛呢你，快把手拿开～～","鼠…鼠标放错地方了！","你要干嘛呀？","喵喵喵？","怕怕(ノ≧∇≦)ノ","非礼呀！救命！","这样的话，只能使用武力了！","我要生气了哦","不要动手动脚的！","真…真的是不知羞耻！",()=>`${getCurrentLive2dName()}！`,"拿小拳拳锤你胸口！","嗨~快来逗我玩吧！","真……真的是不知羞耻！","再摸的话我可要报警了！","不要摸我了，我要叫我老婆来打你了！","是…是不小心碰到了吧…","干嘛碰我呀，小心我咬你！","哼，再靠近一点试试看？","你、你不要突然凑这么近啦！"];
@@ -79,7 +120,7 @@ const isAroundLive2dWidget=(event,{wide=false}={})=>{
 };
 const applyLive2dSettings=()=>{
   if(!live2dWidget)return;
-  const modelKey=live2dModels[localStorage.getItem("live2dModel")||""]?localStorage.getItem("live2dModel"):"tutu";
+  const modelKey=getLive2dModelKey(localStorage.getItem("live2dModel"));
   const size=Math.min(160,Math.max(60,Number(localStorage.getItem("live2dSize"))||100));
   const rawX=localStorage.getItem("live2dX"),rawY=localStorage.getItem("live2dY");
   const savedX=Number(rawX),savedY=Number(rawY);
@@ -194,12 +235,12 @@ const initLive2d=async()=>{
     };
     live2dRelayout=layout;
     switchLive2dModel=async(modelKey)=>{
-      const safeKey=live2dModels[modelKey]?modelKey:"tutu";
+      const safeKey=getLive2dModelKey(modelKey);
       const nextConfig=live2dModels[safeKey];
       const token=++loadToken;
       live2dWidget.classList.remove("live2d-hidden");
       try{
-        const nextModel=await PIXI.live2d.Live2DModel.from(nextConfig.path);
+        const nextModel=await loadLive2dModel(nextConfig);
         if(token!==loadToken){nextModel.destroy?.();return}
         if(model){app.stage.removeChild(model);model.destroy?.()}
         model=nextModel;
@@ -324,7 +365,7 @@ const initLive2d=async()=>{
       showLive2dDialog();
       if(model?.motion)model.motion("TapBody").catch(()=>{});
     });
-    await switchLive2dModel(live2dModels[localStorage.getItem("live2dModel")||""]?localStorage.getItem("live2dModel"):"tutu");
+    await switchLive2dModel(getLive2dModelKey(localStorage.getItem("live2dModel")));
   }catch(err){
     live2dWidget.classList.add("live2d-hidden");
     console.warn("Live2D model load failed:",err);

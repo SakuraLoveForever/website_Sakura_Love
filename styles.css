@@ -934,6 +934,126 @@ h1 {
   border-color: var(--primary);
 }
 
+.hero-actions .btn,
+.project-title-btn,
+.social-links a,
+.jump-btn {
+  --button-bg: color-mix(in srgb, var(--bg-soft) 18%, #090a0d 82%);
+  --button-edge: linear-gradient(transparent, transparent);
+  --button-accent: #ff7aa8;
+  --button-hot: color-mix(in srgb, var(--button-accent) 42%, #ffffff 58%);
+  --button-label: color-mix(in srgb, var(--text) 66%, #000 34%);
+  --button-x: 50%;
+  --button-y: 50%;
+  --text-x: 50%;
+  --text-y: 50%;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-color: transparent !important;
+  border-radius: 10px;
+  background:
+    linear-gradient(var(--button-bg), var(--button-bg)) padding-box,
+    var(--button-edge) border-box,
+    linear-gradient(#050607, #050607) border-box !important;
+  color: var(--button-label) !important;
+  font-family: sans-serif, system-ui;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  box-shadow:
+    0 1px rgba(255, 255, 255, 0.1) inset,
+    0 6px 14px rgba(0, 0, 0, 0.34);
+  touch-action: none;
+  transition:
+    transform 0.18s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.hero-actions .btn:hover,
+.project-title-btn:hover,
+.social-links a:hover,
+.jump-btn:hover {
+  color: var(--text) !important;
+  border-color: transparent !important;
+}
+
+.hero-actions .btn.edge-glowing,
+.project-title-btn.edge-glowing,
+.social-links a.edge-glowing,
+.jump-btn.edge-glowing {
+  --button-edge: radial-gradient(
+    92px circle at var(--button-x) var(--button-y),
+    var(--button-hot),
+    var(--button-accent) 22%,
+    color-mix(in srgb, var(--button-accent) 42%, transparent) 43%,
+    transparent 72%
+  );
+  box-shadow:
+    0 1px rgba(255, 255, 255, 0.1) inset,
+    0 6px 14px rgba(0, 0, 0, 0.34);
+}
+
+.glow-label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  background: none;
+}
+
+.edge-glowing .glow-label {
+  background:
+    radial-gradient(
+      72px circle at var(--text-x) var(--text-y),
+      var(--button-hot),
+      var(--button-accent) 24%,
+      var(--button-label) 58%
+    );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--button-accent) 30%, transparent);
+}
+
+.hero-actions .btn.primary,
+.project-title-btn {
+  --button-bg: color-mix(in srgb, var(--bg-soft) 18%, #090a0d 82%);
+  --button-accent: #ff7aa8;
+}
+
+.social-links a.social-xhs {
+  --button-bg: color-mix(in srgb, #14050a 22%, #090a0d 78%);
+  --button-accent: #fe2c55;
+}
+
+.social-links a.social-github {
+  --button-bg: color-mix(in srgb, #0b0d10 24%, #070809 76%);
+  --button-accent: #2f343b;
+  --button-hot: #a8b0ba;
+}
+
+.social-links a.social-bilibili {
+  --button-bg: color-mix(in srgb, #061217 22%, #090a0d 78%);
+  --button-accent: #00a1d6;
+  --button-hot: #b7efff;
+}
+
+.hero-actions .btn:not(.primary),
+.jump-btn {
+  --button-accent: #8bd3ff;
+}
+
 @media (max-width: 560px) {
   .nav {
     align-items: flex-start;
