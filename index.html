@@ -8,7 +8,7 @@
       name="description"
       content="一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。"
     />
-    <link rel="stylesheet" href="styles.css?v=202605032005" />
+    <link rel="stylesheet" href="styles.css?v=202605051520" />
   </head>
   <body>
     <div id="page-top"></div>
@@ -148,101 +148,107 @@
         </div>
       </section>
 
-      <section id="about" class="section container">
-        <h2>关于我</h2>
-        <details class="about-panel">
-          <summary>学习经历</summary>
-          <ul class="about-list">
-            <li><span class="about-key">小学</span><span class="about-value">泉州市安溪县实验小学</span></li>
-            <li><span class="about-key">初中</span><span class="about-value">福州市金山中学</span></li>
-            <li><span class="about-key">高中</span><span class="about-value">福建省福州第一中学</span></li>
-            <li><span class="about-key">本科</span><span class="about-value">福州大学（机械工程及自动化）</span></li>
-            <li><span class="about-key">硕士</span><span class="about-value">厦门大学（计算机科学与技术）</span></li>
-          </ul>
-        </details>
-        <details class="about-panel awards-panel">
-          <summary>获奖经历</summary>
-          <details class="about-sub-panel" open>
-            <summary>机械类</summary>
-            <ul class="about-list">
-              <li><span class="about-key">奖项</span><span class="about-value">第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类-设计验证类）全国二等奖。</span></li>
-            </ul>
-          </details>
-          <details class="about-sub-panel" open>
-            <summary>数学类</summary>
-            <ul class="about-list">
-              <li><span class="about-key">奖项</span><span class="about-value">2024年全国大学生数学竞赛非数学A类福建省省一等奖。</span></li>
-            </ul>
-          </details>
-          <details class="about-sub-panel" open>
-            <summary>计算机程序设计类</summary>
-            <ul class="about-list">
-              <li><span class="about-key">2024</span><span class="about-value">第49届ICPC国际大学生程序设计竞赛区域赛上海站铜牌。</span></li>
-              <li><span class="about-key">2025</span><span class="about-value">2025年中国大学生程序设计竞赛CCPC福建省邀请赛银奖。</span></li>
-              <li><span class="about-key">2024/2025</span><span class="about-value">2024、2025年团体程序设计天梯赛GPLT全国个人三等奖。</span></li>
-              <li><span class="about-key">2025</span><span class="about-value">2025年百度之星程序设计大赛省赛银奖。</span></li>
-              <li><span class="about-key">2025</span><span class="about-value">2025年蓝桥杯C++A组福建省省一等奖，全国个人三等奖。</span></li>
-            </ul>
-          </details>
-        </details>
-      </section>
+      <div class="page-shell container">
+        <aside class="side-nav" aria-label="页面导航">
+          <a href="#about">关于</a>
+          <a href="#skills">技能</a>
+          <a href="#projects">项目</a>
+          <a href="#contact">联系</a>
+        </aside>
 
-      <section id="skills" class="section container">
-        <h2>技能</h2>
-        <ul class="chips">
-          <li>HTML5</li>
-          <li>CSS3</li>
-          <li>JavaScript</li>
-          <li>TypeScript</li>
-          <li>React</li>
-          <li>Node.js</li>
-          <li>Git</li>
-        </ul>
-      </section>
+        <div class="content-flow">
+          <section id="about" class="section">
+            <h2>关于我</h2>
+            <details class="about-panel">
+              <summary>学习经历</summary>
+              <ul class="about-list">
+                <li><span class="about-key">小学</span><span class="about-value">泉州市安溪县实验小学</span></li>
+                <li><span class="about-key">初中</span><span class="about-value">福州市金山中学</span></li>
+                <li><span class="about-key">高中</span><span class="about-value">福建省福州第一中学</span></li>
+                <li><span class="about-key">本科</span><span class="about-value">福州大学（机械工程及自动化）</span></li>
+                <li><span class="about-key">硕士</span><span class="about-value">厦门大学（计算机科学与技术）</span></li>
+              </ul>
+            </details>
+            <details class="about-panel awards-panel">
+              <summary>获奖经历</summary>
+              <details class="about-sub-panel" open>
+                <summary>机械类</summary>
+                <ul class="about-list">
+                  <li><span class="about-key">奖项</span><span class="about-value">第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类-设计验证类）全国二等奖。</span></li>
+                </ul>
+              </details>
+              <details class="about-sub-panel" open>
+                <summary>数学类</summary>
+                <ul class="about-list">
+                  <li><span class="about-key">奖项</span><span class="about-value">2024年全国大学生数学竞赛非数学A类福建省省一等奖。</span></li>
+                </ul>
+              </details>
+              <details class="about-sub-panel" open>
+                <summary>计算机程序设计类</summary>
+                <ul class="about-list">
+                  <li><span class="about-key">2024</span><span class="about-value">第49届ICPC国际大学生程序设计竞赛区域赛上海站铜牌。</span></li>
+                  <li><span class="about-key">2025</span><span class="about-value">2025年中国大学生程序设计竞赛CCPC福建省邀请赛银奖。</span></li>
+                  <li><span class="about-key">2024/2025</span><span class="about-value">2024、2025年团体程序设计天梯赛GPLT全国个人三等奖。</span></li>
+                  <li><span class="about-key">2025</span><span class="about-value">2025年百度之星程序设计大赛省赛银奖。</span></li>
+                  <li><span class="about-key">2025</span><span class="about-value">2025年蓝桥杯C++A组福建省省一等奖，全国个人三等奖。</span></li>
+                </ul>
+              </details>
+            </details>
+          </section>
 
-      <section id="projects" class="section container">
-        <h2>项目</h2>
-        <div class="project-grid">
-          <article class="card">
-            <h3>
-              <a class="project-title-btn" href="https://sakuraloveforever.github.io/Life-Insights/" target="_blank" rel="noreferrer" aria-label="查看卷里山河，心头月色">卷里山河，心头月色</a>
-            </h3>
-            <p>阅读与长夜随记，支持目录导航与夜间模式，适合沉浸式阅读与记录灵感。</p>
-          </article>
-          <article class="card">
-            <h3>
-              <a class="project-title-btn" href="https://sakuraloveforever.github.io/soul_quotes_archive/" target="_blank" rel="noreferrer" aria-label="查看心灵鸡汤 - 互动语录">心灵鸡汤 - 互动语录</a>
-            </h3>
-            <p>可交互的语录归档网站，支持分类展开收起和目录快速跳转浏览。</p>
-          </article>
-          <article class="card">
-            <h3>
-              <a class="project-title-btn" href="https://sakuraloveforever.github.io/kindle-notes-exporter/" target="_blank" rel="noreferrer" aria-label="查看Kindle笔记导出工具">Kindle笔记导出工具</a>
-            </h3>
-            <p>免费在线工具，支持上传 My Clippings.txt 并本地处理导出，保护隐私。</p>
-          </article>
+          <section id="skills" class="section">
+            <h2>技能</h2>
+            <ul class="chips">
+              <li><a href="https://www.bing.com/search?q=HTML5" target="_blank" rel="noreferrer">HTML5</a></li>
+              <li><a href="https://www.bing.com/search?q=CSS3" target="_blank" rel="noreferrer">CSS3</a></li>
+              <li><a href="https://www.bing.com/search?q=JavaScript" target="_blank" rel="noreferrer">JavaScript</a></li>
+              <li><a href="https://www.bing.com/search?q=TypeScript" target="_blank" rel="noreferrer">TypeScript</a></li>
+              <li><a href="https://www.bing.com/search?q=React" target="_blank" rel="noreferrer">React</a></li>
+              <li><a href="https://www.bing.com/search?q=Node.js" target="_blank" rel="noreferrer">Node.js</a></li>
+              <li><a href="https://www.bing.com/search?q=Git" target="_blank" rel="noreferrer">Git</a></li>
+            </ul>
+          </section>
+
+          <section id="projects" class="section">
+            <h2>项目</h2>
+            <div class="project-grid">
+              <article class="card">
+                <h3>
+                  <a class="project-title-btn" href="https://sakuraloveforever.github.io/Life-Insights/" target="_blank" rel="noreferrer" aria-label="查看卷里山河，心头月色">卷里山河，心头月色</a>
+                </h3>
+                <p>阅读与长夜随记，支持目录导航与夜间模式，适合沉浸式阅读与记录灵感。</p>
+              </article>
+              <article class="card">
+                <h3>
+                  <a class="project-title-btn" href="https://sakuraloveforever.github.io/soul_quotes_archive/" target="_blank" rel="noreferrer" aria-label="查看心灵鸡汤 - 互动语录">心灵鸡汤 - 互动语录</a>
+                </h3>
+                <p>可交互的语录归档网站，支持分类展开收起和目录快速跳转浏览。</p>
+              </article>
+              <article class="card">
+                <h3>
+                  <a class="project-title-btn" href="https://sakuraloveforever.github.io/kindle-notes-exporter/" target="_blank" rel="noreferrer" aria-label="查看Kindle笔记导出工具">Kindle笔记导出工具</a>
+                </h3>
+                <p>免费在线工具，支持上传 My Clippings.txt 并本地处理导出，保护隐私。</p>
+              </article>
+              <article class="card">
+                <h3>
+                  <a class="project-title-btn" href="https://greasyfork.org/zh-CN/scripts/574715-youtube-%E6%89%B9%E9%87%8F%E5%8F%96%E6%B6%88%E7%82%B9%E8%B5%9E%E5%8A%A9%E6%89%8B-%E7%B2%BE%E5%87%86%E7%89%88" target="_blank" rel="noreferrer" aria-label="查看YouTube取消点赞脚本">YouTube取消点赞脚本</a>
+                </h3>
+                <p>浏览器控制台与 Tampermonkey 脚本，批量取消曾经在 YouTube 点赞过的视频，适合清理账号历史记录。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="contact" class="section">
+            <h2>联系我</h2>
+            <p>
+              邮箱：<a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> |
+              GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>
+            </p>
+          </section>
         </div>
-      </section>
-
-      <section id="contact" class="section container">
-        <h2>联系我</h2>
-        <p>
-          邮箱：<a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> |
-          GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>
-        </p>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div class="container">
-        <div class="social-links social-links-bottom">
-          <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书主页</a>
-          <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub主页</a>
-          <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer">Bilibili主页</a>
-        </div>
-        <p>© <span id="year"></span> Sakura_Love. All rights reserved.</p>
       </div>
-    </footer>
+    </main>
 
     <div id="live2d-widget" class="live2d-widget" aria-hidden="true">
       <canvas id="live2d-canvas"></canvas>
@@ -254,7 +260,18 @@
       <a class="jump-btn" href="#page-bottom" aria-label="跳到底部">底部</a>
     </div>
 
-    <div id="page-bottom" class="page-bottom-anchor" aria-hidden="true"></div>
+    <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+
+    <footer id="page-bottom" class="site-footer">
+      <div class="container">
+        <div class="social-links social-links-bottom">
+          <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书主页</a>
+          <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub主页</a>
+          <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer">Bilibili主页</a>
+        </div>
+        <p>© <span id="year"></span> Sakura_Love. All rights reserved.</p>
+      </div>
+    </footer>
 
     <script>
       (() => {
@@ -268,6 +285,6 @@
     <script src="live2d-widget-v3-main/Core/live2dcubismcore.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
-    <script src="script.js?v=202605032005"></script>
+    <script src="script.js?v=202605051445"></script>
   </body>
 </html>

@@ -1,5 +1,6 @@
+document.documentElement.classList.add("js");
 const $=(s)=>document.querySelector(s);
-const yearSpan=$("#year"),styleSelect=$("#style-select"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),headerMusicNextButton=$("#header-music-next"),pageMuteToggleButton=$("#page-mute-toggle"),floatingControls=$(".floating-controls"),controlsToggleButton=$("#controls-toggle"),controlsPinInput=$("#controls-pin"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),heroActionLinks=document.querySelectorAll(".hero-actions a[href^='#']");
+const yearSpan=$("#year"),styleSelect=$("#style-select"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),headerMusicNextButton=$("#header-music-next"),pageMuteToggleButton=$("#page-mute-toggle"),floatingControls=$(".floating-controls"),controlsToggleButton=$("#controls-toggle"),controlsPinInput=$("#controls-pin"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),hashActionLinks=document.querySelectorAll(".hero-actions a[href^='#'],.side-nav a[href^='#']"),toastRoot=$("#toast-root");
 const styleMap={warm:"style-warm",tech:"style-tech",minimal:"style-minimal",melancholy:"style-melancholy"};
 const live2dModels={
   tutu:{name:"草莓兔兔",path:"assets/live2d/tutu/草莓兔兔  试用.model3.json",scale:0.92,watermarkParam:"Param261"},
@@ -32,6 +33,7 @@ let controlsOpen=localStorage.getItem("controlsOpen"),controlsPinned=localStorag
 controlsOpen=controlsOpen===null?true:controlsOpen==="true";
 const bgSeq={},musicSeq={},player=new Audio();
 player.loop=false;player.preload="auto";player.volume=Math.min(1,Math.max(0,Number(localStorage.getItem("musicVolume"))||0.6));player.muted=isPageMuted;
+const showToast=(message)=>{if(!toastRoot)return;const toast=document.createElement("div");toast.className="toast";toast.textContent=message;toastRoot.appendChild(toast);setTimeout(()=>toast.remove(),3100)};
 const fit=(el)=>{if(!el)return;const n=Math.max(4,...Array.from(el.options||[]).map(o=>(o.textContent||"").trim().length));el.style.width=`calc(${n}ch + 3.2rem)`};
 const applyStyle=(k)=>{const safe=styleMap[k]?k:"warm";document.body.classList.remove(...Object.values(styleMap));document.body.classList.add(styleMap[safe]);if(styleSelect)styleSelect.value=safe};
 const setBg=(role)=>{if(!bgLayerA||!bgLayerB)return;const r=bgCount[role]?role:"02",count=bgCount[r],idx=((bgSeq[r]||0)%count)+1;bgSeq[r]=(bgSeq[r]||0)+1;currentRole=r;if(bgCharacterSelect)bgCharacterSelect.value=r;localStorage.setItem("bgCharacter",r);const next=activeBgLayer===bgLayerA?bgLayerB:bgLayerA;next.style.backgroundImage=`url("assets/backgrounds/${r}/${idx}.jpg")`;next.classList.add("visible");if(activeBgLayer)activeBgLayer.classList.remove("visible");activeBgLayer=next};
@@ -48,18 +50,18 @@ const playModeUI=()=>{if(bgCharacterSelect)bgCharacterSelect.disabled=bgPlayMode
 applyStyle(localStorage.getItem("stylePreset")||"warm");controls();playModeUI();
 const bgOn=localStorage.getItem("bgEnabled")==="true",bgRole=localStorage.getItem("bgCharacter")||"02";if(bgToggle)bgToggle.checked=bgOn;if(bgCharacterSelect)bgCharacterSelect.value=bgCount[bgRole]?bgRole:"02";if(bgPlayModeSelect)bgPlayModeSelect.value=bgPlayMode;applyBg(bgOn,bgRole);
 if(musicToggle)musicToggle.checked=musicEnabled;if(musicVolumeInput){musicVolumeInput.value=String(Math.round(player.volume*100));musicVolumeInput.style.setProperty("--vol",`${Math.round(player.volume*100)}%`)}[styleSelect,bgCharacterSelect,bgPlayModeSelect,live2dModelSelect].forEach(fit);
-if(styleSelect)styleSelect.addEventListener("change",e=>{applyStyle(e.target.value);localStorage.setItem("stylePreset",e.target.value);fit(styleSelect)});
-if(bgToggle)bgToggle.addEventListener("change",()=>{const r=bgCharacterSelect?bgCharacterSelect.value:"02";localStorage.setItem("bgEnabled",String(bgToggle.checked));localStorage.setItem("bgCharacter",r);applyBg(bgToggle.checked,r)});
-if(bgCharacterSelect)bgCharacterSelect.addEventListener("change",e=>{localStorage.setItem("bgCharacter",e.target.value);applyBg(bgToggle?bgToggle.checked:false,e.target.value)});
-if(bgPlayModeSelect)bgPlayModeSelect.addEventListener("change",e=>{bgPlayMode=e.target.value==="all"?"all":"single";localStorage.setItem("bgPlayMode",bgPlayMode);playModeUI();applyBg(bgToggle?bgToggle.checked:false,bgCharacterSelect?bgCharacterSelect.value:"02")});
-if(musicToggle)musicToggle.addEventListener("change",()=>{musicEnabled=musicToggle.checked;localStorage.setItem("musicEnabled",String(musicEnabled));if(musicEnabled){clearInterval(bgTimer);if(bgToggle&&bgToggle.checked)showScene(currentRole,{withMusic:true});else playNext()}else{player.pause();scheduleBgOnly()}});
+if(styleSelect)styleSelect.addEventListener("change",e=>{applyStyle(e.target.value);localStorage.setItem("stylePreset",e.target.value);fit(styleSelect);showToast("风格已更新")});
+if(bgToggle)bgToggle.addEventListener("change",()=>{const r=bgCharacterSelect?bgCharacterSelect.value:"02";localStorage.setItem("bgEnabled",String(bgToggle.checked));localStorage.setItem("bgCharacter",r);applyBg(bgToggle.checked,r);showToast(bgToggle.checked?"背景已开启":"背景已关闭")});
+if(bgCharacterSelect)bgCharacterSelect.addEventListener("change",e=>{localStorage.setItem("bgCharacter",e.target.value);applyBg(bgToggle?bgToggle.checked:false,e.target.value);showToast("背景角色已切换")});
+if(bgPlayModeSelect)bgPlayModeSelect.addEventListener("change",e=>{bgPlayMode=e.target.value==="all"?"all":"single";localStorage.setItem("bgPlayMode",bgPlayMode);playModeUI();applyBg(bgToggle?bgToggle.checked:false,bgCharacterSelect?bgCharacterSelect.value:"02");showToast("播放模式已更新")});
+if(musicToggle)musicToggle.addEventListener("change",()=>{musicEnabled=musicToggle.checked;localStorage.setItem("musicEnabled",String(musicEnabled));if(musicEnabled){clearInterval(bgTimer);if(bgToggle&&bgToggle.checked)showScene(currentRole,{withMusic:true});else playNext()}else{player.pause();scheduleBgOnly()}showToast(musicEnabled?"音乐已开启":"音乐已关闭")});
 if(musicVolumeInput)musicVolumeInput.addEventListener("input",()=>{const v=Math.min(100,Math.max(0,Number(musicVolumeInput.value)||0));player.volume=v/100;localStorage.setItem("musicVolume",String(player.volume));musicVolumeInput.style.setProperty("--vol",`${v}%`)});
-if(live2dModelSelect)live2dModelSelect.addEventListener("change",()=>{const modelKey=getLive2dModelKey(live2dModelSelect.value);localStorage.setItem("live2dModel",modelKey);if(typeof switchLive2dModel==="function")switchLive2dModel(modelKey)});
+if(live2dModelSelect)live2dModelSelect.addEventListener("change",()=>{const modelKey=getLive2dModelKey(live2dModelSelect.value);localStorage.setItem("live2dModel",modelKey);if(typeof switchLive2dModel==="function")switchLive2dModel(modelKey);showToast("看板娘角色已切换")});
 if(live2dSizeInput)live2dSizeInput.addEventListener("input",()=>{const size=Math.min(160,Math.max(60,Number(live2dSizeInput.value)||100));localStorage.setItem("live2dSize",String(size));applyLive2dSettings()});
-if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",playNext);
-if(pageMuteToggleButton)pageMuteToggleButton.addEventListener("click",()=>{isPageMuted=!isPageMuted;player.muted=isPageMuted;localStorage.setItem("pageMuted",String(isPageMuted));controls()});
-if(controlsToggleButton)controlsToggleButton.addEventListener("click",()=>{controlsOpen=!controlsOpen;localStorage.setItem("controlsOpen",String(controlsOpen));controls()});
-if(controlsPinInput)controlsPinInput.addEventListener("change",()=>{controlsPinned=controlsPinInput.checked;localStorage.setItem("controlsPinned",String(controlsPinned));if(controlsPinned){controlsOpen=true;localStorage.setItem("controlsOpen","true")}controls()});
+if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",()=>{playNext();showToast(bgPlayMode==="single"?"歌曲已切换":"角色已切换")});
+if(pageMuteToggleButton)pageMuteToggleButton.addEventListener("click",()=>{isPageMuted=!isPageMuted;player.muted=isPageMuted;localStorage.setItem("pageMuted",String(isPageMuted));controls();showToast(isPageMuted?"已静音":"已取消静音")});
+if(controlsToggleButton)controlsToggleButton.addEventListener("click",()=>{controlsOpen=!controlsOpen;localStorage.setItem("controlsOpen",String(controlsOpen));controls();showToast(controlsOpen?"设置面板已展开":"设置面板已收起")});
+if(controlsPinInput)controlsPinInput.addEventListener("change",()=>{controlsPinned=controlsPinInput.checked;localStorage.setItem("controlsPinned",String(controlsPinned));if(controlsPinned){controlsOpen=true;localStorage.setItem("controlsOpen","true")}controls();showToast(controlsPinned?"设置面板已固定":"设置面板已取消固定")});
 if(floatingControls)document.addEventListener("click",e=>{if(controlsPinned||!controlsOpen||floatingControls.contains(e.target))return;controlsOpen=false;localStorage.setItem("controlsOpen","false");controls()});
 player.addEventListener("timeupdate",progress);player.addEventListener("ended",playNext);
 if(yearSpan)yearSpan.textContent=String(new Date().getFullYear());
@@ -90,6 +92,13 @@ glowButtons.forEach(button=>{
   button.addEventListener("pointerleave",()=>button.classList.remove("edge-glowing"));
   button.addEventListener("mouseleave",()=>button.classList.remove("edge-glowing"));
 });
+const revealTargets=document.querySelectorAll(".section,.card,.about-panel,.about-sub-panel,.chips li,.side-nav,.site-footer");
+if("IntersectionObserver" in window){
+  const revealObserver=new IntersectionObserver((entries,observer)=>{entries.forEach(entry=>{if(!entry.isIntersecting)return;entry.target.classList.add("is-revealed");observer.unobserve(entry.target)})},{threshold:0.12,rootMargin:"0px 0px -8% 0px"});
+  revealTargets.forEach((el,index)=>{el.classList.add("reveal-on-scroll");el.style.transitionDelay=`${Math.min(index%6*45,220)}ms`;revealObserver.observe(el)});
+}else{
+  revealTargets.forEach(el=>el.classList.add("is-revealed"));
+}
 const live2dCanvas=$("#live2d-canvas"),live2dWidget=$("#live2d-widget"),live2dDialog=$("#live2d-dialog");
 const live2dMessages=["好久不见，日子过得好快呢……","大坏蛋！你都多久没理人家了呀，嘤嘤嘤～","嗨～快来逗我玩吧！","拿小拳拳锤你胸口！","记得把小家加入收藏夹哦！","今天也要元气满满。","别戳啦，我在认真看家。","要不要听一首歌放松一下？","背景和音乐现在会一起换啦。","欢迎来到 Sakura_Love 的小窝。","偷偷告诉你，点击背景也有惊喜。","哼，你刚刚是不是又在偷看我？","要摸头的话……只能一下下哦。","今天也要陪我玩一会儿嘛。"];
 const getCurrentLive2dName=()=>{
@@ -374,6 +383,11 @@ const initLive2d=async()=>{
 if(document.readyState==="complete")initLive2d();else window.addEventListener("load",initLive2d);
 
 document.addEventListener("visibilitychange",()=>{if(document.hidden){siteWasHidden=true;return}if(siteWasHidden){siteWasHidden=false;setTimeout(()=>showLive2dDialog(live2dReturnMessage),260)}});
-heroActionLinks.forEach(a=>a.addEventListener("click",()=>{const id=a.getAttribute("href"),sec=id&&id.startsWith("#")?$(id):null;if(!sec)return;setTimeout(()=>{sec.classList.remove("flash-highlight");void sec.offsetWidth;sec.classList.add("flash-highlight")},280)}));
+let lastHashClickAt=0;
+const flashSection=(sec,delay=0)=>{if(!sec)return;window.setTimeout(()=>{sec.classList.remove("flash-highlight");sec.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());void sec.offsetWidth;const ring=document.createElement("span");ring.className="section-glow-ring";ring.setAttribute("aria-hidden","true");sec.appendChild(ring);sec.classList.add("flash-highlight");window.clearTimeout(sec._flashHighlightTimer);sec._flashHighlightTimer=window.setTimeout(()=>{sec.classList.remove("flash-highlight");ring.remove()},2700)},delay)};
+const getHashSection=()=>{const id=window.location.hash?decodeURIComponent(window.location.hash.slice(1)):"";return id?document.getElementById(id):null};
+hashActionLinks.forEach(a=>a.addEventListener("click",()=>{const id=a.getAttribute("href"),sec=id&&id.startsWith("#")?document.getElementById(id.slice(1)):null;if(!sec)return;lastHashClickAt=Date.now();flashSection(sec,360)}));
+window.addEventListener("hashchange",()=>{if(Date.now()-lastHashClickAt<800)return;flashSection(getHashSection(),360)});
+if(document.readyState==="complete")flashSection(getHashSection(),520);else window.addEventListener("load",()=>flashSection(getHashSection(),520));
 document.addEventListener("click",e=>{if(e.target.closest("a,button,input,select,label,summary,details,.floating-controls,.quick-jump,.live2d-widget"))return;showClickText(e.clientX,e.clientY)});
 document.addEventListener("pointerdown",()=>{if(musicEnabled&&player.paused&&player.src)player.play().catch(()=>{})},{passive:true});
