@@ -12,143 +12,111 @@
   </head>
   <body>
     <div id="page-top"></div>
-    <div class="bg-stage" aria-hidden="true">
-      <div id="bg-layer-a" class="bg-layer"></div>
-      <div id="bg-layer-b" class="bg-layer"></div>
-    </div>
 
     <header class="site-header">
       <nav class="nav container">
         <a class="logo" href="#hero">Sakura_Love</a>
         <div class="nav-right">
           <div class="social-links social-links-top">
-            <button id="page-mute-toggle" class="btn mute-icon-btn" type="button" aria-label="网页静音开关">
-              <span class="mute-icon-note" aria-hidden="true"></span>
-            </button>
-            <input
-              id="music-volume"
-              class="header-volume"
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              value="60"
-              aria-label="调节音乐音量"
-              title="音量"
-            />
-            <button id="header-music-next" class="btn header-next-btn" type="button" aria-label="切换当前角色下一首歌曲" title="切歌">
-              <span class="header-next-icon" aria-hidden="true"></span>
-            </button>
             <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书</a>
             <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub</a>
             <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer">Bilibili</a>
           </div>
+          <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="切换夜间模式" aria-pressed="false">
+            <span aria-hidden="true"></span>
+          </button>
         </div>
       </nav>
     </header>
 
-    <aside class="floating-controls floating-controls-open" aria-label="快捷设置">
-      <div class="floating-controls-header">
-        <button id="controls-toggle" class="btn control-toggle-btn" type="button" aria-label="展开或收起设置面板">◀</button>
-        <label class="pin-wrap" for="controls-pin">
-          <input id="controls-pin" type="checkbox" />
-          <span>固定</span>
-        </label>
-      </div>
-
-      <div class="floating-controls-body">
-        <div class="control-group">
-          <div class="control-title">风格</div>
-          <select id="style-select" aria-label="切换网站风格">
-            <option value="warm">温馨</option>
-            <option value="tech">科技</option>
-            <option value="minimal">极简</option>
-            <option value="melancholy">伤感</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <div class="control-title">背景图</div>
-          <label class="check-row" for="bg-toggle">
-            <input id="bg-toggle" type="checkbox" aria-label="显示背景图像" />
-            <span>开启</span>
-          </label>
-        </div>
-
-        <div id="bg-character-wrap" class="control-group">
-          <div class="control-title">角色</div>
-          <select id="bg-character-select" aria-label="选择背景角色">
-            <option value="02">02</option>
-            <option value="chitanda">千反田爱瑠</option>
-            <option value="kaguya">辉夜姬</option>
-            <option value="yachiyo">八千代</option>
-            <option value="iroha">彩叶</option>
-            <option value="eriyi">绘梨衣</option>
-            <option value="elaina">伊雷娜</option>
-            <option value="chtholly">珂朵莉</option>
-            <option value="sora">春日野穹</option>
-            <option value="akame">赤瞳</option>
-            <option value="mine">玛茵</option>
-            <option value="esdeath">艾斯德斯</option>
-            <option value="krul">克鲁鲁</option>
-            <option value="shinoa">柊筱娅</option>
-            <option value="violet">薇尔莉特</option>
-            <option value="toki">蝶祈</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <div class="control-title">播放模式</div>
-          <select id="bg-play-mode" aria-label="背景播放模式">
-            <option value="single">单角色</option>
-            <option value="all">全角色</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <div class="control-title">音乐</div>
-          <label class="check-row" for="music-toggle">
-            <input id="music-toggle" type="checkbox" aria-label="开启或关闭角色音乐" checked />
-            <span>开启</span>
-          </label>
-        </div>
-
-        <div class="control-group">
-          <div class="control-title">看板娘角色</div>
-          <select id="live2d-model" aria-label="选择看板娘角色">
-            <option value="tutu">草莓兔兔</option>
-            <option value="mao">Mao</option>
-            <option value="hiyori">Hiyori</option>
-            <option value="haru">Haru</option>
-            <option value="natori">Natori</option>
-            <option value="mark">Mark</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <div class="control-title">看板娘大小 <span id="live2d-size-value">100%</span></div>
-          <input
-            id="live2d-size"
-            type="range"
-            min="60"
-            max="160"
-            step="5"
-            value="100"
-            aria-label="调节看板娘大小"
-          />
-        </div>
-      </div>
-    </aside>
-
     <main>
-      <section id="hero" class="hero container">
-        <div class="hero-actions">
-          <a class="btn primary" href="#projects">查看项目</a>
-          <a class="btn" href="#contact">联系我</a>
+      <section id="hero" class="hero">
+        <div class="hero-inner container">
+          <div class="hero-copy">
+            <p class="eyebrow">Personal Gallery</p>
+            <h1>Sakura_Love</h1>
+            <p class="intro">把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。</p>
+            <div class="hero-actions">
+              <a class="btn primary" href="#projects">查看项目</a>
+              <a class="btn secondary" href="#contact">联系我</a>
+            </div>
+          </div>
+
+          <section class="anime-viewer" aria-labelledby="anime-viewer-title">
+            <div class="anime-viewer-head">
+              <div>
+                <p class="eyebrow">Character Window</p>
+                <h2 id="anime-viewer-title">角色欣赏</h2>
+              </div>
+              <button id="page-mute-toggle" class="btn mute-icon-btn" type="button" aria-label="角色音乐静音开关">
+                <span class="mute-icon-note" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="anime-viewer-stage" aria-label="角色图片展示窗口">
+              <div id="bg-layer-a" class="bg-layer"></div>
+              <div id="bg-layer-b" class="bg-layer"></div>
+              <p class="anime-viewer-empty">打开欣赏窗后，这里会展示角色图片。</p>
+            </div>
+            <div class="anime-viewer-settings" aria-label="角色欣赏设置">
+              <div id="bg-character-wrap" class="control-group">
+                <div class="control-title">角色</div>
+                <select id="bg-character-select" aria-label="选择背景角色">
+                  <option value="02">02</option>
+                  <option value="chitanda">千反田爱瑠</option>
+                  <option value="kaguya">辉夜姬</option>
+                  <option value="yachiyo">八千代</option>
+                  <option value="iroha">彩叶</option>
+                  <option value="eriyi">绘梨衣</option>
+                  <option value="elaina">伊雷娜</option>
+                  <option value="chtholly">珂朵莉</option>
+                  <option value="sora">春日野穹</option>
+                  <option value="akame">赤瞳</option>
+                  <option value="mine">玛茵</option>
+                  <option value="esdeath">艾斯德斯</option>
+                  <option value="krul">克鲁鲁</option>
+                  <option value="shinoa">柊筱娅</option>
+                  <option value="violet">薇尔莉特</option>
+                  <option value="toki">蝶祈</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <div class="control-title">播放模式</div>
+                <select id="bg-play-mode" aria-label="背景播放模式">
+                  <option value="single">单角色</option>
+                  <option value="all">全角色</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <div class="control-title">音乐</div>
+                <label class="check-row" for="music-toggle">
+                  <input id="music-toggle" type="checkbox" aria-label="开启或关闭角色音乐" checked />
+                  <span>开启</span>
+                </label>
+              </div>
+            </div>
+            <div class="anime-viewer-controls">
+              <input
+                id="music-volume"
+                class="header-volume"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="60"
+                aria-label="调节角色音乐音量"
+                title="音量"
+              />
+              <button id="header-music-next" class="btn header-next-btn" type="button" aria-label="切换当前角色下一首歌曲" title="切歌">
+                <span class="header-next-icon" aria-hidden="true"></span>
+              </button>
+            </div>
+          </section>
         </div>
       </section>
 
-      <div class="page-shell container">
+      <div class="page-shell">
         <aside class="side-nav" aria-label="页面导航">
           <a href="#about">关于</a>
           <a href="#skills">技能</a>
@@ -250,9 +218,38 @@
       </div>
     </main>
 
-    <div id="live2d-widget" class="live2d-widget" aria-hidden="true">
+    <div id="live2d-widget" class="live2d-widget">
       <canvas id="live2d-canvas"></canvas>
       <div id="live2d-dialog" class="live2d-dialog" aria-hidden="true"></div>
+      <button id="live2d-settings-toggle" class="live2d-settings-toggle" type="button" aria-label="展开看板娘设置" aria-expanded="false">
+        <span aria-hidden="true"></span>
+      </button>
+      <div id="live2d-settings-panel" class="live2d-settings-panel" aria-label="看板娘设置">
+        <div class="control-group">
+          <div class="control-title">看板娘角色</div>
+          <select id="live2d-model" aria-label="选择看板娘角色">
+            <option value="tutu">草莓兔兔</option>
+            <option value="mao">Mao</option>
+            <option value="hiyori">Hiyori</option>
+            <option value="haru">Haru</option>
+            <option value="natori">Natori</option>
+            <option value="mark">Mark</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <div class="control-title">看板娘大小 <span id="live2d-size-value">100%</span></div>
+          <input
+            id="live2d-size"
+            type="range"
+            min="60"
+            max="160"
+            step="5"
+            value="100"
+            aria-label="调节看板娘大小"
+          />
+        </div>
+      </div>
     </div>
 
     <div class="quick-jump">
@@ -264,6 +261,20 @@
 
     <footer id="page-bottom" class="site-footer">
       <div class="container">
+        <div class="design-style-switch" aria-label="切换网页风格">
+          <span>风格</span>
+          <div class="design-style-options" role="group" aria-label="选择 Apple 或 Linear 风格">
+            <button class="design-style-btn active" type="button" data-design-style="apple" aria-pressed="true">Apple</button>
+            <button class="design-style-btn" type="button" data-design-style="linear" aria-pressed="false">Linear</button>
+          </div>
+        </div>
+        <div class="view-mode-switch" aria-label="切换网页布局">
+          <span>视图</span>
+          <div class="view-mode-options" role="group" aria-label="选择网页端或移动端布局">
+            <button class="view-mode-btn active" type="button" data-layout-mode="desktop" aria-pressed="true">网页端</button>
+            <button class="view-mode-btn" type="button" data-layout-mode="mobile" aria-pressed="false">移动端</button>
+          </div>
+        </div>
         <div class="social-links social-links-bottom">
           <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书主页</a>
           <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub主页</a>

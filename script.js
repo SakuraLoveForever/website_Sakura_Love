@@ -1,13 +1,14 @@
 document.documentElement.classList.add("js");
 const $=(s)=>document.querySelector(s);
-const yearSpan=$("#year"),styleSelect=$("#style-select"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),headerMusicNextButton=$("#header-music-next"),pageMuteToggleButton=$("#page-mute-toggle"),floatingControls=$(".floating-controls"),controlsToggleButton=$("#controls-toggle"),controlsPinInput=$("#controls-pin"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),hashActionLinks=document.querySelectorAll(".hero-actions a[href^='#'],.side-nav a[href^='#']"),toastRoot=$("#toast-root");
-const styleMap={warm:"style-warm",tech:"style-tech",minimal:"style-minimal",melancholy:"style-melancholy"};
+const yearSpan=$("#year"),styleSelect=$("#style-select"),themeToggle=$("#theme-toggle"),designStyleButtons=document.querySelectorAll(".design-style-btn"),layoutModeButtons=document.querySelectorAll(".view-mode-btn"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),headerMusicNextButton=$("#header-music-next"),pageMuteToggleButton=$("#page-mute-toggle"),animeViewer=$(".anime-viewer"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),live2dSettingsToggle=$("#live2d-settings-toggle"),live2dSettingsPanel=$("#live2d-settings-panel"),hashActionLinks=document.querySelectorAll(".hero-actions a[href^='#'],.side-nav a[href^='#']"),toastRoot=$("#toast-root");
+const styleMap={apple:"design-apple",linear:"design-linear"};
+const legacyStyleClasses=["style-warm","style-tech","style-minimal","style-melancholy"];
 const live2dModels={
   tutu:{name:"草莓兔兔",path:"assets/live2d/tutu/草莓兔兔  试用.model3.json",scale:0.92,watermarkParam:"Param261"},
   mao:{name:"Mao",path:"live2d-widget-v3-main/Resources/model/Mao/Mao.model3.json",scale:0.92},
   hiyori:{name:"Hiyori",path:"live2d-widget-v3-main/Resources/model/Hiyori/Hiyori.model3.json",scale:0.92},
   haru:{name:"Haru",path:"live2d-widget-v3-main/Resources/model/Haru/Haru.model3.json",scale:0.92},
-  natori:{name:"Natori",path:"live2d-widget-v3-main/Resources/model/Natori/Natori.model3.json",scale:0.92},
+  natori:{name:"Natori",path:"live2d-widget-v3-main/Resources/model/Natori/Natori.model3.json",scale:0.92,hiddenParts:["PartCredit"]},
   mark:{name:"Mark",path:"live2d-widget-v3-main/Resources/model/Mark/Mark.model3.json",scale:0.92}
 };
 const live2dCdnBase="https://cdn.jsdelivr.net/gh/SakuraLoveForever/website_Sakura_Love@main/";
@@ -27,43 +28,64 @@ const loadLive2dModel=async(config)=>{
 const live2dFocusParams={angleX:"ParamAngleX",angleY:"ParamAngleY",angleZ:"ParamAngleZ",bodyAngleX:"ParamBodyAngleX",bodyAngleY:"ParamBodyAngleY",bodyAngleZ:"ParamBodyAngleZ",eyeBallX:"ParamEyeBallX",eyeBallY:"ParamEyeBallY",mouseX:"Param83",mouseY:"Param84"};
 const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
 const names={"02":"02",chitanda:"千反田爱瑠",kaguya:"辉夜姬",yachiyo:"八千代",iroha:"彩叶",eriyi:"绘梨衣",elaina:"伊雷娜",chtholly:"珂朵莉",sora:"春日野穹",akame:"赤瞳",mine:"玛茵",esdeath:"艾斯德斯",krul:"克鲁鲁",shinoa:"柊筱娅",violet:"薇尔莉特",toki:"蝶祈"};
-const bgCount={"02":2,chitanda:3,kaguya:1,yachiyo:4,iroha:2,eriyi:1,elaina:4,chtholly:1,sora:1,akame:1,mine:3,esdeath:4,krul:4,shinoa:4,violet:7,toki:6};
+const bgFiles={
+  "02":["1.jpg","2.jpg"],
+  chitanda:["1.jpg","2.jpg","3.jpg"],
+  kaguya:["1.jpg"],
+  yachiyo:["1.jpg","2.jpg","3.jpg","4.jpg"],
+  iroha:["1.jpg","2.jpg"],
+  eriyi:["1.jpg"],
+  elaina:["1.jpg","2.jpg","3.jpg","4.jpg"],
+  chtholly:["1.jpg"],
+  sora:["1.jpg"],
+  akame:["1.jpg"],
+  mine:["1.jpg","2.jpg","3.jpg"],
+  esdeath:["1.jpg","2.jpg","3.jpg","4.jpg"],
+  krul:["1.jpg","2.jpg","3.jpg","4.jpg"],
+  shinoa:["1.jpg","2.jpg","3.jpg","4.jpg"],
+  violet:["2.jpg","3.jpg","5.jpg","6.jpg","7.jpg"],
+  toki:["1.jpg","2.jpg","3.jpg","4.jpg","5.jpg","6.jpg"]
+};
+const bgRoleOrder=["02","akame","chitanda","chtholly","elaina","eriyi","esdeath","iroha","kaguya","krul","mine","shinoa","sora","toki","violet","yachiyo"].filter(role=>bgFiles[role]?.length);
+const bgCount=Object.fromEntries(Object.entries(bgFiles).map(([role,files])=>[role,files.length]));
 const musicCount={"02":4,chitanda:2,kaguya:1,yachiyo:1,iroha:1,eriyi:2,elaina:1,chtholly:1,sora:3,akame:4,mine:4,esdeath:4,krul:1,shinoa:1,violet:4,toki:4};
-let controlsOpen=localStorage.getItem("controlsOpen"),controlsPinned=localStorage.getItem("controlsPinned")==="true",bgPlayMode=localStorage.getItem("bgPlayMode")||"single",activeBgLayer=bgLayerA,bgTimer=null,globalRoleIndex=0,currentRole=localStorage.getItem("bgCharacter")||"02",isPageMuted=localStorage.getItem("pageMuted")==="true",musicEnabled=localStorage.getItem("musicEnabled")!=="false";
-controlsOpen=controlsOpen===null?true:controlsOpen==="true";
+let bgPlayMode=localStorage.getItem("bgPlayMode")||"single",activeBgLayer=bgLayerA,bgTimer=null,currentRole=localStorage.getItem("bgCharacter")||"02",isPageMuted=localStorage.getItem("pageMuted")==="true",musicEnabled=localStorage.getItem("musicEnabled")!=="false";
 const bgSeq={},musicSeq={},player=new Audio();
 player.loop=false;player.preload="auto";player.volume=Math.min(1,Math.max(0,Number(localStorage.getItem("musicVolume"))||0.6));player.muted=isPageMuted;
+const isViewerEnabled=()=>true;
 const showToast=(message)=>{if(!toastRoot)return;const toast=document.createElement("div");toast.className="toast";toast.textContent=message;toastRoot.appendChild(toast);setTimeout(()=>toast.remove(),3100)};
 const fit=(el)=>{if(!el)return;const n=Math.max(4,...Array.from(el.options||[]).map(o=>(o.textContent||"").trim().length));el.style.width=`calc(${n}ch + 3.2rem)`};
-const applyStyle=(k)=>{const safe=styleMap[k]?k:"warm";document.body.classList.remove(...Object.values(styleMap));document.body.classList.add(styleMap[safe]);if(styleSelect)styleSelect.value=safe};
-const setBg=(role)=>{if(!bgLayerA||!bgLayerB)return;const r=bgCount[role]?role:"02",count=bgCount[r],idx=((bgSeq[r]||0)%count)+1;bgSeq[r]=(bgSeq[r]||0)+1;currentRole=r;if(bgCharacterSelect)bgCharacterSelect.value=r;localStorage.setItem("bgCharacter",r);const next=activeBgLayer===bgLayerA?bgLayerB:bgLayerA;next.style.backgroundImage=`url("assets/backgrounds/${r}/${idx}.jpg")`;next.classList.add("visible");if(activeBgLayer)activeBgLayer.classList.remove("visible");activeBgLayer=next};
-const nextRole=()=>{const ks=Object.keys(names),start=Math.max(0,ks.indexOf(currentRole));return ks[(start+1)%ks.length]};
+const applyStyle=(k)=>{const safe=styleMap[k]?k:"apple";document.body.classList.remove(...Object.values(styleMap),...legacyStyleClasses);document.body.classList.add(styleMap[safe]);designStyleButtons.forEach(button=>{const active=button.dataset.designStyle===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});if(styleSelect)styleSelect.value=safe;localStorage.setItem("stylePreset",safe)};
+const applyTheme=(mode)=>{const dark=mode==="dark";document.body.classList.toggle("theme-dark",dark);if(themeToggle)themeToggle.setAttribute("aria-pressed",String(dark));localStorage.setItem("themeMode",dark?"dark":"light")};
+const applyLayoutMode=(mode)=>{const safe=mode==="mobile"?"mobile":"desktop";document.body.classList.toggle("layout-mobile",safe==="mobile");layoutModeButtons.forEach(button=>{const active=button.dataset.layoutMode===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});localStorage.setItem("layoutMode",safe)};
+const setBg=(role)=>{if(!bgLayerA||!bgLayerB)return;const r=bgFiles[role]?.length?role:"02",files=bgFiles[r],idx=(bgSeq[r]||0)%files.length;bgSeq[r]=(bgSeq[r]||0)+1;currentRole=r;if(bgCharacterSelect)bgCharacterSelect.value=r;localStorage.setItem("bgCharacter",r);const next=activeBgLayer===bgLayerA?bgLayerB:bgLayerA;next.style.backgroundImage=`url("assets/backgrounds/${r}/${files[idx]}")`;next.classList.add("visible");if(activeBgLayer)activeBgLayer.classList.remove("visible");activeBgLayer=next};
+const nextRole=()=>{const start=bgRoleOrder.indexOf(currentRole);return bgRoleOrder[(start+1+bgRoleOrder.length)%bgRoleOrder.length]||"02"};
 const nextSceneRole=(role=currentRole)=>bgPlayMode==="all"?nextRole():(bgCount[role]?role:"02");
 const playRole=(role)=>{if(!musicEnabled)return;const r=musicCount[role]?role:"02",count=musicCount[r],idx=((musicSeq[r]||0)%count)+1;musicSeq[r]=(musicSeq[r]||0)+1;player.src=`assets/music/${r}/${idx}.mp3`;player.play().catch(()=>{})};
 const showScene=(role,{withMusic=false}={})=>{const r=bgCount[role]?role:"02";setBg(r);if(withMusic)playRole(r)};
-const scheduleBgOnly=()=>{clearInterval(bgTimer);if(bgToggle&&bgToggle.checked&&!musicEnabled)bgTimer=setInterval(()=>showScene(nextSceneRole()),3000)};
-const applyBg=(on,role)=>{clearInterval(bgTimer);if(!bgLayerA||!bgLayerB)return;if(!on){bgLayerA.classList.remove("visible");bgLayerB.classList.remove("visible");bgLayerA.style.backgroundImage="";bgLayerB.style.backgroundImage="";return}showScene(role,{withMusic:musicEnabled});scheduleBgOnly()};
-const playNext=()=>{const role=bgToggle&&bgToggle.checked?nextSceneRole():bgCharacterSelect?bgCharacterSelect.value:"02";if(bgToggle&&bgToggle.checked)showScene(role,{withMusic:musicEnabled});else playRole(role)};
-const progress=()=>{if(!pageMuteToggleButton)return;const d=Number(player.duration),t=Number(player.currentTime),p=d>0?Math.min(1,Math.max(0,t/d)):0;pageMuteToggleButton.style.setProperty("--play-progress",`${p*360}deg`)};
-const controls=()=>{if(floatingControls)floatingControls.classList.toggle("floating-controls-open",controlsOpen);if(controlsToggleButton)controlsToggleButton.textContent=controlsOpen?"◀":"▶";if(controlsPinInput)controlsPinInput.checked=controlsPinned;if(pageMuteToggleButton){pageMuteToggleButton.classList.toggle("muted",isPageMuted);pageMuteToggleButton.title=isPageMuted?"取消静音":"静音"}};
+const scheduleBgOnly=()=>{clearInterval(bgTimer);if(!musicEnabled)bgTimer=setInterval(()=>showScene(nextSceneRole()),3000)};
+const applyBg=(on,role)=>{clearInterval(bgTimer);if(animeViewer)animeViewer.classList.toggle("is-viewer-off",!on);if(!bgLayerA||!bgLayerB)return;if(!on){player.pause();bgLayerA.classList.remove("visible");bgLayerB.classList.remove("visible");bgLayerA.style.backgroundImage="";bgLayerB.style.backgroundImage="";return}showScene(role,{withMusic:musicEnabled});scheduleBgOnly()};
+const playNext=()=>{if(!isViewerEnabled())return;const role=nextSceneRole(bgCharacterSelect?bgCharacterSelect.value:"02");showScene(role,{withMusic:musicEnabled})};
+const updateMusicButtonState=()=>{if(!pageMuteToggleButton)return;const active=Boolean(player.src)&&!player.paused&&!isPageMuted;pageMuteToggleButton.classList.toggle("is-playing",active);pageMuteToggleButton.classList.toggle("muted",isPageMuted||!active);pageMuteToggleButton.title=isPageMuted?"取消静音":"静音"};
+const progress=()=>{if(!pageMuteToggleButton)return;const d=Number(player.duration),t=Number(player.currentTime),p=d>0?Math.min(1,Math.max(0,t/d)):0;pageMuteToggleButton.style.setProperty("--play-progress",`${p*360}deg`);updateMusicButtonState()};
+const controls=()=>updateMusicButtonState();
 const playModeUI=()=>{if(bgCharacterSelect)bgCharacterSelect.disabled=bgPlayMode!=="single";if(headerMusicNextButton)headerMusicNextButton.title=bgPlayMode==="single"?"切歌":"切角色"};
-applyStyle(localStorage.getItem("stylePreset")||"warm");controls();playModeUI();
-const bgOn=localStorage.getItem("bgEnabled")==="true",bgRole=localStorage.getItem("bgCharacter")||"02";if(bgToggle)bgToggle.checked=bgOn;if(bgCharacterSelect)bgCharacterSelect.value=bgCount[bgRole]?bgRole:"02";if(bgPlayModeSelect)bgPlayModeSelect.value=bgPlayMode;applyBg(bgOn,bgRole);
+applyStyle(localStorage.getItem("stylePreset")||"apple");applyTheme(localStorage.getItem("themeMode")==="dark"?"dark":"light");applyLayoutMode(localStorage.getItem("layoutMode")||"desktop");controls();playModeUI();
+const bgOn=true,bgRole=localStorage.getItem("bgCharacter")||"02";localStorage.setItem("bgEnabled","true");if(bgToggle)bgToggle.checked=bgOn;if(bgCharacterSelect)bgCharacterSelect.value=bgCount[bgRole]?bgRole:"02";if(bgPlayModeSelect)bgPlayModeSelect.value=bgPlayMode;applyBg(bgOn,bgRole);
 if(musicToggle)musicToggle.checked=musicEnabled;if(musicVolumeInput){musicVolumeInput.value=String(Math.round(player.volume*100));musicVolumeInput.style.setProperty("--vol",`${Math.round(player.volume*100)}%`)}[styleSelect,bgCharacterSelect,bgPlayModeSelect,live2dModelSelect].forEach(fit);
-if(styleSelect)styleSelect.addEventListener("change",e=>{applyStyle(e.target.value);localStorage.setItem("stylePreset",e.target.value);fit(styleSelect);showToast("风格已更新")});
-if(bgToggle)bgToggle.addEventListener("change",()=>{const r=bgCharacterSelect?bgCharacterSelect.value:"02";localStorage.setItem("bgEnabled",String(bgToggle.checked));localStorage.setItem("bgCharacter",r);applyBg(bgToggle.checked,r);showToast(bgToggle.checked?"背景已开启":"背景已关闭")});
-if(bgCharacterSelect)bgCharacterSelect.addEventListener("change",e=>{localStorage.setItem("bgCharacter",e.target.value);applyBg(bgToggle?bgToggle.checked:false,e.target.value);showToast("背景角色已切换")});
-if(bgPlayModeSelect)bgPlayModeSelect.addEventListener("change",e=>{bgPlayMode=e.target.value==="all"?"all":"single";localStorage.setItem("bgPlayMode",bgPlayMode);playModeUI();applyBg(bgToggle?bgToggle.checked:false,bgCharacterSelect?bgCharacterSelect.value:"02");showToast("播放模式已更新")});
-if(musicToggle)musicToggle.addEventListener("change",()=>{musicEnabled=musicToggle.checked;localStorage.setItem("musicEnabled",String(musicEnabled));if(musicEnabled){clearInterval(bgTimer);if(bgToggle&&bgToggle.checked)showScene(currentRole,{withMusic:true});else playNext()}else{player.pause();scheduleBgOnly()}showToast(musicEnabled?"音乐已开启":"音乐已关闭")});
+designStyleButtons.forEach(button=>button.addEventListener("click",()=>{applyStyle(button.dataset.designStyle);showToast("风格已更新")}));
+if(styleSelect)styleSelect.addEventListener("change",e=>{applyStyle(e.target.value);fit(styleSelect);showToast("风格已更新")});
+if(themeToggle)themeToggle.addEventListener("click",()=>{const dark=!document.body.classList.contains("theme-dark");applyTheme(dark?"dark":"light");showToast(dark?"夜间模式已开启":"夜间模式已关闭")});
+layoutModeButtons.forEach(button=>button.addEventListener("click",()=>{const mode=button.dataset.layoutMode==="mobile"?"mobile":"desktop";applyLayoutMode(mode);if(mode==="desktop")requestAnimationFrame(()=>requestAnimationFrame(()=>{if(typeof applyLive2dSettings==="function")applyLive2dSettings()}));showToast(mode==="mobile"?"已切换移动端布局":"已切换网页端布局")}));
+if(bgCharacterSelect)bgCharacterSelect.addEventListener("change",e=>{localStorage.setItem("bgCharacter",e.target.value);applyBg(true,e.target.value);showToast("欣赏角色已切换")});
+if(bgPlayModeSelect)bgPlayModeSelect.addEventListener("change",e=>{bgPlayMode=e.target.value==="all"?"all":"single";localStorage.setItem("bgPlayMode",bgPlayMode);playModeUI();applyBg(true,bgCharacterSelect?bgCharacterSelect.value:"02");showToast("播放模式已更新")});
+if(musicToggle)musicToggle.addEventListener("change",()=>{musicEnabled=musicToggle.checked;localStorage.setItem("musicEnabled",String(musicEnabled));if(musicEnabled){clearInterval(bgTimer);if(isViewerEnabled())showScene(currentRole,{withMusic:true})}else{player.pause();scheduleBgOnly()}showToast(musicEnabled?"音乐已开启":"音乐已关闭")});
 if(musicVolumeInput)musicVolumeInput.addEventListener("input",()=>{const v=Math.min(100,Math.max(0,Number(musicVolumeInput.value)||0));player.volume=v/100;localStorage.setItem("musicVolume",String(player.volume));musicVolumeInput.style.setProperty("--vol",`${v}%`)});
 if(live2dModelSelect)live2dModelSelect.addEventListener("change",()=>{const modelKey=getLive2dModelKey(live2dModelSelect.value);localStorage.setItem("live2dModel",modelKey);if(typeof switchLive2dModel==="function")switchLive2dModel(modelKey);showToast("看板娘角色已切换")});
 if(live2dSizeInput)live2dSizeInput.addEventListener("input",()=>{const size=Math.min(160,Math.max(60,Number(live2dSizeInput.value)||100));localStorage.setItem("live2dSize",String(size));applyLive2dSettings()});
 if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",()=>{playNext();showToast(bgPlayMode==="single"?"歌曲已切换":"角色已切换")});
 if(pageMuteToggleButton)pageMuteToggleButton.addEventListener("click",()=>{isPageMuted=!isPageMuted;player.muted=isPageMuted;localStorage.setItem("pageMuted",String(isPageMuted));controls();showToast(isPageMuted?"已静音":"已取消静音")});
-if(controlsToggleButton)controlsToggleButton.addEventListener("click",()=>{controlsOpen=!controlsOpen;localStorage.setItem("controlsOpen",String(controlsOpen));controls();showToast(controlsOpen?"设置面板已展开":"设置面板已收起")});
-if(controlsPinInput)controlsPinInput.addEventListener("change",()=>{controlsPinned=controlsPinInput.checked;localStorage.setItem("controlsPinned",String(controlsPinned));if(controlsPinned){controlsOpen=true;localStorage.setItem("controlsOpen","true")}controls();showToast(controlsPinned?"设置面板已固定":"设置面板已取消固定")});
-if(floatingControls)document.addEventListener("click",e=>{if(controlsPinned||!controlsOpen||floatingControls.contains(e.target))return;controlsOpen=false;localStorage.setItem("controlsOpen","false");controls()});
-player.addEventListener("timeupdate",progress);player.addEventListener("ended",playNext);
+player.addEventListener("timeupdate",progress);player.addEventListener("play",updateMusicButtonState);player.addEventListener("pause",updateMusicButtonState);player.addEventListener("ended",()=>{updateMusicButtonState();playNext()});
 if(yearSpan)yearSpan.textContent=String(new Date().getFullYear());
 const glowButtons=document.querySelectorAll(".hero-actions .btn,.project-title-btn,.social-links a,.jump-btn");
 const updateButtonEdgeGlow=(button,event)=>{
@@ -100,7 +122,50 @@ if("IntersectionObserver" in window){
   revealTargets.forEach(el=>el.classList.add("is-revealed"));
 }
 const live2dCanvas=$("#live2d-canvas"),live2dWidget=$("#live2d-widget"),live2dDialog=$("#live2d-dialog");
-const live2dMessages=["好久不见，日子过得好快呢……","大坏蛋！你都多久没理人家了呀，嘤嘤嘤～","嗨～快来逗我玩吧！","拿小拳拳锤你胸口！","记得把小家加入收藏夹哦！","今天也要元气满满。","别戳啦，我在认真看家。","要不要听一首歌放松一下？","背景和音乐现在会一起换啦。","欢迎来到 Sakura_Love 的小窝。","偷偷告诉你，点击背景也有惊喜。","哼，你刚刚是不是又在偷看我？","要摸头的话……只能一下下哦。","今天也要陪我玩一会儿嘛。"];
+let live2dSettingsTimer=null,live2dControlsActive=false,live2dLayoutFrame=0;
+const queueLive2dFrame=window.requestAnimationFrame?.bind(window)||((callback)=>setTimeout(callback,16));
+const isLive2dSettingsTarget=(target)=>Boolean(target?.closest?.(".live2d-settings-toggle,.live2d-settings-panel"));
+const markLive2dControlsActive=()=>{live2dControlsActive=true};
+const unmarkLive2dControlsActive=()=>{live2dControlsActive=false};
+const hideLive2dSettingsButton=()=>{
+  if(!live2dWidget||live2dWidget.classList.contains("live2d-settings-open"))return;
+  live2dWidget.classList.remove("live2d-settings-visible");
+};
+const showLive2dSettingsButton=({keep=false}={})=>{
+  if(!live2dWidget)return;
+  live2dWidget.classList.add("live2d-settings-visible");
+  clearTimeout(live2dSettingsTimer);
+  if(!keep)live2dSettingsTimer=setTimeout(hideLive2dSettingsButton,3000);
+};
+const setLive2dSettingsOpen=(open)=>{
+  if(!live2dWidget)return;
+  live2dWidget.classList.toggle("live2d-settings-open",open);
+  if(live2dSettingsToggle)live2dSettingsToggle.setAttribute("aria-expanded",String(open));
+  showLive2dSettingsButton({keep:open});
+  if(!open){unmarkLive2dControlsActive();live2dSettingsTimer=setTimeout(hideLive2dSettingsButton,3000)}
+};
+if(live2dSettingsToggle)live2dSettingsToggle.addEventListener("click",e=>{
+  e.stopPropagation();
+  setLive2dSettingsOpen(!live2dWidget?.classList.contains("live2d-settings-open"));
+});
+if(live2dSettingsPanel){
+  live2dSettingsPanel.addEventListener("click",e=>e.stopPropagation());
+  live2dSettingsPanel.addEventListener("pointerdown",markLive2dControlsActive);
+  live2dSettingsPanel.addEventListener("focusin",markLive2dControlsActive);
+  live2dSettingsPanel.addEventListener("focusout",()=>setTimeout(()=>{if(!live2dSettingsPanel.contains(document.activeElement))unmarkLive2dControlsActive()},0));
+  live2dSettingsPanel.addEventListener("input",markLive2dControlsActive);
+}
+window.addEventListener("pointerup",unmarkLive2dControlsActive,{passive:true});
+window.addEventListener("pointercancel",unmarkLive2dControlsActive,{passive:true});
+document.addEventListener("pointerdown",e=>{
+  if(!live2dWidget||!live2dWidget.classList.contains("live2d-settings-visible")&&!live2dWidget.classList.contains("live2d-settings-open"))return;
+  if(live2dWidget.contains(e.target))return;
+  clearTimeout(live2dSettingsTimer);
+  unmarkLive2dControlsActive();
+  live2dWidget.classList.remove("live2d-settings-open","live2d-settings-visible");
+  if(live2dSettingsToggle)live2dSettingsToggle.setAttribute("aria-expanded","false");
+},true);
+const live2dMessages=["好久不见，日子过得好快呢……","大坏蛋！你都多久没理人家了呀，嘤嘤嘤～","嗨～快来逗我玩吧！","拿小拳拳锤你胸口！","记得把小家加入收藏夹哦！","今天也要元气满满。","别戳啦，我在认真看家。","要不要听一首歌放松一下？","角色窗口和音乐现在会一起换啦。","欢迎来到 Sakura_Love 的小窝。","偷偷告诉你，点击页面也有惊喜。","哼，你刚刚是不是又在偷看我？","要摸头的话……只能一下下哦。","今天也要陪我玩一会儿嘛。"];
 const getCurrentLive2dName=()=>{
   const selected=getLive2dModelKey(live2dModelSelect&&live2dModels[live2dModelSelect.value]?live2dModelSelect.value:localStorage.getItem("live2dModel"));
   return live2dModels[selected]?.name||"看板娘";
@@ -119,6 +184,14 @@ const showNextLive2dHoverDialog=(force=false)=>{const now=Date.now();if(!force&&
 const showClickText=(x,y,text=pick(clickTexts))=>{const clean=sanitizeWaifuText(text)||pick(clickTexts);const el=document.createElement("span");el.className="click-pop-text";el.textContent=clean;const safeX=Math.min(window.innerWidth-16,Math.max(16,x));const safeY=Math.min(window.innerHeight-16,Math.max(16,y));el.style.left=`${safeX}px`;el.style.top=`${safeY}px`;document.body.appendChild(el);el.addEventListener("animationend",()=>el.remove(),{once:true})};
 let live2dRelayout=null;
 let switchLive2dModel=null;
+const scheduleLive2dRelayout=()=>{
+  if(typeof live2dRelayout!=="function")return;
+  if(live2dLayoutFrame)return;
+  live2dLayoutFrame=queueLive2dFrame(()=>{
+    live2dLayoutFrame=0;
+    if(typeof live2dRelayout==="function")live2dRelayout();
+  });
+};
 const isAroundLive2dWidget=(event,{wide=false}={})=>{
   if(!live2dWidget)return false;
   const rect=live2dWidget.getBoundingClientRect();
@@ -159,7 +232,7 @@ const applyLive2dSettings=()=>{
   if(live2dModelSelect)live2dModelSelect.value=modelKey;
   if(live2dSizeInput)live2dSizeInput.value=String(size);
   if(live2dSizeValue)live2dSizeValue.textContent=`${size}%`;
-  if(typeof live2dRelayout==="function")live2dRelayout();
+  scheduleLive2dRelayout();
 };
 applyLive2dSettings();
 const initLive2d=async()=>{
@@ -188,8 +261,49 @@ const initLive2d=async()=>{
         return;
       }
     };
+    const getModelIdText=(handle)=>{
+      if(typeof handle==="string")return handle;
+      const raw=handle?.getString?.();
+      if(typeof raw==="string")return raw;
+      if(typeof raw?.s==="string")return raw.s;
+      if(typeof handle?._id?.s==="string")return handle._id.s;
+      return "";
+    };
+    const findModelPartIndex=(coreModel,id)=>{
+      const count=typeof coreModel.getPartCount==="function"?coreModel.getPartCount():coreModel?._model?.parts?.ids?.length||0;
+      const partIds=coreModel?._partIds;
+      const rawIds=coreModel?._model?.parts?.ids;
+      for(let index=0;index<count;index+=1){
+        const partId=partIds?.at?.(index)||rawIds?.[index];
+        if(partId===id||partId?.isEqual?.(id)||getModelIdText(partId)===id)return index;
+      }
+      try{
+        if(typeof coreModel.getPartIndex==="function"){
+          const index=coreModel.getPartIndex(id);
+          if(index>=0&&index<count)return index;
+        }
+      }catch{}
+      return -1;
+    };
+    const setModelPartOpacity=(id,value)=>{
+      const coreModel=model?.internalModel?.coreModel;
+      if(!id||!coreModel)return;
+      try{
+        const index=findModelPartIndex(coreModel,id);
+        if(index>=0&&typeof coreModel.setPartOpacityByIndex==="function"){
+          coreModel.setPartOpacityByIndex(index,value);
+          return;
+        }
+        if(typeof coreModel.setPartOpacityById==="function")coreModel.setPartOpacityById(id,value);
+      }catch{
+        return;
+      }
+    };
     let watermarkHidden=true;
-    const hideTrialWatermark=()=>{if(modelConfig?.watermarkParam)setModelParameter(modelConfig.watermarkParam,watermarkHidden?1:0)};
+    const hideConfiguredModelMarks=()=>{
+      if(modelConfig?.watermarkParam)setModelParameter(modelConfig.watermarkParam,watermarkHidden?1:0);
+      (modelConfig?.hiddenParts||[]).forEach(partId=>setModelPartOpacity(partId,0));
+    };
     const setManualFocusFromEvent=(event)=>{
       const rect=live2dWidget.getBoundingClientRect();
       if(!rect.width||!rect.height)return;
@@ -231,7 +345,7 @@ const initLive2d=async()=>{
       live2dWidget.style.setProperty("--live2d-dialog-x",`${x}px`);
       live2dWidget.style.setProperty("--live2d-dialog-y",`${y}px`);
     };
-    app.ticker.add(()=>{hideTrialWatermark();applyManualFocus();updateLive2dDialogAnchor()},undefined,-100);
+    app.ticker.add(()=>{hideConfiguredModelMarks();applyManualFocus();updateLive2dDialogAnchor()},undefined,-100);
     const layout=()=>{
       const w=live2dWidget.clientWidth,h=live2dWidget.clientHeight;
       if(!model||!w||!h||!naturalWidth||!naturalHeight)return;
@@ -257,7 +371,7 @@ const initLive2d=async()=>{
         naturalWidth=model.width;
         naturalHeight=model.height;
         app.stage.addChild(model);
-        hideTrialWatermark();
+        hideConfiguredModelMarks();
         applyLive2dSettings();
         layout();
         if(live2dModelSelect)live2dModelSelect.value=safeKey;
@@ -269,12 +383,13 @@ const initLive2d=async()=>{
     window.addEventListener("keydown",e=>{
       if(e.ctrlKey&&e.shiftKey){
         watermarkHidden=!watermarkHidden;
-        hideTrialWatermark();
+        hideConfiguredModelMarks();
       }
     });
     window.addEventListener("resize",applyLive2dSettings);
     window.addEventListener("pointermove",e=>{
       if(!model)return;
+      if(live2dControlsActive||isLive2dSettingsTarget(e.target))return;
       setManualFocusFromEvent(e);
       const inLive2dZone=isAroundLive2dWidget(e);
       if(inLive2dZone&&!live2dHovering){
@@ -326,6 +441,8 @@ const initLive2d=async()=>{
       if(typeof live2dRelayout==="function")live2dRelayout();
     };
     const beginLive2dDrag=(e)=>{
+      if(isLive2dSettingsTarget(e.target))return;
+      if(!hitLive2dPixel(e))return;
       const rect=live2dWidget.getBoundingClientRect();
       draggingLive2d=true;
       live2dDragged=false;
@@ -339,10 +456,6 @@ const initLive2d=async()=>{
       e.preventDefault();
     };
     live2dWidget.addEventListener("pointerdown",beginLive2dDrag);
-    document.addEventListener("pointerdown",e=>{
-      if(draggingLive2d||live2dWidget.contains(e.target)||!isAroundLive2dWidget(e,{wide:true})||e.target.closest("a,button,input,select,label,summary,details,.floating-controls,.quick-jump"))return;
-      beginLive2dDrag(e);
-    },true);
     const handleLive2dDragMove=(e)=>{
       if(!draggingLive2d)return;
       if(!live2dDragged&&Math.hypot(e.clientX-dragStartX,e.clientY-dragStartY)<=3)return;
@@ -366,6 +479,8 @@ const initLive2d=async()=>{
     live2dWidget.addEventListener("lostpointercapture",endLive2dDrag);
     live2dWidget.addEventListener("click",e=>{
       e.stopPropagation();
+      if(isLive2dSettingsTarget(e.target))return;
+      showLive2dSettingsButton();
       if(suppressLive2dClick){suppressLive2dClick=false;live2dDragged=false;return}
       if(!hitLive2dPixel(e)){
         showClickText(e.clientX,e.clientY);
@@ -389,5 +504,5 @@ const getHashSection=()=>{const id=window.location.hash?decodeURIComponent(windo
 hashActionLinks.forEach(a=>a.addEventListener("click",()=>{const id=a.getAttribute("href"),sec=id&&id.startsWith("#")?document.getElementById(id.slice(1)):null;if(!sec)return;lastHashClickAt=Date.now();flashSection(sec,360)}));
 window.addEventListener("hashchange",()=>{if(Date.now()-lastHashClickAt<800)return;flashSection(getHashSection(),360)});
 if(document.readyState==="complete")flashSection(getHashSection(),520);else window.addEventListener("load",()=>flashSection(getHashSection(),520));
-document.addEventListener("click",e=>{if(e.target.closest("a,button,input,select,label,summary,details,.floating-controls,.quick-jump,.live2d-widget"))return;showClickText(e.clientX,e.clientY)});
-document.addEventListener("pointerdown",()=>{if(musicEnabled&&player.paused&&player.src)player.play().catch(()=>{})},{passive:true});
+document.addEventListener("click",e=>{if(e.target.closest("a,button,input,select,label,summary,details,.quick-jump,.live2d-widget"))return;showClickText(e.clientX,e.clientY)});
+document.addEventListener("pointerdown",()=>{if(isViewerEnabled()&&musicEnabled&&player.paused&&player.src)player.play().catch(()=>{})},{passive:true});
