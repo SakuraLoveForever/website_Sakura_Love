@@ -8,7 +8,7 @@
       name="description"
       content="一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。"
     />
-    <link rel="stylesheet" href="styles.css?v=202605051520" />
+    <link rel="stylesheet" href="styles.css?v=2026050919505" />
   </head>
   <body>
     <div id="page-top"></div>
@@ -18,12 +18,18 @@
         <a class="logo" href="#hero">Sakura_Love</a>
         <div class="nav-right">
           <div class="social-links social-links-top">
-            <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书</a>
-            <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub</a>
-            <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer">Bilibili</a>
+            <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer" aria-label="小红书" title="小红书">
+              <span class="social-icon" aria-hidden="true"></span>
+            </a>
+            <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer" aria-label="GitHub" title="GitHub">
+              <span class="social-icon" aria-hidden="true"></span>
+            </a>
+            <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer" aria-label="Bilibili" title="Bilibili">
+              <span class="social-icon" aria-hidden="true"></span>
+            </a>
           </div>
-          <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="切换夜间模式" aria-pressed="false">
-            <span aria-hidden="true"></span>
+          <button id="language-toggle" class="language-switch" type="button" aria-label="切换语言" title="切换语言">
+            <span class="language-text">EN</span>
           </button>
         </div>
       </nav>
@@ -118,10 +124,46 @@
 
       <div class="page-shell">
         <aside class="side-nav" aria-label="页面导航">
-          <a href="#about">关于</a>
-          <a href="#skills">技能</a>
-          <a href="#projects">项目</a>
-          <a href="#contact">联系</a>
+          <div class="sidebar-brand">
+            <div class="sidebar-logo-link">
+              <button id="sidebar-avatar-button" class="sidebar-avatar-button" type="button" aria-label="上传自定义头像" title="上传自定义头像">
+                <span class="sidebar-logo-mark">S</span>
+              </button>
+              <input id="sidebar-avatar-input" class="sidebar-avatar-input" type="file" accept="image/*" hidden />
+              <a class="sidebar-logo-text" href="#hero" aria-label="Sakura_Love 首页">Sakura_Love</a>
+            </div>
+            <button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-label="收缩侧边栏" aria-pressed="false">
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <nav class="sidebar-menu" aria-label="主要功能">
+            <a class="sidebar-link active" href="#hero" data-nav-key="home">
+              <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5h5v5"/></svg>
+              <span class="sidebar-label">首页</span>
+            </a>
+            <a class="sidebar-link" href="#about" data-nav-key="about">
+              <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v4"/><path d="M17 3v4"/><path d="M4.5 8h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/></svg>
+              <span class="sidebar-label">关于我</span>
+            </a>
+            <a class="sidebar-link" href="#skills" data-nav-key="skills">
+              <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h12"/><path d="M8 12h12"/><path d="M8 17h12"/><path d="m3.5 7 1 1 2-2"/><path d="m3.5 12 1 1 2-2"/><path d="m3.5 17 1 1 2-2"/></svg>
+              <span class="sidebar-label">技能</span>
+            </a>
+            <a class="sidebar-link" href="#projects" data-nav-key="projects">
+              <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h16"/><path d="M7 4h10a2 2 0 0 1 2 2v14H5V6a2 2 0 0 1 2-2Z"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
+              <span class="sidebar-label">项目</span>
+            </a>
+            <a class="sidebar-link" href="#contact" data-nav-key="contact">
+              <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v10H8l-4 3v-13Z"/><path d="M8 10h8"/><path d="M8 13h5"/></svg>
+              <span class="sidebar-label">联系</span>
+            </a>
+            <a class="sidebar-link" href="#page-bottom" data-nav-key="settings">
+              <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V5"/><path d="M5 19h15"/><path d="M8.5 16v-5"/><path d="M13 16V8"/><path d="M17.5 16v-3"/></svg>
+              <span class="sidebar-label">页面设置</span>
+            </a>
+          </nav>
+
         </aside>
 
         <div class="content-flow">
@@ -263,9 +305,12 @@
       <div class="container">
         <div class="design-style-switch" aria-label="切换网页风格">
           <span>风格</span>
-          <div class="design-style-options" role="group" aria-label="选择 Apple 或 Linear 风格">
+          <div class="design-style-options" role="group" aria-label="选择 Apple、Linear、Spotify、Figma 或 Notion 风格">
             <button class="design-style-btn active" type="button" data-design-style="apple" aria-pressed="true">Apple</button>
             <button class="design-style-btn" type="button" data-design-style="linear" aria-pressed="false">Linear</button>
+            <button class="design-style-btn" type="button" data-design-style="spotify" aria-pressed="false">Spotify</button>
+            <button class="design-style-btn" type="button" data-design-style="figma" aria-pressed="false">Figma</button>
+            <button class="design-style-btn" type="button" data-design-style="notion" aria-pressed="false">Notion</button>
           </div>
         </div>
         <div class="view-mode-switch" aria-label="切换网页布局">
@@ -276,9 +321,15 @@
           </div>
         </div>
         <div class="social-links social-links-bottom">
-          <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer">小红书主页</a>
-          <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">GitHub主页</a>
-          <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer">Bilibili主页</a>
+          <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer" aria-label="小红书主页" title="小红书">
+            <span class="social-icon" aria-hidden="true"></span>
+          </a>
+          <a class="social-github" href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer" aria-label="GitHub主页" title="GitHub">
+            <span class="social-icon" aria-hidden="true"></span>
+          </a>
+          <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer" aria-label="Bilibili主页" title="Bilibili">
+            <span class="social-icon" aria-hidden="true"></span>
+          </a>
         </div>
         <p>© <span id="year"></span> Sakura_Love. All rights reserved.</p>
       </div>
@@ -296,6 +347,6 @@
     <script src="live2d-widget-v3-main/Core/live2dcubismcore.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
-    <script src="script.js?v=202605051445"></script>
+    <script src="script.js?v=2026050919505"></script>
   </body>
 </html>

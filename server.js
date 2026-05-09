@@ -39,10 +39,15 @@ const isInsideRoot = (filePath) => {
   return normalizedPath === normalizedRoot || normalizedPath.startsWith(normalizedRoot + path.sep);
 };
 
-const serveFile = (res, filePath) => {
+const serveFile = (res, filePath, statusCode = 200) => {
   fs.stat(filePath, (statErr, stats) => {
     if (statErr) {
-      sendText(res, 404, "Not found");
+      const notFoundPath = path.join(root, "404.html");
+      if (path.resolve(filePath) === path.resolve(notFoundPath)) {
+        sendText(res, 404, "Not found");
+        return;
+      }
+      serveFile(res, notFoundPath, 404);
       return;
     }
 
@@ -52,7 +57,7 @@ const serveFile = (res, filePath) => {
     }
 
     const contentType = mimeTypes[path.extname(filePath).toLowerCase()] || "application/octet-stream";
-    res.writeHead(200, {
+    res.writeHead(statusCode, {
       "Content-Type": contentType,
       "Cache-Control": "no-store",
       "Access-Control-Allow-Origin": "*"
