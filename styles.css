@@ -761,7 +761,8 @@ body.theme-dark .anime-viewer-empty {
 }
 
 .mute-icon-btn,
-.header-next-btn {
+.header-next-btn,
+.header-image-next-btn {
   width: 44px;
   min-width: 44px;
   height: 44px;
@@ -773,43 +774,78 @@ body.theme-dark .anime-viewer-empty {
 
 .mute-icon-btn {
   position: relative;
-  overflow: hidden;
-  --play-progress: 0deg;
+  width: 58px;
+  min-width: 58px;
+  height: 58px;
+  overflow: visible;
+  border: 0;
+  background: var(--primary);
+  color: #ffffff;
+  isolation: isolate;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 18px rgba(255, 255, 255, 0.24);
 }
 
-.mute-icon-btn::before {
-  content: "";
+.mute-progress-circle {
   position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  background: conic-gradient(#ffffff 0deg, #ffffff var(--play-progress), rgba(255, 255, 255, 0.24) var(--play-progress), rgba(255, 255, 255, 0.24) 360deg);
-  box-shadow: 0 0 0 2px rgba(41, 151, 255, 0.34), 0 0 14px rgba(41, 151, 255, 0.52);
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: 62px;
+  height: 62px;
+  overflow: visible;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
+  opacity: 1;
+}
+
+.mute-progress-track,
+.mute-progress-arc {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 5;
+}
+
+.mute-progress-track {
+  stroke: rgba(255, 255, 255, 0.22);
+}
+
+.mute-progress-arc {
+  stroke: #ffffff;
+  transition: stroke-dashoffset 0.08s linear;
 }
 
 .mute-icon-btn::after {
   content: "";
   position: absolute;
-  inset: 8px;
+  inset: 6px;
+  z-index: 1;
   border-radius: 50%;
   background: var(--primary);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.46),
+    0 10px 24px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .mute-icon-note {
   position: relative;
-  z-index: 1;
+  z-index: 4;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 100%;
+  height: 100%;
   color: #ffffff;
   font-family: "Segoe UI Symbol", "Segoe UI", sans-serif;
-  font-size: 21px;
+  font-size: 30px;
+  font-weight: 700;
   line-height: 1;
 }
 
 .mute-icon-note::before {
   content: "♪";
+  transform: translate(1px, -1px);
 }
 
 .mute-icon-btn.is-playing .mute-icon-note {
@@ -823,13 +859,15 @@ body.theme-dark .anime-viewer-empty {
 .mute-icon-btn.muted .mute-icon-note::after {
   content: "";
   position: absolute;
-  left: 2px;
-  right: 2px;
+  left: 50%;
   top: 50%;
-  height: 2.5px;
+  z-index: 5;
+  width: calc(100% + 2px);
+  height: 2px;
   border-radius: 999px;
-  background: #ffffff;
-  transform: translateY(-50%) rotate(-45deg);
+  background: #ff3b30;
+  box-shadow: 0 0 5px rgba(255, 59, 48, 0.62);
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 @keyframes noteSpin {
@@ -842,7 +880,8 @@ body.theme-dark .anime-viewer-empty {
   }
 }
 
-.header-next-btn {
+.header-next-btn,
+.header-image-next-btn {
   position: relative;
 }
 
@@ -854,6 +893,20 @@ body.theme-dark .anime-viewer-empty {
   width: 20px;
   height: 20px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M6 18l8.5-6L6 6v12zm9 0V6h2v12h-2z'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  transform: translate(-50%, -50%);
+}
+
+.header-image-next-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect fill='none' stroke='%23ffffff' stroke-width='2' x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle fill='%23ffffff' cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='2' d='M3 16l5-5 3 3 4-4 6 6'/%3E%3C/svg%3E");
   background-position: center;
   background-repeat: no-repeat;
   background-size: 20px 20px;
@@ -3182,13 +3235,12 @@ body.design-notion .sidebar-link.active::before {
 .anime-viewer .anime-viewer-stage,
 body.design-linear .anime-viewer .anime-viewer-stage,
 body.design-spotify .anime-viewer .anime-viewer-stage,
-body.design-figma .anime-viewer .anime-viewer-stage {
-  background: inherit;
-}
-
+body.design-figma .anime-viewer .anime-viewer-stage,
 body.design-notion .anime-viewer .anime-viewer-stage {
   border: 0;
-  background: transparent;
+  box-shadow: none;
+  background: inherit;
+}
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -3310,6 +3362,8 @@ body.layout-mobile .hero-actions .btn {
 
 body.layout-mobile .anime-viewer-head {
   align-items: flex-start;
+  justify-content: flex-start;
+  gap: 18px;
   padding: 20px 18px 14px;
 }
 
@@ -3527,6 +3581,8 @@ body.layout-mobile .live2d-widget {
 
   .anime-viewer-head {
     align-items: flex-start;
+    justify-content: flex-start;
+    gap: 18px;
     padding: 20px 18px 14px;
   }
 

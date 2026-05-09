@@ -8,7 +8,7 @@
       name="description"
       content="一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。"
     />
-    <link rel="stylesheet" href="styles.css?v=2026050919505" />
+    <link rel="stylesheet" href="styles.css?v=202605092205" />
   </head>
   <body>
     <div id="page-top"></div>
@@ -55,6 +55,10 @@
                 <h2 id="anime-viewer-title">角色欣赏</h2>
               </div>
               <button id="page-mute-toggle" class="btn mute-icon-btn" type="button" aria-label="角色音乐静音开关">
+                <svg class="mute-progress-circle" viewBox="0 0 58 58" aria-hidden="true">
+                  <circle class="mute-progress-track" cx="29" cy="29" r="26" pathLength="100"></circle>
+                  <circle class="mute-progress-arc" cx="29" cy="29" r="26" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></circle>
+                </svg>
                 <span class="mute-icon-note" aria-hidden="true"></span>
               </button>
             </div>
@@ -116,6 +120,9 @@
               />
               <button id="header-music-next" class="btn header-next-btn" type="button" aria-label="切换当前角色下一首歌曲" title="切歌">
                 <span class="header-next-icon" aria-hidden="true"></span>
+              </button>
+              <button id="header-image-next" class="btn header-image-next-btn" type="button" aria-label="切换当前角色下一张图片" title="换图">
+                <span class="header-image-next-icon" aria-hidden="true"></span>
               </button>
             </div>
           </section>
@@ -347,6 +354,6 @@
     <script src="live2d-widget-v3-main/Core/live2dcubismcore.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
-    <script src="script.js?v=2026050919505"></script>
+    <script src="script.js?v=202605092205"></script>
   </body>
 </html>
