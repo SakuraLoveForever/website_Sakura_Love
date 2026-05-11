@@ -66,12 +66,40 @@ const serveFile = (res, filePath, statusCode = 200) => {
   });
 };
 
-const server = http.createServer((req, res) => {
+const parseBody = (req) =>
+  new Promise((resolve) => {
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+  });
+
+const server = http.createServer(async (req, res) => {
   let pathname;
   try {
     pathname = decodeURIComponent(new URL(req.url, `http://${req.headers.host || host}`).pathname);
   } catch (error) {
     sendText(res, 400, "Bad request");
+    return;
+  }
+
+  // API: save avatar
+  if (req.method === "POST" && pathname === "/api/save-avatar") {
+    try {
+      const body = await parseBody(req);
+      const { image } = JSON.parse(body.toString("utf-8"));
+      if (!image || typeof image !== "string") {
+        sendText(res, 400, "Missing image data");
+        return;
+      }
+      const base64 = image.replace(/^data:image\/\w+;base64,/, "");
+      const avatarPath = path.join(root, "assets", "avatar.png");
+      fs.mkdirSync(path.dirname(avatarPath), { recursive: true });
+      fs.writeFileSync(avatarPath, Buffer.from(base64, "base64"));
+      sendText(res, 200, "OK");
+    } catch (err) {
+      console.error("Save avatar error:", err);
+      sendText(res, 500, "Failed to save avatar");
+    }
     return;
   }
 
