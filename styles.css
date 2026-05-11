@@ -2534,6 +2534,10 @@ body.design-linear .btn {
   box-shadow: none;
 }
 
+body.design-linear .mute-icon-btn {
+  border-radius: 50%;
+}
+
 body.design-linear .btn.primary,
 body.design-linear .view-mode-btn.active,
 body.design-linear .design-style-btn.active {
@@ -3417,6 +3421,10 @@ body.design-notion .btn {
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
+}
+
+body.design-notion .mute-icon-btn {
+  border-radius: 50%;
 }
 
 body.design-notion .btn.primary,
