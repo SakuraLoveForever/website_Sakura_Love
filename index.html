@@ -40,8 +40,8 @@
         <div class="hero-inner container">
           <div class="hero-copy">
             <p class="eyebrow">Personal Gallery</p>
-            <h1>Sakura_Love</h1>
-            <p class="intro">把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。</p>
+            <h1 data-char-slide>Sakura_Love</h1>
+            <p class="intro" data-char-slide>把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。</p>
             <div class="hero-actions">
               <a class="btn primary" href="#projects">查看项目</a>
               <a class="btn secondary" href="#contact">联系我</a>
@@ -54,13 +54,15 @@
                 <p class="eyebrow">Character Window</p>
                 <h2 id="anime-viewer-title">角色欣赏</h2>
               </div>
-              <button id="page-mute-toggle" class="btn mute-icon-btn" type="button" aria-label="角色音乐静音开关">
-                <svg class="mute-progress-circle" viewBox="0 0 58 58" aria-hidden="true">
-                  <circle class="mute-progress-track" cx="29" cy="29" r="26" pathLength="100"></circle>
-                  <circle class="mute-progress-arc" cx="29" cy="29" r="26" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></circle>
+              <div class="mute-btn-wrap">
+                <svg class="mute-progress-ring" viewBox="0 0 66 66">
+                  <circle cx="33" cy="33" r="31" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2" />
+                  <circle id="mute-progress-arc" cx="33" cy="33" r="31" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" />
                 </svg>
-                <span class="mute-icon-note" aria-hidden="true"></span>
-              </button>
+                <button id="page-mute-toggle" class="btn mute-icon-btn" type="button" aria-label="角色音乐静音开关">
+                  <span class="mute-icon-note" aria-hidden="true"></span>
+                </button>
+              </div>
             </div>
             <div class="anime-viewer-stage" aria-label="角色图片展示窗口">
               <div id="bg-layer-a" class="bg-layer"></div>
@@ -107,6 +109,18 @@
               </div>
             </div>
             <div class="anime-viewer-controls">
+              <div id="music-time-display" class="music-time-display">0:00 / 0:00</div>
+              <input
+                id="music-seek"
+                class="header-seek"
+                type="range"
+                min="0"
+                max="100"
+                step="0.1"
+                value="0"
+                aria-label="音乐播放进度"
+                title="进度"
+              />
               <input
                 id="music-volume"
                 class="header-volume"
@@ -252,6 +266,12 @@
                   <a class="project-title-btn" href="https://greasyfork.org/zh-CN/scripts/574715-youtube-%E6%89%B9%E9%87%8F%E5%8F%96%E6%B6%88%E7%82%B9%E8%B5%9E%E5%8A%A9%E6%89%8B-%E7%B2%BE%E5%87%86%E7%89%88" target="_blank" rel="noreferrer" aria-label="查看YouTube取消点赞脚本">YouTube取消点赞脚本</a>
                 </h3>
                 <p>浏览器控制台与 Tampermonkey 脚本，批量取消曾经在 YouTube 点赞过的视频，适合清理账号历史记录。</p>
+              </article>
+              <article class="card">
+                <h3>
+                  <a class="project-title-btn" href="https://github.com/SakuraLoveForever/SakuraLoveForever" target="_blank" rel="noreferrer" aria-label="查看GitHub个人首页">GitHub个人首页</a>
+                </h3>
+                <p>GitHub个人首页美化展示，个性化README配置，展示技术栈与项目导航。</p>
               </article>
             </div>
           </section>
