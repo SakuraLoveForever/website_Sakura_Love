@@ -14,9 +14,9 @@ const live2dModels={
 const live2dCdnBase="https://cdn.jsdelivr.net/gh/SakuraLoveForever/website_Sakura_Love@main/";
 const live2dFileMode=window.location.protocol==="file:";
 const live2dDefaultModel=live2dFileMode?"hiyori":"tutu";
-const getLive2dModelKey=(key)=>live2dModels[key]?(live2dFileMode&&key==="tutu"?live2dDefaultModel:key):live2dDefaultModel;
+const getLive2dModelKey=(key)=>live2dModels[key]?key:live2dDefaultModel;
 const live2dCdnUrl=(path)=>live2dCdnBase+path.split("/").map(encodeURIComponent).join("/");
-const live2dModelSources=(config)=>live2dFileMode?[live2dCdnUrl(config.path)]:[config.path,live2dCdnUrl(config.path)];
+const live2dModelSources=(config)=>[config.path,live2dCdnUrl(config.path)];
 const loadLive2dModel=async(config)=>{
   let lastError=null;
   for(const source of live2dModelSources(config)){
