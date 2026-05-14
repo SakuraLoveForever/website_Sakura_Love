@@ -293,6 +293,14 @@
       <button id="live2d-settings-toggle" class="live2d-settings-toggle" type="button" aria-label="展开看板娘设置" aria-expanded="false">
         <span aria-hidden="true"></span>
       </button>
+      <button id="project-speed-toggle" class="live2d-speed-btn" type="button" aria-label="调节滚动速度" title="滚动速度">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h4l2-6 3 14 3-10 2 8h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div id="project-speed-panel" class="live2d-speed-panel" hidden>
+        <label for="project-speed-slider">滚动速度</label>
+        <input id="project-speed-slider" type="range" min="5" max="300" step="1" value="100" aria-label="调节项目卡片滚动速度" />
+        <span id="project-speed-value">100</span>
+      </div>
       <div id="live2d-settings-panel" class="live2d-settings-panel" aria-label="看板娘设置">
         <div class="control-group">
           <div class="control-title">看板娘角色</div>
@@ -365,6 +373,7 @@
     <script src="live2d-widget-v3-main/Core/live2dcubismcore.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
+    <div class="bg-blur-overlay" aria-hidden="true"></div>
     <script src="script.js?v=202605092205"></script>
   </body>
 </html>

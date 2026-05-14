@@ -630,11 +630,37 @@ document.addEventListener("click",e=>{if(e.target.closest("a,button,input,select
 
 document.querySelectorAll("[data-char-slide]").forEach(el=>{const text=el.textContent||"";el.textContent="";[...text].forEach((char,i)=>{const span=document.createElement("span");span.className="char-slide";span.style.animationDelay=i*0.028+"s";span.textContent=char===" "?" ":char;el.appendChild(span)})});
 
+let speedPxPerSec=100;
 const projectGrid=document.querySelector("#projects .project-grid");
 if(projectGrid){const viewport=document.createElement("div");viewport.className="project-scroll-viewport";const track=document.createElement("div");track.className="project-scroll-track";const clone=projectGrid.cloneNode(true);clone.querySelectorAll(".reveal-on-scroll").forEach(el=>{el.classList.remove("reveal-on-scroll","reveal-fade","reveal-slide-up","reveal-blur","reveal-visible")});projectGrid.parentNode.insertBefore(viewport,projectGrid);track.appendChild(projectGrid);track.appendChild(clone);viewport.appendChild(track);
-let scrollPaused=false,scrollPos=0,lastTime=0;const speedPxPerSec=30;
+let scrollPaused=false,scrollPos=0,lastTime=0;
 const getGridWidth=()=>projectGrid.getBoundingClientRect().width+24;
 viewport.addEventListener("pointerenter",()=>{scrollPaused=true});
 viewport.addEventListener("pointerleave",()=>{scrollPaused=false});
 const animateScroll=(time)=>{const dt=lastTime?(time-lastTime)/1000:0;lastTime=time;if(!scrollPaused&&dt>0&&dt<0.5){const gridWidth=getGridWidth();scrollPos-=speedPxPerSec*dt;if(scrollPos<=-gridWidth)scrollPos+=gridWidth;track.style.transform=`translateX(${scrollPos.toFixed(2)}px)`}requestAnimationFrame(animateScroll)};
 requestAnimationFrame(animateScroll)}
+
+/* ---- 学习/获奖经历悬停时背景模糊 ---- */
+document.querySelectorAll(".about-list li").forEach(li=>{
+  li.addEventListener("pointerenter",()=>document.body.classList.add("blur-active"));
+  li.addEventListener("pointerleave",()=>document.body.classList.remove("blur-active"));
+});
+	/* ---- 项目卡片滚动速度调节 ---- */
+	const speedToggle=$("#project-speed-toggle"),speedPanel=$("#project-speed-panel"),speedSlider=$("#project-speed-slider"),speedValue=$("#project-speed-value");
+	if(speedToggle&&speedPanel&&speedSlider&&speedValue){
+	  speedToggle.addEventListener("click",e=>{
+	    e.stopPropagation();
+	    const show=!speedPanel.hidden;
+	    speedPanel.hidden=show;
+	    speedToggle.setAttribute("aria-expanded",String(!show));
+	  });
+	  speedPanel.addEventListener("click",e=>e.stopPropagation());
+	  speedPanel.addEventListener("pointerdown",e=>e.stopPropagation());
+	  document.addEventListener("click",()=>{
+	    if(!speedPanel.hidden){speedPanel.hidden=true;speedToggle.setAttribute("aria-expanded","false")}
+	  });
+	  speedSlider.addEventListener("input",()=>{
+	    speedPxPerSec=Number(speedSlider.value);
+	    speedValue.textContent=speedSlider.value;
+	  });
+	}
