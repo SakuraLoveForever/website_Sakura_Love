@@ -640,11 +640,6 @@ viewport.addEventListener("pointerleave",()=>{scrollPaused=false});
 const animateScroll=(time)=>{const dt=lastTime?(time-lastTime)/1000:0;lastTime=time;if(!scrollPaused&&dt>0&&dt<0.5){const gridWidth=getGridWidth();scrollPos-=speedPxPerSec*dt;if(scrollPos<=-gridWidth)scrollPos+=gridWidth;track.style.transform=`translateX(${scrollPos.toFixed(2)}px)`}requestAnimationFrame(animateScroll)};
 requestAnimationFrame(animateScroll)}
 
-/* ---- 学习/获奖经历悬停时背景模糊 ---- */
-document.querySelectorAll(".about-list li").forEach(li=>{
-  li.addEventListener("pointerenter",()=>document.body.classList.add("blur-active"));
-  li.addEventListener("pointerleave",()=>document.body.classList.remove("blur-active"));
-});
 	/* ---- 项目卡片滚动速度调节 ---- */
 	const speedToggle=$("#project-speed-toggle"),speedPanel=$("#project-speed-panel"),speedSlider=$("#project-speed-slider"),speedValue=$("#project-speed-value");
 	if(speedToggle&&speedPanel&&speedSlider&&speedValue){

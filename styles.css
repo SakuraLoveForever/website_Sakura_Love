@@ -1656,8 +1656,6 @@ body.theme-dark .section p {
   transform: translateY(-3px) scale(1.015);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.08);
   background: rgba(245, 245, 248, 0.9);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
 body.theme-dark .about-panel,
@@ -1714,8 +1712,6 @@ body.theme-dark .about-sub-panel:hover {
   z-index: 10;
   transform: translateY(-2px) scale(1.025);
   background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   border-top-color: transparent;
 }
@@ -1728,8 +1724,6 @@ body.theme-dark .about-sub-panel:hover {
 
 body.theme-dark .about-list li:hover {
   background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   color: var(--ink);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   border-top-color: transparent;
@@ -4154,44 +4148,6 @@ body.layout-mobile .live2d-widget {
   }
 }
 
-/* ---- 背景模糊遮罩 ---- */
-.bg-blur-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background: rgba(0, 0, 0, 0.06);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-}
-body.blur-active .bg-blur-overlay {
-  opacity: 1;
-}
-
-/* 悬停时提升 about 区域到遮罩之上，让背景透出模糊 */
-body.blur-active #about {
-  position: relative;
-  z-index: 100;
-}
-body.blur-active #about .section {
-  background: transparent;
-}
-body.blur-active .about-panel,
-body.blur-active .about-sub-panel {
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-body.blur-active .about-panel:hover,
-body.blur-active .about-sub-panel:hover {
-  transform: none;
-}
-body.theme-dark.blur-active .about-panel,
-body.theme-dark.blur-active .about-sub-panel {
-  background: rgba(20, 20, 30, 0.35);
-}
 
 @media (max-width: 419px) {
   h1 {
