@@ -1,6 +1,7 @@
 document.documentElement.classList.add("js");
 const $=(s)=>document.querySelector(s);
 const yearSpan=$("#year"),styleSelect=$("#style-select"),languageToggle=$("#language-toggle"),sidebarToggle=$("#sidebar-toggle"),sidebarAvatarButton=$("#sidebar-avatar-button"),sidebarAvatarInput=$("#sidebar-avatar-input"),sidebarLogoMark=$(".sidebar-logo-mark"),sidebarLinks=document.querySelectorAll(".sidebar-link"),designStyleButtons=document.querySelectorAll(".design-style-btn"),layoutModeButtons=document.querySelectorAll(".view-mode-btn"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),musicSeekInput=$("#music-seek"),musicTimeDisplay=$("#music-time-display"),headerMusicNextButton=$("#header-music-next"),headerImageNextButton=$("#header-image-next"),pageMuteToggleButton=$("#page-mute-toggle"),muteProgressArc=$("#mute-progress-arc"),animeViewer=$(".anime-viewer"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),live2dSettingsToggle=$("#live2d-settings-toggle"),live2dSettingsPanel=$("#live2d-settings-panel"),hashActionLinks=document.querySelectorAll(".hero-actions a[href^='#'],.sidebar-link[href^='#']"),toastRoot=$("#toast-root");
+const musicLibraryAudio=$("#music-library-audio"),musicLibraryArtist=$("#music-library-artist"),musicLibraryTitle=$("#music-library-title"),musicLibraryStatus=$("#music-api-status"),musicLocalList=$("#music-local-list"),musicLocalCount=$("#music-local-count"),musicLibraryPlay=$("#music-library-play"),musicLibraryProgress=$("#music-library-progress"),musicLibraryVolume=$("#music-library-volume"),musicLibraryTime=$("#music-library-time"),musicLibrarySource=$("#music-library-source");
 const styleMap={apple:"design-apple",linear:"design-linear",spotify:"design-spotify",figma:"design-figma",notion:"design-notion"};
 const legacyStyleClasses=["style-warm","style-tech","style-minimal","style-melancholy"];
 const live2dModels={
@@ -95,7 +96,7 @@ let _durationCheckTimer=0;const ensureDuration=()=>{clearTimeout(_durationCheckT
 const showScene=(role,{withMusic=false}={})=>{const r=bgCount[role]?role:"02";setBg(r);if(withMusic)playRole(r)};
 const scheduleBgOnly=()=>{clearInterval(bgTimer);if(!musicEnabled)bgTimer=setInterval(()=>showScene(nextSceneRole()),3000)};
 const applyBg=(on,role)=>{clearInterval(bgTimer);if(animeViewer)animeViewer.classList.toggle("is-viewer-off",!on);if(!bgLayerA||!bgLayerB)return;if(!on){player.pause();bgLayerA.classList.remove("visible");bgLayerB.classList.remove("visible");bgLayerA.style.backgroundImage="";bgLayerB.style.backgroundImage="";return}showScene(role,{withMusic:musicEnabled});scheduleBgOnly()};
-const playNext=()=>{if(!isViewerEnabled())return;const role=nextSceneRole(bgCharacterSelect?bgCharacterSelect.value:"02");showScene(role,{withMusic:musicEnabled})};const nextImageOnly=()=>{if(!isViewerEnabled())return;const role=bgCharacterSelect?bgCharacterSelect.value:currentRole;setBg(bgCount[role]?role:"02")};
+const playNext=()=>{if(!isViewerEnabled())return;const role=nextSceneRole(currentRole);showScene(role,{withMusic:musicEnabled})};const nextImageOnly=()=>{if(!isViewerEnabled())return;setBg(bgCount[currentRole]?currentRole:"02")};
 const updateMusicButtonState=()=>{if(!pageMuteToggleButton)return;const active=Boolean(player.src)&&!player.paused&&!isPagePaused;const label=currentLanguage==="en"?(isPagePaused?"Resume music":"Pause music"):(isPagePaused?"继续播放":"暂停播放");pageMuteToggleButton.classList.toggle("is-playing",active);pageMuteToggleButton.classList.toggle("muted",isPagePaused);pageMuteToggleButton.setAttribute("aria-pressed",String(isPagePaused));pageMuteToggleButton.setAttribute("aria-label",label);pageMuteToggleButton.title=label};
 let musicProgressTimer=0;
 let _musicSeekDragging=false;
@@ -104,7 +105,7 @@ const progress=()=>{drawMusicProgress();updateMusicButtonState()};
 const stopMusicProgressLoop=()=>{if(musicProgressTimer)clearInterval(musicProgressTimer);musicProgressTimer=0;progress()};
 const startMusicProgressLoop=()=>{if(musicProgressTimer)return;progress();musicProgressTimer=setInterval(progress,120)};
 const controls=()=>updateMusicButtonState();
-const playModeUI=()=>{if(bgCharacterSelect)bgCharacterSelect.disabled=bgPlayMode!=="single";if(headerMusicNextButton)headerMusicNextButton.title=bgPlayMode==="single"?ui("nextSong"):ui("nextRole")};
+const playModeUI=()=>{if(bgCharacterSelect)bgCharacterSelect.disabled=bgPlayMode!=="single"};
 let currentLanguage=localStorage.getItem("languageMode")==="en"?"en":"zh";
 const languageCopy={
   zh:{
@@ -152,14 +153,14 @@ const setSidebarCollapsed=(collapsed)=>{
 };
 let sidebarActiveLockId=null,sidebarActiveLockTimer=null;
 const updateSidebarActive=(targetId=null)=>{
-  const sections=["hero","about","skills","projects","contact","page-bottom"].map(id=>document.getElementById(id)).filter(Boolean);
+  const sections=["hero","about","skills","projects","music-library","contact","page-bottom"].map(id=>document.getElementById(id)).filter(Boolean);
   const scrollMax=document.documentElement.scrollHeight-window.innerHeight;
   const atPageEnd=scrollMax>0&&window.scrollY>=scrollMax-Math.min(180,window.innerHeight*0.18);
   const probeY=Math.min(window.innerHeight*0.38,360);
   const hashId=window.location.hash?decodeURIComponent(window.location.hash.slice(1)):"";
   const endTarget=targetId||sidebarActiveLockId||hashId;
   const current=targetId||sidebarActiveLockId||(atPageEnd&&["contact","page-bottom"].includes(endTarget)?endTarget:sections.reduce((active,section)=>section.getBoundingClientRect().top<=probeY?section.id:active,"hero"));
-  const activeMap={hero:"home",about:"about",skills:"skills",projects:"projects",contact:"contact","page-bottom":"settings"};
+  const activeMap={hero:"home",about:"about",skills:"skills",projects:"projects","music-library":"music",contact:"contact","page-bottom":"settings"};
   sidebarLinks.forEach(link=>link.classList.toggle("active",link.dataset.navKey===activeMap[current]));
 };
 const scrollToSidebarTarget=(targetId)=>{
@@ -175,10 +176,208 @@ const lockSidebarActive=(targetId)=>{
 };
 if(localStorage.getItem("sidebarCollapsed")==="true")document.body.classList.add("sidebar-collapsed");
 player.addEventListener("timeupdate",progress);player.addEventListener("loadedmetadata",progress);player.addEventListener("durationchange",progress);player.addEventListener("canplay",progress);player.addEventListener("seeked",progress);player.addEventListener("playing",startMusicProgressLoop);player.addEventListener("play",startMusicProgressLoop);player.addEventListener("pause",stopMusicProgressLoop);player.addEventListener("ended",()=>{stopMusicProgressLoop();if(!isPagePaused)playNext()});if(musicSeekInput){musicSeekInput.addEventListener("input",()=>{_musicSeekDragging=true;const v=Number(musicSeekInput.value),max=Number(musicSeekInput.max);if(max>0)musicSeekInput.style.setProperty("--seek",(v/max*100)+"%")});musicSeekInput.addEventListener("change",()=>{const v=Number(musicSeekInput.value);_musicSeekDragging=false;if(Number.isFinite(player.duration)&&player.duration>0)player.currentTime=v})}
+/* ==== 音乐收藏模块 ==== */
+const getMusicFallbackTracks=()=>Object.entries(musicCount).flatMap(([role,count])=>Array.from({length:count},(_,index)=>({
+  id:`local-${role}-${index+1}`,
+  title:`${names[role]||role} BGM ${index+1}`,
+  artist:"",
+  album:"",
+  artwork:"",
+  audioUrl:`assets/music/${role}/${index+1}.mp3`,
+  source:"",
+  group:"local",
+  role,
+  roleName:names[role]||role,
+  trackNumber:index+1
+})));
+let musicLocalTracks=[],musicLibraryTracks=[],musicLibraryIndex=0,musicLibrarySeekDragging=false,musicLibraryLoaded=false;
+const setMusicLibraryStatus=(text)=>{if(musicLibraryStatus)musicLibraryStatus.textContent=text};
+const getMusicTrackIndex=(track)=>musicLibraryTracks.findIndex(item=>item.id===track?.id);
+const syncMusicTrackGroups=()=>{
+  const activeId=musicLibraryTracks[musicLibraryIndex]?.id;
+  musicLibraryTracks=[...musicLocalTracks];
+  const nextIndex=musicLibraryTracks.findIndex(track=>track.id===activeId);
+  musicLibraryIndex=nextIndex>=0?nextIndex:Math.min(musicLibraryIndex,Math.max(0,musicLibraryTracks.length-1));
+  if(musicLocalCount)musicLocalCount.textContent=String(musicLocalTracks.length);
+};
+const getAdjacentMusicIndex=(delta)=>{
+  const visibleTracks=musicLibraryTracks.filter(track=>track.audioUrl);
+  if(!visibleTracks.length)return -1;
+  const currentId=musicLibraryTracks[musicLibraryIndex]?.id;
+  const currentVisibleIndex=Math.max(0,visibleTracks.findIndex(track=>track.id===currentId));
+  const nextTrack=visibleTracks[(currentVisibleIndex+delta+visibleTracks.length)%visibleTracks.length];
+  return getMusicTrackIndex(nextTrack);
+};
+const renderTrackList=(listEl,tracks=[])=>{
+  if(!listEl)return;
+  listEl.replaceChildren();
+  const groupedTracks=tracks.reduce((groups,track)=>{
+    const key=track.role||"local";
+    if(!groups.has(key))groups.set(key,{role:key,roleName:track.roleName||key,tracks:[]});
+    groups.get(key).tracks.push(track);
+    return groups;
+  },new Map());
+  const orderedRoles=[...bgRoleOrder,...groupedTracks.keys()].filter((role,index,self)=>groupedTracks.has(role)&&self.indexOf(role)===index);
+  orderedRoles.forEach(role=>{
+    const group=groupedTracks.get(role);
+
+    const card=document.createElement("div");
+    card.className="music-role-group";
+    card.dataset.role=role;
+
+    // 头像
+    const img=document.createElement("img");
+    img.className="music-role-thumb-sm";
+    const firstBg=bgFiles[role]?.[0]||"1.jpg";
+    img.src=`assets/backgrounds/${role}/${firstBg}`;
+    img.alt=group.roleName;
+    img.loading="lazy";
+    img.onerror=function(){this.style.opacity="0.3"};
+
+    // 信息行：名字 + 歌曲数
+    const info=document.createElement("div");
+    info.className="music-role-info";
+
+    const nameEl=document.createElement("span");
+    nameEl.className="music-role-name";
+    nameEl.textContent=group.roleName;
+    nameEl.title=group.roleName;
+
+    const countEl=document.createElement("span");
+    countEl.className="music-role-count";
+    countEl.textContent=`${group.tracks.length}首`;
+
+    info.appendChild(nameEl);
+    info.appendChild(countEl);
+    card.appendChild(img);
+    card.appendChild(info);
+
+    // 点击卡片：切换角色并播放第一首曲目
+    card.addEventListener("click",()=>{
+      if(group.tracks.length>0){
+        const firstTrack=group.tracks[0];
+        const index=musicLibraryTracks.findIndex(item=>item.id===firstTrack.id);
+        if(index>=0)setMusicLibraryTrack(index,{autoplay:true});
+      }
+    });
+
+    listEl.appendChild(card);
+  });
+};
+const renderMusicLibraryList=()=>{
+  syncMusicTrackGroups();
+  renderTrackList(musicLocalList,musicLocalTracks);
+};
+const syncMusicLibraryActive=()=>{
+  const activeTrack=musicLibraryTracks[musicLibraryIndex];
+  document.querySelectorAll(".music-role-group").forEach(group=>group.classList.toggle("is-active",group.dataset.role===activeTrack?.role));
+};
+const setMusicLibraryTrack=(index,{autoplay=false}={})=>{
+  if(!musicLibraryAudio||!musicLibraryTracks.length)return;
+  musicLibraryIndex=(index+musicLibraryTracks.length)%musicLibraryTracks.length;
+  const track=musicLibraryTracks[musicLibraryIndex];
+  if(!track.audioUrl){
+    setMusicLibraryStatus(`${track.title} 暂无可播放`);
+    syncMusicLibraryActive();
+    return;
+  }
+  musicLibraryAudio.src=track.audioUrl;
+  musicLibraryAudio.load();
+  if(musicLibraryTitle)musicLibraryTitle.textContent=track.title;
+  if(musicLibraryTitle)musicLibraryTitle.title=track.title;
+  if(musicLibraryArtist)musicLibraryArtist.textContent=track.roleName||"";
+  if(musicLibraryArtist)musicLibraryArtist.title=track.roleName||"";
+  if(musicLibrarySource)musicLibrarySource.textContent="";
+  if(musicLibrarySource)musicLibrarySource.title="";
+  syncMusicLibraryActive();
+  drawMusicLibraryProgress();
+  if(track.role)setBg(track.role);
+  if(autoplay)musicLibraryAudio.play().catch(()=>{});
+};
+const drawMusicLibraryProgress=()=>{
+  if(!musicLibraryAudio)return;
+  const d=musicLibraryAudio.duration,t=musicLibraryAudio.currentTime;
+  if(musicLibraryTime)musicLibraryTime.textContent=`${fmtTime(t)} / ${Number.isFinite(d)&&d>0?fmtTime(d):"00:00"}`;
+  if(!musicLibraryProgress||musicLibrarySeekDragging)return;
+  if(Number.isFinite(d)&&d>0){
+    musicLibraryProgress.max=String(d);
+    musicLibraryProgress.value=String(t);
+    musicLibraryProgress.style.setProperty("--library-seek",(t/d*100)+"%");
+  }else{
+    musicLibraryProgress.value="0";
+    musicLibraryProgress.style.setProperty("--library-seek","0%");
+  }
+};
+const updateMusicLibraryPlayState=()=>{
+  if(!musicLibraryPlay||!musicLibraryAudio)return;
+  const playing=!musicLibraryAudio.paused&&!musicLibraryAudio.ended;
+  musicLibraryPlay.classList.toggle("is-playing",playing);
+  musicLibraryPlay.setAttribute("aria-pressed",String(playing));
+  musicLibraryPlay.setAttribute("aria-label",playing?"暂停音乐收藏":"播放音乐收藏");
+};
+const commitMusicLibrarySeek=()=>{
+  if(!musicLibraryAudio||!musicLibraryProgress)return;
+  const value=Number(musicLibraryProgress.value)||0;
+  const duration=musicLibraryAudio.duration;
+  if(Number.isFinite(duration)&&duration>0){
+    musicLibraryAudio.currentTime=Math.min(duration,Math.max(0,value));
+    drawMusicLibraryProgress();
+  }
+};
+const nextMusicLibraryTrack=()=>{
+  const role=currentRole;
+  const roleTracks=musicLibraryTracks.filter(t=>t.role===role&&t.audioUrl);
+  if(!roleTracks.length)return;
+  const currentId=musicLibraryTracks[musicLibraryIndex]?.id;
+  const currentIdx=roleTracks.findIndex(t=>t.id===currentId);
+  const nextTrack=roleTracks[(currentIdx+1)%roleTracks.length];
+  const index=musicLibraryTracks.findIndex(t=>t.id===nextTrack.id);
+  if(index>=0)setMusicLibraryTrack(index,{autoplay:true});
+};
+const syncMusicLibraryHeight=()=>{
+  const left=document.querySelector(".music-library-left");
+  const stage=document.querySelector(".music-library-stage");
+  if(left&&stage)left.style.maxHeight=stage.offsetHeight+"px";
+};
+const loadMusicLibrary=async()=>{
+  if(!musicLibraryAudio||musicLibraryLoaded)return;
+  musicLibraryLoaded=true;
+  musicLocalTracks=getMusicFallbackTracks();
+  syncMusicTrackGroups();
+  setMusicLibraryStatus(`${musicLocalTracks.length} 首`);
+  renderMusicLibraryList();
+  const firstPlayable=musicLibraryTracks.find(track=>track.audioUrl);
+  if(firstPlayable)setMusicLibraryTrack(getMusicTrackIndex(firstPlayable),{autoplay:false});
+  requestAnimationFrame(()=>{syncMusicLibraryHeight();requestAnimationFrame(()=>syncMusicLibraryHeight())});
+};
+if(musicLibraryAudio){
+  musicLibraryAudio.volume=0.7;
+  musicLibraryAudio.addEventListener("play",()=>{player.pause();isPagePaused=true;controls();updateMusicLibraryPlayState()});
+  musicLibraryAudio.addEventListener("pause",updateMusicLibraryPlayState);
+  musicLibraryAudio.addEventListener("ended",()=>{const nextIndex=getAdjacentMusicIndex(1);if(nextIndex>=0)setMusicLibraryTrack(nextIndex,{autoplay:true})});
+  ["timeupdate","loadedmetadata","durationchange","canplay","seeked"].forEach(eventName=>musicLibraryAudio.addEventListener(eventName,drawMusicLibraryProgress));
+  if(musicLibraryPlay)musicLibraryPlay.addEventListener("click",()=>{if(!musicLibraryTracks.length)return;if(musicLibraryAudio.paused)musicLibraryAudio.play().catch(()=>{});else musicLibraryAudio.pause()});
+  if(musicLibraryProgress){
+    musicLibraryProgress.addEventListener("input",()=>{musicLibrarySeekDragging=true;const v=Number(musicLibraryProgress.value),max=Number(musicLibraryProgress.max);if(max>0)musicLibraryProgress.style.setProperty("--library-seek",(v/max*100)+"%");commitMusicLibrarySeek()});
+    const finishSeek=()=>{musicLibrarySeekDragging=false;commitMusicLibrarySeek();drawMusicLibraryProgress()};
+    musicLibraryProgress.addEventListener("change",finishSeek);
+    musicLibraryProgress.addEventListener("pointerup",finishSeek);
+    musicLibraryProgress.addEventListener("keyup",finishSeek);
+  }
+  if(musicLibraryVolume){
+    musicLibraryVolume.addEventListener("input",()=>{
+      const v=Math.min(100,Math.max(0,Number(musicLibraryVolume.value)||0));
+      musicLibraryAudio.volume=v/100;
+      musicLibraryVolume.style.setProperty("--library-vol",`${v}%`);
+    });
+  }
+  player.addEventListener("play",()=>{if(!musicLibraryAudio.paused)musicLibraryAudio.pause()});
+  loadMusicLibrary();
+}
 const projectAvatarUrl="assets/avatar.png";const loadProjectAvatar=()=>{const saved=localStorage.getItem("sidebarAvatar");const img=new Image();img.onload=()=>{localStorage.setItem("sidebarAvatarSource","project");applySidebarAvatar(projectAvatarUrl+"?v="+Date.now())};img.onerror=()=>{localStorage.removeItem("sidebarAvatarSource");if(saved&&saved.startsWith("data:"))applySidebarAvatar(saved)};img.src=projectAvatarUrl+"?v="+Date.now()};loadProjectAvatar();applyStyle(localStorage.getItem("stylePreset")||"apple");applyLayoutMode(detectLayoutMode());applyLanguage(currentLanguage);controls();playModeUI();updateSidebarActive();
 const bgOn=true,bgRole=localStorage.getItem("bgCharacter")||"02";localStorage.setItem("bgEnabled","true");if(bgToggle)bgToggle.checked=bgOn;if(bgCharacterSelect)bgCharacterSelect.value=bgCount[bgRole]?bgRole:"02";if(bgPlayModeSelect)bgPlayModeSelect.value=bgPlayMode;applyBg(bgOn,bgRole);
 if(musicToggle)musicToggle.checked=musicEnabled;if(musicVolumeInput){musicVolumeInput.value=String(Math.round(player.volume*100));musicVolumeInput.style.setProperty("--vol",`${Math.round(player.volume*100)}%`)}[styleSelect,bgCharacterSelect,bgPlayModeSelect,live2dModelSelect].forEach(fit);
-window.addEventListener("resize",()=>{applyLayoutMode(detectLayoutMode());updateSidebarActive()},{passive:true});
+window.addEventListener("resize",()=>{applyLayoutMode(detectLayoutMode());updateSidebarActive();syncMusicLibraryHeight()},{passive:true});
 designStyleButtons.forEach(button=>button.addEventListener("click",()=>withViewportPreserved(()=>{applyStyle(button.dataset.designStyle);showToast(ui("styleUpdated"))},{frames:3,anchor:button})));
 if(styleSelect)styleSelect.addEventListener("change",e=>withViewportPreserved(()=>{applyStyle(e.target.value);fit(styleSelect);showToast(ui("styleUpdated"))},{frames:3,anchor:styleSelect}));
 if(languageToggle)languageToggle.addEventListener("click",()=>withViewportPreserved(()=>{applyLanguage(currentLanguage==="en"?"zh":"en");showToast(ui("languageUpdated"))},{frames:3,anchor:languageToggle}));
@@ -197,7 +396,7 @@ if(musicVolumeInput)musicVolumeInput.addEventListener("input",()=>{const v=Math.
 if(live2dModelSelect)live2dModelSelect.addEventListener("change",()=>withViewportPreserved(()=>{const modelKey=getLive2dModelKey(live2dModelSelect.value);localStorage.setItem("live2dModel",modelKey);if(typeof switchLive2dModel==="function")switchLive2dModel(modelKey);showToast(ui("live2dModelChanged"))}));
 let live2dSizeInputFrame=0;
 if(live2dSizeInput)live2dSizeInput.addEventListener("input",()=>{if(live2dSizeInputFrame)cancelAnimationFrame(live2dSizeInputFrame);live2dSizeInputFrame=requestAnimationFrame(()=>{live2dSizeInputFrame=0;setLive2dSizePercent(live2dSizeInput.value,{freezePanel:true})})});
-if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",()=>withViewportPreserved(()=>{playNext();showToast(bgPlayMode==="single"?ui("songChanged"):ui("roleChanged"))}));if(headerImageNextButton)headerImageNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextImageOnly();showToast(ui("imageChanged"))}));
+if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextMusicLibraryTrack();showToast(ui("songChanged"))}));if(headerImageNextButton)headerImageNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextImageOnly();showToast(ui("imageChanged"))}));
 if(pageMuteToggleButton)pageMuteToggleButton.addEventListener("click",()=>withViewportPreserved(()=>{isPagePaused=!isPagePaused;localStorage.setItem("pagePaused",String(isPagePaused));if(isPagePaused){player.pause()}else if(musicEnabled){if(player.src)player.play().then(startMusicProgressLoop).catch(()=>{});else showScene(currentRole,{withMusic:true})}controls();showToast(currentLanguage==="en"?(isPagePaused?"Music paused":"Music resumed"):(isPagePaused?"音乐已暂停":"音乐继续播放"))}));
 if(yearSpan)yearSpan.textContent=String(new Date().getFullYear());
 const revealTargets=document.querySelectorAll(".section,.card,.about-panel,.about-sub-panel,.chips li,.side-nav,.site-footer");
@@ -266,17 +465,25 @@ const getCurrentLive2dName=()=>{
   return live2dModels[selected]?.name||"看板娘";
 };
 const live2dHoverMessages=["干嘛呢你，快把手拿开～～","鼠…鼠标放错地方了！","你要干嘛呀？","喵喵喵？","怕怕(ノ≧∇≦)ノ","非礼呀！救命！","这样的话，只能使用武力了！","我要生气了哦","不要动手动脚的！","真…真的是不知羞耻！",()=>`${getCurrentLive2dName()}！`,"拿小拳拳锤你胸口！","嗨~快来逗我玩吧！","真……真的是不知羞耻！","再摸的话我可要报警了！","不要摸我了，我要叫我老婆来打你了！","是…是不小心碰到了吧…","干嘛碰我呀，小心我咬你！","哼，再靠近一点试试看？","你、你不要突然凑这么近啦！"];
-const clickTexts=["是…是不小心碰到了吧…","萝莉控是什么呀？","你看到我的小熊了吗？","再摸的话我可要报警了！⌇●﹏●⌇","110 吗，这里有个变态一直在摸我(ó﹏ò｡)","不要摸我了，我会告诉老婆来打你的！","干嘛动我呀！小心我咬你！","别摸我，有什么好摸的！","樱花落下的速度，是每秒五厘米。","愿你所到之处，遍地温柔。","今天也辛苦啦。","把热爱写进每一天。","风会带来新的故事。","愿所有长夜都有星光。","保持可爱，也保持锋芒。","世界很大，慢慢相遇。"];
+let clickTexts=["樱花落下的速度，是每秒五厘米。","愿你所到之处，遍地温柔。","今天也辛苦啦。","把热爱写进每一天。","风会带来新的故事。","愿所有长夜都有星光。","保持可爱，也保持锋芒。","世界很大，慢慢相遇。","念念不忘，必有回响。","人终会被年少不可得之物困其一生。","璞玉有缺便是王。","已知乾坤大，犹怜草木青。","追风赶月莫停留，平芜尽处是春山。","光而不耀，静水流深。","日拱一卒，功不唐捐。","沉舟侧畔千帆过，病树前头万木春。","放弃不难，但坚持一定很酷。","向前看，别烂在过去和梦里。","但行好事，莫问前程。","三里清风三里路，步步清风，再无你。"];
 let live2dHoverIndex=0,lastLive2dHoverAt=0,live2dHovering=false,live2dHoverExitTimer=null,dialogTimer=null,siteWasHidden=false,live2dReturnMessage="哇，你终于回来了~";
 const sanitizeWaifuText=(text)=>{
   if(typeof text!=="string")return "";
   const clean=text.trim();
-  return /<[^>]*>|\{[^}]*\}/.test(clean)?"":clean;
+  return /<script|<iframe|javascript:/i.test(clean)?"":clean;
 };
 const pick=(arr)=>arr[Math.floor(Math.random()*arr.length)];
 const showLive2dDialog=(text=pick(live2dMessages))=>{if(!live2dDialog)return;const clean=sanitizeWaifuText(text)||pick(live2dMessages);clearTimeout(dialogTimer);live2dDialog.textContent=clean;live2dDialog.classList.add("visible");dialogTimer=setTimeout(()=>live2dDialog.classList.remove("visible"),2600)};
 const showNextLive2dHoverDialog=(force=false)=>{const now=Date.now();if(!force&&now-lastLive2dHoverAt<350)return;lastLive2dHoverAt=now;const message=live2dHoverMessages[live2dHoverIndex++%live2dHoverMessages.length];showLive2dDialog(typeof message==="function"?message():message)};
-const showClickText=(x,y,text=pick(clickTexts))=>{const clean=sanitizeWaifuText(text)||pick(clickTexts);const el=document.createElement("span");el.className="click-pop-text";el.textContent=clean;const safeX=Math.min(window.innerWidth-16,Math.max(16,x));const safeY=Math.min(window.innerHeight-16,Math.max(16,y));el.style.left=`${safeX}px`;el.style.top=`${safeY}px`;document.body.appendChild(el);el.addEventListener("animationend",()=>el.remove(),{once:true})};
+let clickTextSeq=0,clickTextForward=true;
+const quoteOrderToggle=document.getElementById("quote-order-toggle");
+if(quoteOrderToggle){
+  quoteOrderToggle.addEventListener("click",()=>{
+    clickTextForward=!clickTextForward;
+    quoteOrderToggle.textContent=clickTextForward?"正序":"倒序";
+  });
+}
+const showClickText=(x,y,text)=>{if(!clickTexts.length)return;if(!text){const idx=((clickTextSeq%clickTexts.length)+clickTexts.length)%clickTexts.length;text=clickTexts[idx];clickTextSeq+=clickTextForward?1:-1}const clean=sanitizeWaifuText(text);if(!clean)return;const el=document.createElement("span");el.className="click-pop-text";el.textContent=clean;const safeX=Math.min(window.innerWidth-16,Math.max(16,x));const safeY=Math.min(window.innerHeight-16,Math.max(16,y));el.style.left=`${safeX}px`;el.style.top=`${safeY}px`;document.body.appendChild(el);el.addEventListener("animationend",()=>el.remove(),{once:true})};
 let live2dRelayout=null;
 let switchLive2dModel=null;
 const scheduleLive2dRelayout=()=>{
@@ -621,12 +828,12 @@ if(document.readyState==="complete")initLive2d();else window.addEventListener("l
 
 document.addEventListener("visibilitychange",()=>{if(document.hidden){siteWasHidden=true;return}if(siteWasHidden){siteWasHidden=false;setTimeout(()=>showLive2dDialog(live2dReturnMessage),260)}});
 let lastHashClickAt=0;
-const flashSection=(sec,delay=0)=>{if(!sec)return;window.setTimeout(()=>{sec.classList.remove("flash-highlight");sec.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());void sec.offsetWidth;const ring=document.createElement("span");ring.className="section-glow-ring";ring.setAttribute("aria-hidden","true");sec.appendChild(ring);sec.classList.add("flash-highlight");window.clearTimeout(sec._flashHighlightTimer);sec._flashHighlightTimer=window.setTimeout(()=>{sec.classList.remove("flash-highlight");ring.remove()},820)},delay)};
+const flashSection=(sec,delay=0)=>{if(!sec)return;window.setTimeout(()=>{sec.classList.remove("flash-highlight");sec.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());void sec.offsetWidth;const ring=document.createElement("span");ring.className="section-glow-ring";ring.setAttribute("aria-hidden","true");sec.appendChild(ring);sec.classList.add("flash-highlight");window.clearTimeout(sec._flashHighlightTimer);sec._flashHighlightTimer=window.setTimeout(()=>{sec.classList.remove("flash-highlight");ring.remove()},1300)},delay)};
 const getHashSection=()=>{const id=window.location.hash?decodeURIComponent(window.location.hash.slice(1)):"";return id?document.getElementById(id):null};
 hashActionLinks.forEach(a=>a.addEventListener("click",()=>{const id=a.getAttribute("href"),sec=id&&id.startsWith("#")?document.getElementById(id.slice(1)):null;if(!sec)return;lastHashClickAt=Date.now();flashSection(sec,240)}));
 window.addEventListener("hashchange",()=>{if(Date.now()-lastHashClickAt<800)return;flashSection(getHashSection(),240)});
 if(document.readyState==="complete")flashSection(getHashSection(),320);else window.addEventListener("load",()=>flashSection(getHashSection(),320));
-document.addEventListener("click",e=>{if(e.target.closest("a,button,input,select,label,summary,details,.quick-jump,.live2d-widget"))return;showClickText(e.clientX,e.clientY)});
+document.addEventListener("click",e=>{if(e.target.closest("a,button,input,select,label,summary,details,.quick-jump,.live2d-widget,.card,.music-role-group,.about-panel,.about-sub-panel,.chips,.anime-viewer,.music-library-player,.project-grid,.hero-inner,.side-nav"))return;showClickText(e.clientX,e.clientY)});
 
 document.querySelectorAll("[data-char-slide]").forEach(el=>{const text=el.textContent||"";el.textContent="";[...text].forEach((char,i)=>{const span=document.createElement("span");span.className="char-slide";span.style.animationDelay=i*0.028+"s";span.textContent=char===" "?" ":char;el.appendChild(span)})});
 

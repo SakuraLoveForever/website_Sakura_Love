@@ -8,7 +8,7 @@
       name="description"
       content="一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。"
     />
-    <link rel="stylesheet" href="styles.css?v=202605092205" />
+    <link rel="stylesheet" href="styles.css?v=202605241548" />
   </head>
   <body>
     <div id="page-top"></div>
@@ -48,98 +48,6 @@
             </div>
           </div>
 
-          <section class="anime-viewer" aria-labelledby="anime-viewer-title">
-            <div class="anime-viewer-head">
-              <div>
-                <p class="eyebrow">Character Window</p>
-                <h2 id="anime-viewer-title">角色欣赏</h2>
-              </div>
-              <div class="mute-btn-wrap">
-                <svg class="mute-progress-ring" viewBox="0 0 66 66">
-                  <circle cx="33" cy="33" r="31" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2" />
-                  <circle id="mute-progress-arc" cx="33" cy="33" r="31" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" />
-                </svg>
-                <button id="page-mute-toggle" class="btn mute-icon-btn" type="button" aria-label="角色音乐静音开关">
-                  <span class="mute-icon-note" aria-hidden="true"></span>
-                </button>
-              </div>
-            </div>
-            <div class="anime-viewer-stage" aria-label="角色图片展示窗口">
-              <div id="bg-layer-a" class="bg-layer"></div>
-              <div id="bg-layer-b" class="bg-layer"></div>
-              <p class="anime-viewer-empty">打开欣赏窗后，这里会展示角色图片。</p>
-            </div>
-            <div class="anime-viewer-settings" aria-label="角色欣赏设置">
-              <div id="bg-character-wrap" class="control-group">
-                <div class="control-title">角色</div>
-                <select id="bg-character-select" aria-label="选择背景角色">
-                  <option value="02">02</option>
-                  <option value="chitanda">千反田爱瑠</option>
-                  <option value="kaguya">辉夜姬</option>
-                  <option value="yachiyo">八千代</option>
-                  <option value="iroha">彩叶</option>
-                  <option value="eriyi">绘梨衣</option>
-                  <option value="elaina">伊雷娜</option>
-                  <option value="chtholly">珂朵莉</option>
-                  <option value="sora">春日野穹</option>
-                  <option value="akame">赤瞳</option>
-                  <option value="mine">玛茵</option>
-                  <option value="esdeath">艾斯德斯</option>
-                  <option value="krul">克鲁鲁</option>
-                  <option value="shinoa">柊筱娅</option>
-                  <option value="violet">薇尔莉特</option>
-                  <option value="toki">蝶祈</option>
-                </select>
-              </div>
-
-              <div class="control-group">
-                <div class="control-title">播放模式</div>
-                <select id="bg-play-mode" aria-label="背景播放模式">
-                  <option value="single">单角色</option>
-                  <option value="all">全角色</option>
-                </select>
-              </div>
-
-              <div class="control-group">
-                <div class="control-title">音乐</div>
-                <label class="check-row" for="music-toggle">
-                  <input id="music-toggle" type="checkbox" aria-label="开启或关闭角色音乐" checked />
-                  <span>开启</span>
-                </label>
-              </div>
-            </div>
-            <div class="anime-viewer-controls">
-              <div id="music-time-display" class="music-time-display">0:00 / 0:00</div>
-              <input
-                id="music-seek"
-                class="header-seek"
-                type="range"
-                min="0"
-                max="100"
-                step="0.1"
-                value="0"
-                aria-label="音乐播放进度"
-                title="进度"
-              />
-              <input
-                id="music-volume"
-                class="header-volume"
-                type="range"
-                min="0"
-                max="100"
-                step="1"
-                value="60"
-                aria-label="调节角色音乐音量"
-                title="音量"
-              />
-              <button id="header-music-next" class="btn header-next-btn" type="button" aria-label="切换当前角色下一首歌曲" title="切歌">
-                <span class="header-next-icon" aria-hidden="true"></span>
-              </button>
-              <button id="header-image-next" class="btn header-image-next-btn" type="button" aria-label="切换当前角色下一张图片" title="换图">
-                <span class="header-image-next-icon" aria-hidden="true"></span>
-              </button>
-            </div>
-          </section>
         </div>
       </section>
 
@@ -174,6 +82,10 @@
             <a class="sidebar-link" href="#projects" data-nav-key="projects">
               <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h16"/><path d="M7 4h10a2 2 0 0 1 2 2v14H5V6a2 2 0 0 1 2-2Z"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
               <span class="sidebar-label">项目</span>
+            </a>
+            <a class="sidebar-link" href="#music-library" data-nav-key="music">
+              <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+              <span class="sidebar-label">音乐</span>
             </a>
             <a class="sidebar-link" href="#contact" data-nav-key="contact">
               <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v10H8l-4 3v-13Z"/><path d="M8 10h8"/><path d="M8 13h5"/></svg>
@@ -276,6 +188,52 @@
             </div>
           </section>
 
+          <section id="music-library" class="section music-library">
+            <div class="music-library-shell">
+              <div class="music-library-head">
+                <h2>音乐收藏</h2>
+              </div>
+
+              <div class="music-library-body">
+                <div class="music-library-left">
+                  <div id="music-local-list" class="music-library-list"></div>
+                </div>
+                <div class="music-library-right">
+                  <div class="music-library-stage">
+                    <div id="bg-layer-a" class="bg-layer"></div>
+                    <div id="bg-layer-b" class="bg-layer"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="music-player-bar">
+                <div class="player-bar-left">
+                  <span id="music-library-artist" class="player-bar-artist"></span>
+                </div>
+                <div class="player-bar-center">
+                  <button id="header-music-next" class="player-bar-btn" type="button" aria-label="切换BGM" title="切换当前角色BGM">
+                    <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="19" cy="16" r="3"/></svg>
+                  </button>
+                  <button id="music-library-play" class="player-bar-play" type="button" aria-label="播放" aria-pressed="false">
+                    <svg class="music-play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7-11-7Z"/></svg>
+                    <svg class="music-pause-icon" viewBox="0 0 24 24"><path d="M7 5h4v14H7z"/><path d="M13 5h4v14h-4z"/></svg>
+                  </button>
+                  <button id="header-image-next" class="player-bar-btn" type="button" aria-label="切换图片" title="切换当前角色图片">
+                    <svg viewBox="0 0 24 24"><rect fill="none" stroke="currentColor" stroke-width="2" x="3" y="3" width="18" height="18" rx="3"/><circle fill="currentColor" cx="8.5" cy="8.5" r="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M3 17l5-5 3 3 4-4 6 6"/></svg>
+                  </button>
+                </div>
+                <div class="player-bar-right">
+                  <span id="music-library-time" class="music-library-time">00:00 / 00:00</span>
+                  <input id="music-library-progress" class="music-library-progress" type="range" min="0" max="100" step="0.1" value="0" aria-label="音乐播放进度" />
+                  <input id="music-library-volume" class="music-library-vol" type="range" min="0" max="100" step="1" value="70" aria-label="音量" title="音量" />
+                </div>
+              </div>
+
+              <p id="music-library-source" class="music-track-source"></p>
+              <audio id="music-library-audio" preload="metadata"></audio>
+            </div>
+          </section>
+
           <section id="contact" class="section">
             <h2>联系我</h2>
             <p>
@@ -338,6 +296,7 @@
 
     <footer id="page-bottom" class="site-footer">
       <div class="container">
+        <div class="footer-settings-title" aria-hidden="true">页面设置</div>
         <div class="design-style-switch" aria-label="切换网页风格">
           <span>风格</span>
           <div class="design-style-options" role="group" aria-label="选择 Apple、Linear、Spotify、Figma 或 Notion 风格">
@@ -355,6 +314,7 @@
             <button class="view-mode-btn" type="button" data-layout-mode="mobile" aria-pressed="false">移动端</button>
           </div>
         </div>
+
         <div class="social-links social-links-bottom">
           <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer" aria-label="小红书主页" title="小红书">
             <span class="social-icon" aria-hidden="true"></span>
@@ -366,6 +326,13 @@
             <span class="social-icon" aria-hidden="true"></span>
           </a>
         </div>
+        <div class="quote-category-switch" aria-label="切换语录分类">
+          <span>语录</span>
+          <select id="quote-category-select" class="quote-category-select" aria-label="选择语录分类">
+            <option value="all">全部随机</option>
+          </select>
+          <button id="quote-order-toggle" class="quote-order-btn" type="button" aria-label="切换语录顺序" title="切换正序/倒序">正序</button>
+        </div>
         <p>© <span id="year"></span> Sakura_Love. All rights reserved.</p>
       </div>
     </footer>
@@ -374,6 +341,339 @@
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
 
-    <script src="script.js?v=202605092205"></script>
-  </body>
+    
+    <script>
+var quotesData={
+"杂":[
+"最怕你一生庸碌无为，却总是安慰自己平凡可贵",
+"很多时候，我们咀嚼自己小小的悲欢，忘了更大的世界",
+"暗夜的羽翼，带我杀出重围",
+"已知乾坤大，犹怜草木青",
+"念念不忘，必有回响",
+"人终会被年少不可得之物困其一生",
+"璞玉有缺便是王",
+"我已经没兴趣给别人留下好印象了，你所见既是我，好与坏都不反驳",
+"摆脱低俗的多巴胺 ， 追随高级的内啡肽",
+"以你之姓，冠我之名",
+"我始终认为，为了迷茫的未来，我们应该拼一把",
+"原来喜欢一个人第一感觉竟然是自卑",
+"循环的圆，不循环的缘",
+"小赵和大正的关系就像是筋疲力尽的萧炎和气定神闲的药老",
+"玫瑰捧起篝火，追忆她年少时爱的日落",
+"只有那曾一同欣赏过的月光，依旧在雨后的水洼里荡漾",
+"生活纵然时一地鸡毛，但也总有能让你嘴角上扬的时刻",
+"三里清风三里路，步步清风，再无你",
+"承诺时一个骗子给一个傻瓜的东西",
+"故事不能重写，谁也回不到过去",
+"他朝若是同淋雪，此生也算共白头，白头若是雪可替，世上何来苦心人",
+"真正的成熟时在看到过世间所有的肮脏与不堪后，内心还能向往积极与温暖",
+"一个人的单程旅途，一个人的朝朝暮暮，一个人的韶华倾负！你的名字，是我见过的最短的情诗",
+"事以密成，语以泄败，成大事者往往都是守口如瓶的人",
+"光而不耀，静水流深",
+"追风赶月莫停留，平芜尽处是春山",
+"究竟是怎样的结局才配得上这一路的颠沛流离",
+"幸福的只是童话，纠结的才是人生",
+"欲加之罪，何患无辞",
+"有些时间错过一次，好比错过一生",
+"她是踏碎星河落入我梦境的幻想",
+"伤心桥下春波绿，曾是惊鸿照影来",
+"但行好事，莫问前程",
+"屋舍简陋，抬头无愧见先贤 ; 金碧辉煌，双目不敢对英烈",
+"你拯救世界，我拯救你",
+"在你之前，我没有一件像样的心事.在你之后，我没有拿得出手的痛苦.",
+"滚筒洗衣机不能没有工业质保",
+"人或者就是为了樱岛麻衣",
+"幸福转瞬即逝，痛失挚爱无所适从. 善意滴水穿石，延续希望有始有终.",
+"大城市容不下肉体 ， 小城市容不下灵魂",
+"以战友的名义 ， 给予彼此恋人般的关心",
+"记得向前看，别烂在过去和梦里。",
+"回眸一笑百媚生 ， 六宫粉黛无颜色",
+"此时相望不相闻 ， 愿逐月华流照君",
+"这个世界从来没有真正的强者 ， 只有想要变强的人",
+"少时看重的 ， 年长后却视若鸿毛 ; 少时看轻的 ， 年长后却视若泰山",
+"红叶最多情 ， 一曲寄相思",
+"忽魂悸以魄动，恍惊起而长嗟",
+"生活纵然是一地鸡毛 ， 但也总有能让你嘴角上扬的时刻",
+"你看吧，高耸入云的天路总有人种满花的",
+"欲买桂花同载酒，终不似，少年游",
+"牧之原翔子：本不想再次干涉你的生活，但是你记得我，那么我将用最美的笑容回应你",
+"所爱隔山海，山海皆可平，难平是人心",
+"将军枯骨无人问，戏子家事天下知",
+"幸得识卿桃花面，从此阡陌多暖春",
+"勇敢的人先享受世界",
+"一朝被蛇咬，十年怕井绳",
+"以为只靠努力就能无所不能，这是一种傲慢",
+"狂妄是需要本事的，而我正好有",
+"帮我们的未必一定是朋友，朋友也未必会帮我们",
+"桃园之中唱恋歌，净土之上舞极乐",
+"昆山玉碎凤凰叫，芙蓉泣露香兰笑",
+"日拱一卒，功不唐捐",
+"与其互为人间，不如自成宇宙",
+"倾巢之下，焉有完卵",
+"不知江月待何人，但见长江送流水",
+"共情能力好像是对心软的人的惩罚，自己的生活一团乱麻，还是会为世界上无能为力的事情心痛",
+"在这个暧昧至极的时代，小说里的爱情至死不渝。",
+"烟花易逝，人情长存",
+"即便未尝死亡之至，却已知晓珍惜彼时。礼弥未懂命中之意，千纮已知深爱彼此！",
+"活着为了樱岛麻衣，死了为了散华礼弥",
+"一手慈悲买人心，一手雷霆震宵小",
+"明修栈道，暗度陈仓",
+"得妻如此，夫复何求",
+"沉舟侧畔千帆过，病树前头万木春",
+"物是人非事事休，欲语泪先流",
+"烟花装饰了整个星空，你却装饰了她的梦",
+"吾心吾行澄如明镜，所作所为皆为正义",
+"世界上只有一种英雄主义，就是看清世界的真相之后仍然爱它",
+"大都好物不坚牢，彩云易散琉璃脆",
+"久旱逢甘露，他乡遇故知，洞房花烛夜，金榜题名时。",
+"贤妻扶我凌云志，我还贤妻万两金",
+"原来，所有向上生长的胜景，都离不开日复一日的向下扎根",
+"补番过程确实令人着迷，补完后就会去找各种图片，oped背景音乐来弥补这番完结所带给自己的空洞感，或许这就是动漫的迷人之处",
+"已许国，难许卿",
+"拒绝了世俗的胭脂，宴请了年少的自己",
+"尊严只在剑锋之上，真理只在大炮射程之内",
+"得道多助，失道寡助",
+"谨以此歌，献给我逝去的童年",
+"放弃不难，但坚持一定很酷",
+"立于浮华之世，奏响天籁之音",
+"今当远离，临表涕零，不知所言",
+"树欲静而风不止，子欲养而亲不待",
+"伟大的动画，就是抹去了时间的刻度，跨越了空间的距离，始终完成了陪伴这两个字。",
+"有人在殿堂放了把火，有人在那废墟中开出了花朵。",
+"悲剧是一种艺术，但是我喜欢大团圆结局",
+"我很好奇——冰菓\n\n我不高兴——境界的彼方\n\n我想知道——紫罗兰永恒花园",
+"欲戴王冠，必承其重",
+"君生于小国而并非小人",
+"君子论迹不论心 论心世上无完人",
+"想要瓦解一个民族，只要抽掉男人的脊梁和血性，拿走女人的廉耻和善良",
+"当知足凌驾于欲望之上，幸福将贯彻人生",
+"扛住了四月，忍住了花名，最后在cl哭成智障",
+"有一种谎言，以死亡为真相。《四月是你的谎言》\n有一种寻花，以永别为代价。《未闻花名》\n为了两千小时的记忆，我忍痛伴你。《可塑性记忆》\n这是岸边与潮汐的物语。《CLANNAD》",
+"意义本身，就在于发生",
+"能从命运的围追堵截中脱出而不失平和，可谓真正的栋梁和大材。",
+"世上第一快乐的人就是不需对别人负责的人，第二快乐的人就是从不回头看的人",
+"即使双眼不愿再接纳世界，可她还是用手轻抚万物的脉搏与温度",
+"恋人之间应该用名字称呼",
+"少女的脸红胜过千言万语",
+"我没有勇气成为你的过去，所以我想参与你的未来",
+"成熟的标志从来不是学会嘲笑别人的幼稚，而是懂得在复杂的世界里，依然珍视那些简单的美好。",
+"回眸一笑百媚生，六宫粉黛无颜色",
+"接收高等教育是让你对知识充满向往，不是让你有高人一等的傲慢与偏见",
+"事了拂衣去，深藏功与名",
+"不听老人言，吃亏在眼前。尽信老人言，终生未向前。",
+"一饭之德必偿 睚眦之怨必报",
+"欲买桂花同载酒，终不似，少年游",
+"重剑无法穿心甲，耳边轻语最攻心",
+"人生最好的三个词，“虚惊一场”，“失而复得”，“久别重逢”。",
+"陌上花开，可缓缓归矣",
+"朱颜辞镜花辞树，最是人间留不住",
+"后来啊，有人似你三分，我便慌了神",
+"战士军前半死生，美人帐下犹歌舞。",
+"相濡以沫，不如相忘于江湖",
+"他人所得非你之失",
+"笑贫不笑娼，救急不救穷",
+"宁惹白头翁，莫欺少年郎",
+"行不更名，坐不改姓，如假包换。",
+"真正有思考能力的人都知道，用三观来评判一部文学作品，是这个世界上最浅薄最无聊也最幼稚的做法",
+"世界不是非黑即白的，也不是扁平化的，从来都没有绝对正确的三观",
+"宁做狂风里披头散发的野木，莫为温室中姿态优雅的病梅",
+"谎言不会伤人，真相才是快刀",
+"第一次输入提示词，它返给我的不是图，是之前所有想象力的欠条。",
+"从来没有正确的答案，我们都在美化那条未曾涉足的道路，每一段人生，都是愿赌服输的等价交换",
+"目之所及，皆是回忆；心之所想，皆是过往；眼之所看，皆是遗憾",
+"故乡承载不了肉体，远方承载不了灵魂。终究是故乡的阑珊灯火，映不出远方的星辰闪烁",
+"“不是歌变好听了，而是我们都有故事了”"
+],
+"冰菓":[
+"折木弄花千蝶反田，蔷薇穹下旷世恋语",
+"令人绝望的差距会产生期待"
+],
+"龙族":[
+"\"我们都是小怪兽，有一天会被正义的奥特曼杀死。” 是啊，你是小怪兽，可小怪兽也有小怪兽的好朋友，孤独的小怪兽们害怕得靠在一起，但如果正义的奥特曼要来杀你，我就帮你把你把正义的奥特曼杀死。",
+"我们都是小怪兽，可是如果正义的奥特曼来了，我就帮你杀死他。可是我答应了，却没有做到。",
+"落尽红樱君不见，轻绘梨花泪沾衣。 炎炎夏日弥弥忘，江阔楚天子未航。",
+"你以为她是公主她拥有全世界，可她认为她只拥有你和她的玩具们",
+"同一条路，和某些人一起走，就长的离谱，和另外一些人走，就短得让人舍不得迈步子。",
+"爱意随风起，风止意难平",
+"如果世界真的不喜欢你，那世界就是我的敌人了。",
+"“04.24，和Sakura去东京天空树，世界上最暖和的地方在天空树的顶上。” \n\n“04.26，和Sakura去明治神宫，有人在那里举办婚礼。”\n\n “04.25，和Sakura去迪士尼，鬼屋很可怕，但是有Sakura在，所以不可怕。” \n\n“Sakura最好了。”",
+"总有一天，当孤独的重量超过了极限，它就会崩塌，雪崩的狂潮会把整个世界都吞噬",
+"凡王之血，必以剑终\n\n汝必以痛，偿还儹越\n\n汝必以眼，偿还狂妄\n\n汝必以血，偿还背叛\n\n吾重临世界之日，诸逆臣皆当死去",
+"路旁青衣树上斜，\n\n\n明眸杉影叹妃曦。\n\n\n落尽红樱君不见，\n\n\n轻绘梨花泪沾衣。",
+"Sakura最好了(Sakura daiyisiki)",
+"当楚子航三度暴血和凯撒一起也打不过源稚生时，他就知道他杀的到底时夏弥还是耶梦加得",
+"凯撒加图索先生，那把零钱十分烫手吧，是否把你的骄傲烫穿了呢，你那引以为傲的镰鼬让你清楚的听到那个姑娘全身的骨头被撞碎的所有声音。\n\n楚子航先生，当三度暴血的你与二度暴血的凯撒联手也无法战胜源稚生的时候。你明白你杀得究竟是夏弥还是耶梦加得了吗？当然啦，阳光下再也不会有女孩低下头来亲吻你的脸了。\n\n路明非先生，高天原的酒好喝吗，是否把你的懦弱浇灭了呢。她给你准备了张试卷，无论你写什么她都会给你满分，但你缺考了。十万零三百二十张花票都留不住你，所以你花了四分之一生命也留不住她啦。”"
+],
+"斗破苍穹":[
+"在这个暧昧至极的时代，小说里的爱情至死不渝",
+"熏儿是青梅竹马，彩麟是责任，小医仙是红颜知己，只有云韵是初恋",
+"小医仙只是萧炎一生中的一道彩虹，而萧炎却是小医仙的整片苍穹",
+"三十年河东 ， 三十年河西 ， 莫欺少年穷"
+],
+"武动乾坤":[
+"如墨玄衣，如银长发",
+"上穷碧落下黄泉，两处茫茫皆不见",
+"傻瓜……哪有什么冰主，我一直……都是应欢欢啊……",
+"我走遍轮回，只为与你相遇",
+"有玉微凉，是为璎琅",
+"手如柔荑，肤如凝脂",
+"走遍轮回，只为与你相遇。\n\n踏遍红尘，只为寻你归来！\n\n上穷碧落下黄泉，我要把你找回来！"
+],
+"大主宰":[
+"行不更名，坐不改姓，如假包换。",
+"择日不如撞日",
+"良禽择木而栖",
+"螓首蛾眉，巧笑倩兮，美目盼兮。",
+"人为刀殂，我为鱼肉",
+"天堂有路你不走，地狱无门你闯进来！",
+"螳臂当车，蚍蜉撼树",
+"年少出北灵，今朝登天门",
+"负手而立，渊渟岳峙，犹如擎天之柱，可挽狂澜，可救天倾。",
+"毕生修炼所为何，不就是为了能够守护自己所在乎的人与物，不就是为了在这种时刻，能够挺身而出，力挽狂澜，受那万人敬仰吗？"
+],
+"CLANND":[
+"雪中智代雨中杏",
+"Clannad——Call life as natality， noticing， accompaning， death. 人生即是到来、相遇、陪伴、离开",
+"有一种羁绊，叫家族，对于世界来说，你是一个人，对于我来说，你就是整个世界。\n\n——冈崎朋也 \n\n有一种希望，叫奇迹，只要有你在，哪怕前途艰险，布满荆棘，我也能鼓起勇气迎接未来。 ——古河渚 \n\n有一种责任，叫父亲，我可以放弃梦想，我可以归于平凡，唯独不能放弃你。\n\n——古河秋生\n\n有一种信念，叫做坚强，就算是哭，也是在完成自己的使命之后。 \n\n——古河早苗 \n\n有一种心愿，叫祝福，只要你能得到幸福，那么我也能幸福。\n\n——伊吹风子\n\n有一种勇气，叫孤独，纵使世界上只剩我孤身一人，也不会忘记曾经的感动。 \n\n——坂上智代 \n\n有一种牵挂，叫父母，即使天各一方，阴阳两隔，思念也能传达给远方的你。 \n\n——一之濑琴美 \n\n有一种情义，叫姐妹，就算是放弃自己的幸福，也要竭尽全力为她争取。 \n\n——藤林杏\n\n有一种友情，叫信任，即便是自己最珍爱的宝物，只要交给他就没有任何问题。\n\n——春原阳平\n\n有一种感动，叫clannad，时光流逝，岁月变迁，但这份感动，我们永远铭刻在心。\n\n——所有深爱着clannad的人",
+"雪中智代雨中杏，樱花树下古河渚。 图书馆中小琴美，资料室里有纪宁。 春原兄妹路边走，古河夫妻店里忙。 海星风子随风去，花田丛中冈崎汐。一座小镇，一个家族，一生太短，回忆太长。写作CLANNAD，译作经典，读作人生。",
+"雪中智代雨中杏，樱下小渚花田汐",
+"因为遇见你，我的世界才有了色彩",
+"无论怎样，请不要后悔遇见我",
+"前天，我看见了一只兔子；昨天，是一头鹿；而今天，则是你",
+"你的妈妈还是个什么样的人呀？\n\n嗯……\n\n非常爱哭的人\n\n但是，很努力地把汐生下来的人\n\n还有，她是爸爸非常喜欢的人",
+"曾经我迷信科学",
+"写作cl读作人生",
+"写作CLANNAD，译作经典，读作人生",
+"潮鸣起万物泣，潮鸣落万物寂",
+"与其说它在讲述青春，不如说它在描绘人生"
+],
+"辉夜大小姐想让我告白":[
+"犹豫就会败北，果断就会白给",
+"因为我一直在注视着你啊！",
+"欲问此夜君何意，漫天昭然皆吾心",
+"只要你向我告白，肯定是百分百成功的啊"
+],
+"Charlotte":[
+"【C】ollapse - 崩坏 \n\n【H】ypnotism - 催眠 \n\n【A】scertainment - 能力者探知 \n\n【R】emove memories - 消除记忆 \n\n【L】ooting - 掠夺 \n\n【O】bscure - 隐身 \n\n【T】ime leap - 时间跳跃 \n\n【T】eleport - 瞬间(高速)移动/【T】ransmission - 穿透 \n\n【E】vocation - 招魂/ 【E】mblaze - 点燃",
+"这个世界上，有很多事是可以靠时间冲淡的，虽然也有一些连时间也无可奈何。",
+"――太好了，你终于醒了\n\n――那个……你是谁啊？\n\n――你不记得我了吗？也难怪，一个人承受了那么多的能力，大脑受不了是很正常的，我叫友利奈绪，是你的恋人哦……"
+],
+"紫罗兰永恒花园":[
+"花无凋零之日，意有传递之时，爱情亘古不变，紫罗兰永世长存。",
+"窈窕淑女，君子好逑。求之不得，寤寐思服。",
+"紫罗兰的花语是爱",
+"不存在不必送达的信件",
+"烽火连三月，家书抵万金",
+"你将不再是道具，而是人如其名的人",
+"不论春夏秋冬，四季轮转，唯独有少佐的季节迟迟不来。",
+"有人在殿堂放了把火，有人在那废墟中开出了花朵。",
+"以你之姓，冠我之名",
+"只要呼唤你的名字，我们的牵绊就永远不会消逝",
+"三色堇的花语\n\n1：思念 \n\n2：纯洁、等待 \n\n3：沉默不语、无言的爱",
+"以前我想，要是还能再见面，我想向你道个歉，不过，我现在只想把你塞进麻袋里，然后丢到薇尔莉特跟前",
+"用最冰冷的手，传递最温暖的爱。"
+],
+"EVA":[
+"她真实的一面是不会让我们这些外人看到的啊，这不就说明你们是一家人嘛",
+"为什么人一多，就必须要这么热闹呢",
+"直到何谓痛苦，才能温柔待人"
+],
+"末日时在做什么有没有空可以来拯救吗":[
+"如果幸福有颜色，那一定是终末之红染尽的蓝色。",
+"比起踌躇不前，一步一步地前进就好，即便昨天的足迹消失不见，就算明天的路途晦暗不清，即便这样，我也不愿做改变过去的无用功，不愿一味地悲叹未来，我只想感受现在，因为不管如何抗争，时间总是在推着你前进",
+"忘记的名字还可以重新记住，但是失去的回忆却无法挽回",
+"抱歉，我已经无法获得幸福了，因为我注意到了，我早已经是……幸福的人了",
+"幸福只有当事人知道，别人无从得知，决定或者否定别人的幸福，只是自以为是而已。不过，能带给别人幸福的人，总是那些坚持自以为是到底的人吧",
+"在太阳西斜的这个世界，置身天上之森。等这场战争结束后，不归之人与望眼欲穿的众人，人人本着正义之名，长存不灭的过去、逐渐消逝的未来。我回来了，纵使日薄西山，即使看不见未来，此时此刻的光辉，盼君勿忘。————世界上最幸福的女孩"
+],
+"Angel Beats":[
+"音无结弦之时，天使跃动之心。立于浮华之世，奏响天籁之音。"
+],
+"缘之空":[
+"无妹恨穹不是妹，有妹恨妹不成穹",
+"春日原野悠穹下，凌云苍穹无天涯"
+],
+"DARLING in the FRANXX":[
+"鹤望兰无凋零之时，比翼鸟永世长存",
+"明天天气又如何？现在的你，我预测不来",
+"只要我们比翼而飞，便能够飞到天涯海角",
+"分别和相逢反复交替，我们就这样长大成人",
+"我们因偶然相逢，又因必然相吸引"
+],
+"可塑性记忆":[
+"愿你有朝一日，能和所爱之人再度萍水相逢",
+"命运之环轮回反复，思绪终将合而为一",
+"因为悲伤，所以一直微笑",
+"幸福并没有一定的模样。烛光前的甜言蜜语，绝对是幸福的一种表情。但寒风中的眼泪婆娑，也可能会是幸福的相貌。"
+],
+"信条":[
+"这世间暮色四合，黄昏之时无故人"
+],
+"罪恶王冠":[
+"集接受了世界的一切承担了一切的善与恶，楪祈接受了集的一切",
+"樱花满地集于我心，楪舞纷飞祈愿相随",
+"为王的诞生献上血与泪编制的荆棘王冠"
+],
+"魔女之旅":[
+"我本可以忍受黑暗 如果我从未见过光明",
+"Q：那么，请答题，漫步在清澈蓝天之下，如果有人在一旁，定会被吸引住目光，有着闲月羞花般美貌的魔女，究竟是谁呢?\n\nA：那就是身在旅途，编织着我和我们的故事 《魔女之旅》的人。没错，就是我。"
+],
+"斩赤红之瞳":[
+"我的坚强就是南瓜的强大"
+],
+"终结的炽天使":[
+"只要反派长的好，三观跟着五官跑"
+],
+"葬送的芙丽莲":[
+"您想要了解我这件事，让我喜悦得无以复加"
+],
+"活着":[
+"他说的话就像是一把钝刀子在割我的脖子，脑袋掉不下来，倒是疼得死去活来。",
+"治不了才好，哪有钱治病。",
+"少年去游荡，中年想掘藏，老年做和尚。"
+]
+};
+window.quotesData=quotesData;
+</script>
+
+    <script src="script.js?v=202605241548"></script>
+
+    <script>
+(function(){
+  var cat = localStorage.getItem("quoteCategory") || "all";
+  var sel = document.getElementById("quote-category-select");
+  
+  function updateQuotes(){
+    if (cat === "all") {
+      var all = [];
+      for (var k in quotesData) { if (quotesData.hasOwnProperty(k)) all = all.concat(quotesData[k]); }
+      clickTexts = all;
+    } else if (quotesData[cat]) {
+      clickTexts = quotesData[cat];
+    }
+  }
+  
+  // Populate select
+  if (sel) {
+    var keys = Object.keys(quotesData);
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      var opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = k;
+      sel.appendChild(opt);
+    }
+    sel.value = cat;
+    sel.addEventListener("change", function(){
+      cat = sel.value;
+      localStorage.setItem("quoteCategory", cat);
+      updateQuotes();
+    });
+  }
+  
+  updateQuotes();
+})();
+</script>
+
+</body>
 </html>

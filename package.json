@@ -1,0 +1,26 @@
+{
+  "name": "website_sakura_love",
+  "version": "1.0.0",
+  "description": "这是我的个人网站，汇集了我的精华项目，充斥着绚丽的背景和曼妙的BGM，恭迎莅临！！！",
+  "main": "script.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test --ui",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SakuraLoveForever/website_Sakura_Love.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SakuraLoveForever/website_Sakura_Love/issues"
+  },
+  "homepage": "https://github.com/SakuraLoveForever/website_Sakura_Love#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}

@@ -39,7 +39,7 @@ const isInsideRoot = (filePath) => {
   return normalizedPath === normalizedRoot || normalizedPath.startsWith(normalizedRoot + path.sep);
 };
 
-const serveFile = (res, filePath, statusCode = 200) => {
+const serveFile = (req, res, filePath, statusCode = 200) => {
   fs.stat(filePath, (statErr, stats) => {
     if (statErr) {
       const notFoundPath = path.join(root, "404.html");
@@ -47,18 +47,57 @@ const serveFile = (res, filePath, statusCode = 200) => {
         sendText(res, 404, "Not found");
         return;
       }
-      serveFile(res, notFoundPath, 404);
+      serveFile(req, res, notFoundPath, 404);
       return;
     }
 
     if (stats.isDirectory()) {
-      serveFile(res, path.join(filePath, "index.html"));
+      serveFile(req, res, path.join(filePath, "index.html"));
       return;
     }
 
     const contentType = mimeTypes[path.extname(filePath).toLowerCase()] || "application/octet-stream";
+    const isAudio = contentType.startsWith("audio/");
+    const range = isAudio ? req.headers.range : null;
+    if (range) {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (!match) {
+        res.writeHead(416, {
+          "Content-Range": `bytes */${stats.size}`,
+          "Access-Control-Allow-Origin": "*"
+        });
+        res.end();
+        return;
+      }
+
+      const start = match[1] ? Number(match[1]) : 0;
+      const end = match[2] ? Number(match[2]) : stats.size - 1;
+      if (!Number.isFinite(start) || !Number.isFinite(end) || start > end || start >= stats.size) {
+        res.writeHead(416, {
+          "Content-Range": `bytes */${stats.size}`,
+          "Access-Control-Allow-Origin": "*"
+        });
+        res.end();
+        return;
+      }
+
+      const safeEnd = Math.min(end, stats.size - 1);
+      res.writeHead(206, {
+        "Content-Type": contentType,
+        "Content-Length": safeEnd - start + 1,
+        "Content-Range": `bytes ${start}-${safeEnd}/${stats.size}`,
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "no-store",
+        "Access-Control-Allow-Origin": "*"
+      });
+      fs.createReadStream(filePath, { start, end: safeEnd }).pipe(res);
+      return;
+    }
+
     res.writeHead(statusCode, {
       "Content-Type": contentType,
+      "Content-Length": stats.size,
+      "Accept-Ranges": isAudio ? "bytes" : "none",
       "Cache-Control": "no-store",
       "Access-Control-Allow-Origin": "*"
     });
@@ -73,10 +112,13 @@ const parseBody = (req) =>
     req.on("end", () => resolve(Buffer.concat(chunks)));
   });
 
+// ─── HTTP Server ───
 const server = http.createServer(async (req, res) => {
   let pathname;
+  let requestUrl;
   try {
-    pathname = decodeURIComponent(new URL(req.url, `http://${req.headers.host || host}`).pathname);
+    requestUrl = new URL(req.url, `http://${req.headers.host || host}`);
+    pathname = decodeURIComponent(requestUrl.pathname);
   } catch (error) {
     sendText(res, 400, "Bad request");
     return;
@@ -87,10 +129,7 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await parseBody(req);
       const { image } = JSON.parse(body.toString("utf-8"));
-      if (!image || typeof image !== "string") {
-        sendText(res, 400, "Missing image data");
-        return;
-      }
+      if (!image || typeof image !== "string") { sendText(res, 400, "Missing image data"); return; }
       const base64 = image.replace(/^data:image\/\w+;base64,/, "");
       const avatarPath = path.join(root, "assets", "avatar.png");
       fs.mkdirSync(path.dirname(avatarPath), { recursive: true });
@@ -104,12 +143,8 @@ const server = http.createServer(async (req, res) => {
   }
 
   const filePath = path.resolve(root, pathname === "/" ? "index.html" : `.${pathname}`);
-  if (!isInsideRoot(filePath)) {
-    sendText(res, 403, "Forbidden");
-    return;
-  }
-
-  serveFile(res, filePath);
+  if (!isInsideRoot(filePath)) { sendText(res, 403, "Forbidden"); return; }
+  serveFile(req, res, filePath);
 });
 
 server.listen(port, host, () => {
