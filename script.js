@@ -1,9 +1,23 @@
 document.documentElement.classList.add("js");
+const launcherMode=new URLSearchParams(window.location.search).has("launcher");
+if(launcherMode)document.documentElement.classList.add("launcher-desktop-view");
+if(launcherMode&&"scrollRestoration"in history)history.scrollRestoration="manual";
+const forceLauncherInitialView=()=>{if(launcherMode)window.scrollTo({top:0,left:0,behavior:"auto"})};
+if(launcherMode)window.addEventListener("load",()=>requestAnimationFrame(()=>requestAnimationFrame(forceLauncherInitialView)),{once:true});
 const $=(s)=>document.querySelector(s);
-const yearSpan=$("#year"),styleSelect=$("#style-select"),languageToggle=$("#language-toggle"),sidebarToggle=$("#sidebar-toggle"),sidebarAvatarButton=$("#sidebar-avatar-button"),sidebarAvatarInput=$("#sidebar-avatar-input"),sidebarLogoMark=$(".sidebar-logo-mark"),sidebarLinks=document.querySelectorAll(".sidebar-link"),designStyleButtons=document.querySelectorAll(".design-style-btn"),layoutModeButtons=document.querySelectorAll(".view-mode-btn"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),musicSeekInput=$("#music-seek"),musicTimeDisplay=$("#music-time-display"),headerMusicNextButton=$("#header-music-next"),headerImageNextButton=$("#header-image-next"),pageMuteToggleButton=$("#page-mute-toggle"),muteProgressArc=$("#mute-progress-arc"),animeViewer=$(".anime-viewer"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),live2dSettingsToggle=$("#live2d-settings-toggle"),live2dSettingsPanel=$("#live2d-settings-panel"),hashActionLinks=document.querySelectorAll(".hero-actions a[href^='#'],.sidebar-link[href^='#']"),toastRoot=$("#toast-root");
-const musicLibraryAudio=$("#music-library-audio"),musicLibraryArtist=$("#music-library-artist"),musicLibraryTitle=$("#music-library-title"),musicLibraryStatus=$("#music-api-status"),musicLocalList=$("#music-local-list"),musicLocalCount=$("#music-local-count"),musicLibraryPlay=$("#music-library-play"),musicLibraryProgress=$("#music-library-progress"),musicLibraryVolume=$("#music-library-volume"),musicLibraryTime=$("#music-library-time"),musicLibrarySource=$("#music-library-source");
+const yearSpan=$("#year"),styleSelect=$("#style-select"),languageToggle=$("#language-toggle"),sidebarToggle=$("#sidebar-toggle"),sidebarAvatarButton=$("#sidebar-avatar-button"),sidebarAvatarInput=$("#sidebar-avatar-input"),sidebarLogoMark=$(".sidebar-logo-mark"),sidebarLinks=document.querySelectorAll(".sidebar-link"),designStyleButtons=document.querySelectorAll(".design-style-btn"),layoutModeButtons=document.querySelectorAll(".view-mode-btn"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),musicSeekInput=$("#music-seek"),musicTimeDisplay=$("#music-time-display"),headerMusicPrevButton=$("#header-music-prev"),headerMusicNextButton=$("#header-music-next"),headerImagePrevButton=$("#header-image-prev"),headerImageNextButton=$("#header-image-next"),pageMuteToggleButton=$("#page-mute-toggle"),muteProgressArc=$("#mute-progress-arc"),animeViewer=$(".anime-viewer"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dCanvas=$("#live2d-canvas"),live2dWidget=$("#live2d-widget"),live2dDialog=$("#live2d-dialog"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),live2dSettingsToggle=$("#live2d-settings-toggle"),live2dSettingsPanel=$("#live2d-settings-panel"),live2dToggleButton=$("#live2d-toggle"),hashActionLinks=document.querySelectorAll(".hero-actions a[href^='#'],.sidebar-link[href^='#']"),toastRoot=$("#toast-root");
+const musicLibraryAudio=$("#music-library-audio"),musicLibraryArtist=$("#music-library-artist"),musicLibraryTitle=$("#music-library-title"),musicLibraryStatus=$("#music-api-status"),musicLocalList=$("#music-local-list"),musicLocalCount=$("#music-local-count"),musicLibraryPlay=$("#music-library-play"),musicLibraryProgress=$("#music-library-progress"),musicLibraryVolume=$("#music-library-volume"),musicLibraryMute=$("#music-library-mute"),musicLibraryTime=$("#music-library-time"),musicLibrarySource=$("#music-library-source");
 const styleMap={apple:"design-apple",linear:"design-linear",spotify:"design-spotify",figma:"design-figma",notion:"design-notion"};
+const rootThemeTokens={
+  apple:{canvas:"#1d1d1f",text:"#f5f5f7",scheme:"dark"},
+  linear:{canvas:"#010102",text:"#f7f8f8",scheme:"dark"},
+  spotify:{canvas:"#121212",text:"#f6f6f6",scheme:"dark"},
+  figma:{canvas:"#121116",text:"#f5f3ff",scheme:"dark"},
+  notion:{canvas:"#07101f",text:"#dce7ff",scheme:"dark"}
+};
 const legacyStyleClasses=["style-warm","style-tech","style-minimal","style-melancholy"];
+let activeDesignStyleKey=localStorage.getItem("stylePreset")||"apple";
+let activeDesignStyleClass=styleMap[activeDesignStyleKey]||styleMap.apple;
 const live2dModels={
   tutu:{name:"草莓兔兔",path:"assets/live2d/tutu/草莓兔兔  试用.model3.json",scale:0.92,watermarkParam:"Param261"},
   mao:{name:"Mao",path:"live2d-widget-v3-main/Resources/model/Mao/Mao.model3.json",scale:0.92},
@@ -50,9 +64,10 @@ const bgFiles={
 const bgRoleOrder=["02","akame","chitanda","chtholly","elaina","eriyi","esdeath","iroha","kaguya","krul","mine","shinoa","sora","toki","violet","yachiyo"].filter(role=>bgFiles[role]?.length);
 const bgCount=Object.fromEntries(Object.entries(bgFiles).map(([role,files])=>[role,files.length]));
 const musicCount={"02":4,chitanda:2,kaguya:1,yachiyo:1,iroha:1,eriyi:2,elaina:1,chtholly:1,sora:3,akame:4,mine:4,esdeath:4,krul:1,shinoa:1,violet:4,toki:4};
-let bgPlayMode=localStorage.getItem("bgPlayMode")||"single",activeBgLayer=bgLayerA,bgTimer=null,currentRole=localStorage.getItem("bgCharacter")||"02",isPagePaused=true,musicEnabled=localStorage.getItem("musicEnabled")!=="false",_suppressSelectChange=false;
+let bgPlayMode=localStorage.getItem("bgPlayMode")||"single",activeBgLayer=bgLayerA,bgTimer=null,currentRole=localStorage.getItem("bgCharacter")||"02",isPagePaused=true,musicEnabled=localStorage.getItem("musicEnabled")!=="false",live2dEnabled=localStorage.getItem("live2dEnabled")!=="false",_suppressSelectChange=false;
 const bgSeq={},musicSeq={},player=new Audio();
 player.loop=false;player.preload="auto";player.volume=Math.min(1,Math.max(0,Number(localStorage.getItem("musicVolume"))||0.6));player.muted=false;localStorage.removeItem("pageMuted");
+if(live2dWidget)live2dWidget.classList.toggle("live2d-hidden",!live2dEnabled);
 const isViewerEnabled=()=>true;
 const showToast=(message)=>{if(!toastRoot)return;toastRoot.replaceChildren();const toast=document.createElement("div");toast.className="toast";toast.textContent=message;toastRoot.appendChild(toast);setTimeout(()=>toast.remove(),500)};
 const fit=(el)=>{if(!el)return;const n=Math.max(4,...Array.from(el.options||[]).map(o=>(o.textContent||"").trim().length));el.style.width=`calc(${n}ch + 3.2rem)`};
@@ -86,8 +101,72 @@ const withViewportPreserved=(action,{frames=2,anchor=null}={})=>{
   };
   requestAnimationFrame(tick);
 };
-const detectLayoutMode=()=>/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent)||window.matchMedia?.("(pointer: coarse)")?.matches&&window.innerWidth<=920||window.innerWidth<=700?"mobile":"desktop";
-const applyStyle=(k)=>{const safe=styleMap[k]?k:"apple";document.body.classList.remove(...Object.values(styleMap),...legacyStyleClasses);document.body.classList.add(styleMap[safe]);document.body.classList.toggle("theme-dark",safe==="apple");designStyleButtons.forEach(button=>{const active=button.dataset.designStyle===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});if(styleSelect)styleSelect.value=safe;localStorage.setItem("stylePreset",safe);localStorage.removeItem("themeMode")};
+const detectLayoutMode=()=>launcherMode?"desktop":/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent)||window.matchMedia?.("(pointer: coarse)")?.matches&&window.innerWidth<=920||window.innerWidth<=700?"mobile":"desktop";
+let stylePersistTimer=0;
+const persistStylePreset=(safe)=>{
+  clearTimeout(stylePersistTimer);
+  stylePersistTimer=setTimeout(()=>{
+    localStorage.setItem("stylePreset",safe);
+    localStorage.removeItem("themeMode");
+  },0);
+};
+/* syncRootThemeTokens — 只设置 html 根元素属性。--canvas/--text 由 body.design-* CSS 类提供 */
+const syncRootThemeTokens=(styleKey)=>{
+  const safe=styleMap[styleKey]?styleKey:"apple";
+  const root=document.documentElement;
+  const tokens=rootThemeTokens[safe]||rootThemeTokens.apple;
+  root.dataset.initialStyle=safe;
+  root.style.backgroundColor=tokens.canvas;
+  root.style.color=tokens.text;
+  root.style.colorScheme=tokens.scheme||"dark";
+};
+const applyStyle=(k)=>{
+  const safe=styleMap[k]?k:"apple";
+  const nextClass=styleMap[safe];
+  if(activeDesignStyleKey===safe
+    &&activeDesignStyleClass===nextClass
+    &&document.body.classList.contains(nextClass)
+    &&document.body.classList.contains("theme-dark")===(safe==="apple")){
+    if(styleSelect&&styleSelect.value!==safe)styleSelect.value=safe;
+    designStyleButtons.forEach(button=>{const active=button.dataset.designStyle===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});
+    return
+  }
+  if(activeDesignStyleClass&&activeDesignStyleClass!==nextClass)document.body.classList.replace(activeDesignStyleClass,nextClass);
+  else if(!document.body.classList.contains(nextClass))document.body.classList.add(nextClass);
+  legacyStyleClasses.forEach(cls=>{if(cls!==nextClass)document.body.classList.remove(cls)});
+  activeDesignStyleKey=safe;
+  activeDesignStyleClass=nextClass;
+  document.body.classList.toggle("theme-dark",safe==="apple");
+  syncRootThemeTokens(safe);
+  designStyleButtons.forEach(button=>{const active=button.dataset.designStyle===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});
+  if(styleSelect&&styleSelect.value!==safe)styleSelect.value=safe;
+  persistStylePreset(safe);
+};
+const styleTransitionMs=320;
+let styleTransitionTimer=0;
+const beginStyleTransition=()=>{clearTimeout(styleTransitionTimer);document.body.classList.add("style-transitioning","theme-swap-active")};
+const endStyleTransition=()=>{clearTimeout(styleTransitionTimer);styleTransitionTimer=setTimeout(()=>document.body.classList.remove("style-transitioning","theme-swap-active"),styleTransitionMs+120)};
+const prefersReducedMotion=()=>Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
+const applyStyleSmooth=(style,afterApply=()=>{})=>{
+  const safe=styleMap[style]?style:"apple";
+  if(prefersReducedMotion()){
+    applyStyle(safe);
+    afterApply();
+    return
+  }
+  if(document.startViewTransition){
+    const transition=document.startViewTransition(()=>{applyStyle(safe);afterApply()});
+    transition.finished.then(()=>{}).catch(()=>{})
+  }else{
+    beginStyleTransition();
+    const finish=()=>{endStyleTransition()};
+    requestAnimationFrame(()=>{
+      applyStyle(safe);
+      afterApply();
+      finish()
+    })
+  }
+};
 const applyLayoutMode=(mode)=>{const safe=mode==="mobile"?"mobile":"desktop";document.body.classList.toggle("layout-mobile",safe==="mobile");layoutModeButtons.forEach(button=>{const active=button.dataset.layoutMode===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});localStorage.setItem("layoutMode",safe)};
 const setBg=(role)=>{if(!bgLayerA||!bgLayerB)return;const r=bgFiles[role]?.length?role:"02",files=bgFiles[r],idx=(bgSeq[r]||0)%files.length;bgSeq[r]=(bgSeq[r]||0)+1;currentRole=r;_suppressSelectChange=true;if(bgCharacterSelect)bgCharacterSelect.value=r;localStorage.setItem("bgCharacter",r);const next=activeBgLayer===bgLayerA?bgLayerB:bgLayerA;next.style.backgroundImage=`url("assets/backgrounds/${r}/${files[idx]}")`;next.classList.add("visible");if(activeBgLayer)activeBgLayer.classList.remove("visible");activeBgLayer=next};
 const nextRole=()=>{const start=bgRoleOrder.indexOf(currentRole);return bgRoleOrder[(start+1+bgRoleOrder.length)%bgRoleOrder.length]||"02"};
@@ -96,7 +175,7 @@ let _durationCheckTimer=0;const ensureDuration=()=>{clearTimeout(_durationCheckT
 const showScene=(role,{withMusic=false}={})=>{const r=bgCount[role]?role:"02";setBg(r);if(withMusic)playRole(r)};
 const scheduleBgOnly=()=>{clearInterval(bgTimer);if(!musicEnabled)bgTimer=setInterval(()=>showScene(nextSceneRole()),3000)};
 const applyBg=(on,role)=>{clearInterval(bgTimer);if(animeViewer)animeViewer.classList.toggle("is-viewer-off",!on);if(!bgLayerA||!bgLayerB)return;if(!on){player.pause();bgLayerA.classList.remove("visible");bgLayerB.classList.remove("visible");bgLayerA.style.backgroundImage="";bgLayerB.style.backgroundImage="";return}showScene(role,{withMusic:musicEnabled});scheduleBgOnly()};
-const playNext=()=>{if(!isViewerEnabled())return;const role=nextSceneRole(currentRole);showScene(role,{withMusic:musicEnabled})};const nextImageOnly=()=>{if(!isViewerEnabled())return;setBg(bgCount[currentRole]?currentRole:"02")};
+const playNext=()=>{if(!isViewerEnabled())return;const role=nextSceneRole(currentRole);showScene(role,{withMusic:musicEnabled})};const prevImageOnly=()=>{if(!isViewerEnabled())return;const r=bgCount[currentRole]?currentRole:"02";const files=bgFiles[r];bgSeq[r]=((bgSeq[r]||1)-2+files.length)%files.length;setBg(r)};const nextImageOnly=()=>{if(!isViewerEnabled())return;setBg(bgCount[currentRole]?currentRole:"02")};
 const updateMusicButtonState=()=>{if(!pageMuteToggleButton)return;const active=Boolean(player.src)&&!player.paused&&!isPagePaused;const label=currentLanguage==="en"?(isPagePaused?"Resume music":"Pause music"):(isPagePaused?"继续播放":"暂停播放");pageMuteToggleButton.classList.toggle("is-playing",active);pageMuteToggleButton.classList.toggle("muted",isPagePaused);pageMuteToggleButton.setAttribute("aria-pressed",String(isPagePaused));pageMuteToggleButton.setAttribute("aria-label",label);pageMuteToggleButton.title=label};
 let musicProgressTimer=0;
 let _musicSeekDragging=false;
@@ -106,13 +185,27 @@ const stopMusicProgressLoop=()=>{if(musicProgressTimer)clearInterval(musicProgre
 const startMusicProgressLoop=()=>{if(musicProgressTimer)return;progress();musicProgressTimer=setInterval(progress,120)};
 const controls=()=>updateMusicButtonState();
 const playModeUI=()=>{if(bgCharacterSelect)bgCharacterSelect.disabled=bgPlayMode!=="single"};
+const syncLive2dToggleUI=()=>{if(!live2dToggleButton)return;const label=currentLanguage==="en"?"Live2D mascot":"看板娘";const state=live2dEnabled?(currentLanguage==="en"?"Off":"关闭"):(currentLanguage==="en"?"On":"开启");live2dToggleButton.classList.toggle("active",live2dEnabled);live2dToggleButton.setAttribute("aria-pressed",String(live2dEnabled));live2dToggleButton.setAttribute("aria-label",currentLanguage==="en"?`${label}: ${state}`:`${label}：${state}`);live2dToggleButton.setAttribute("title",currentLanguage==="en"?`${label}: ${state}`:`${label}：${state}`);live2dToggleButton.textContent=state};
+const applyLive2dVisibility=()=>{if(!live2dWidget)return;live2dWidget.classList.toggle("live2d-hidden",!live2dEnabled);live2dWidget.setAttribute("aria-hidden",String(!live2dEnabled));if(!live2dEnabled){live2dWidget.classList.remove("live2d-settings-open","live2d-settings-visible");if(live2dSettingsToggle)live2dSettingsToggle.setAttribute("aria-expanded","false")}};
+const setLive2dEnabled=(enabled,{persist=true,initialize=true}={})=>{
+  live2dEnabled=Boolean(enabled);
+  if(persist)localStorage.setItem("live2dEnabled",String(live2dEnabled));
+  if(!live2dEnabled)setLive2dLoading(false);
+  applyLive2dVisibility();
+  syncLive2dToggleUI();
+  applyLive2dSettings();
+  if(live2dEnabled){
+    if(initialize)refreshLive2dAfterShow();
+    else settleLive2dChrome({frames:4});
+  }
+};
 let currentLanguage=localStorage.getItem("languageMode")==="en"?"en":"zh";
 const languageCopy={
   zh:{
-    pageTitle:"Sakura_Love | 个人主页",pageDescription:"一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。",languageLabel:"切换语言",personalGallery:"个人画廊",intro:"把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。",viewProjects:"查看项目",contactMe:"联系我",characterWindow:"角色窗口",characterViewer:"角色欣赏",muteToggle:"角色音乐静音开关",viewerStage:"角色图片展示窗口",viewerEmpty:"打开欣赏窗口后，这里会展示角色图片。",viewerSettings:"角色欣赏设置",character:"角色",chooseCharacter:"选择背景角色",playMode:"播放模式",playModeLabel:"背景播放模式",singleRole:"单角色",allRoles:"全角色",music:"音乐",enabled:"开启",volume:"音量",volumeLabel:"调节角色音乐音量",nextSong:"切歌",nextImage:"换图",nextRole:"切角色",imageChanged:"图片已切换",aboutNav:"关于",skillsNav:"技能",projectsNav:"项目",contactNav:"联系",aboutTitle:"关于我",education:"学习经历",awards:"获奖经历",machinery:"机械类",mathematics:"数学类",programming:"计算机程序设计类",primary:"小学",junior:"初中",senior:"高中",bachelor:"本科",master:"硕士",primaryValue:"泉州市安溪县实验小学",juniorValue:"福州市金山中学",seniorValue:"福建省福州第一中学",bachelorValue:"福州大学（机械工程及自动化）",masterValue:"厦门大学（计算机科学与技术）",awardKey:"奖项",mechAward:"第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类、设计验证类）全国二等奖。",mathAward:"2024年全国大学生数学竞赛非数学A类福建省一等奖。",icpc2024:"第49届 ICPC 国际大学生程序设计竞赛区域赛上海站铜牌。",ccpc2025:"2025年中国大学生程序设计竞赛 CCPC 福建省邀请赛银奖。",gplt:"2024、2025 年团体程序设计天梯赛 GPLT 全国个人三等奖。",baiduStar:"2025年百度之星程序设计大赛省赛银奖。",lanqiao:"2025年蓝桥杯 C++ A 组福建省一等奖，全国个人三等奖。",skillsTitle:"技能",projectsTitle:"项目",projectLifeTitle:"卷里山河，心头月色",projectLifeAria:"查看卷里山河，心头月色",projectLifeDesc:"阅读与长夜随笔，支持目录导航与夜间模式，适合沉浸式阅读与记录灵感。",projectQuotesTitle:"心灵鸡汤 - 互动语录",projectQuotesAria:"查看心灵鸡汤 - 互动语录",projectQuotesDesc:"可交互的语录归档网站，支持分类展开收起和目录快速跳转浏览。",projectKindleTitle:"Kindle笔记导出工具",projectKindleAria:"查看 Kindle 笔记导出工具",projectKindleDesc:"免费在线工具，支持上传 My Clippings.txt 并本地处理导出，保护隐私。",projectYoutubeTitle:"YouTube取消点赞脚本",projectYoutubeAria:"查看 YouTube 取消点赞脚本",projectYoutubeDesc:"浏览器控制台与 Tampermonkey 脚本，批量取消曾经在 YouTube 点赞过的视频，适合清理账号历史记录。",contactTitle:"联系我",contactHtml:'邮箱：<a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',live2dOpen:"展开看板娘设置",live2dSettings:"看板娘设置",live2dModel:"看板娘角色",chooseLive2dModel:"选择看板娘角色",live2dSize:"看板娘大小",adjustLive2dSize:"调节看板娘大小",top:"顶部",topAria:"回到顶部",bottom:"底部",bottomAria:"跳到底部",style:"风格",styleAria:"切换网页风格",styleGroup:"选择 Apple、Linear、Spotify、Figma 或 Notion 风格",view:"视图",viewAria:"切换网页布局",viewGroup:"选择网页端或移动端布局",desktop:"网页端",mobile:"移动端",xhs:"小红书",xhsHome:"小红书主页",githubHome:"GitHub主页",bilibiliHome:"Bilibili主页",styleUpdated:"风格已更新",languageUpdated:"语言已切换",darkOn:"夜间模式已开启",darkOff:"夜间模式已关闭",mobileLayout:"已切换移动端布局",desktopLayout:"已切换网页端布局",bgRoleChanged:"欣赏角色已切换",playModeUpdated:"播放模式已更新",musicOn:"音乐已开启",musicOff:"音乐已关闭",live2dModelChanged:"看板娘角色已切换",songChanged:"歌曲已切换",roleChanged:"角色已切换",muted:"已静音",unmuted:"已取消静音",mute:"静音",unmute:"取消静音"
+    pageTitle:"Sakura_Love | 个人主页",pageDescription:"一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。",languageLabel:"切换语言",personalGallery:"个人画廊",intro:"把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。",viewProjects:"查看项目",contactMe:"联系我",characterWindow:"角色窗口",characterViewer:"角色欣赏",muteToggle:"角色音乐静音开关",viewerStage:"角色图片展示窗口",viewerEmpty:"打开欣赏窗口后，这里会展示角色图片。",viewerSettings:"角色欣赏设置",character:"角色",chooseCharacter:"选择背景角色",playMode:"播放模式",playModeLabel:"背景播放模式",singleRole:"单角色",allRoles:"全角色",music:"音乐",enabled:"开启",volume:"音量",volumeLabel:"调节角色音乐音量",nextSong:"切歌",nextImage:"换图",nextRole:"切角色",imageChanged:"图片已切换",aboutNav:"关于",skillsNav:"技能",projectsNav:"项目",contactNav:"联系",aboutTitle:"关于我",education:"学习经历",awards:"获奖经历",machinery:"机械类",mathematics:"数学类",programming:"计算机程序设计类",primary:"小学",junior:"初中",senior:"高中",bachelor:"本科",master:"硕士",primaryValue:"泉州市安溪县实验小学",juniorValue:"福州市金山中学",seniorValue:"福建省福州第一中学",bachelorValue:"福州大学（机械工程及自动化）",masterValue:"厦门大学（计算机科学与技术）",awardKey:"奖项",mechAward:"第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类、设计验证类）全国二等奖。",mathAward:"2024年全国大学生数学竞赛非数学A类福建省一等奖。",icpc2024:"第49届 ICPC 国际大学生程序设计竞赛区域赛上海站铜牌。",ccpc2025:"2025年中国大学生程序设计竞赛 CCPC 福建省邀请赛银奖。",gplt:"2024、2025 年团体程序设计天梯赛 GPLT 全国个人三等奖。",baiduStar:"2025年百度之星程序设计大赛省赛银奖。",lanqiao:"2025年蓝桥杯 C++ A 组福建省一等奖，全国个人三等奖。",skillsTitle:"技能",projectsTitle:"项目",projectLifeTitle:"卷里山河，心头月色",projectLifeAria:"查看卷里山河，心头月色",projectLifeDesc:"阅读与长夜随笔，支持目录导航与夜间模式，适合沉浸式阅读与记录灵感。",projectQuotesTitle:"心灵鸡汤 - 互动语录",projectQuotesAria:"查看心灵鸡汤 - 互动语录",projectQuotesDesc:"可交互的语录归档网站，支持分类展开收起和目录快速跳转浏览。",projectKindleTitle:"Kindle笔记导出工具",projectKindleAria:"查看 Kindle 笔记导出工具",projectKindleDesc:"免费在线工具，支持上传 My Clippings.txt 并本地处理导出，保护隐私。",projectYoutubeTitle:"YouTube取消点赞脚本",projectYoutubeAria:"查看 YouTube 取消点赞脚本",projectYoutubeDesc:"浏览器控制台与 Tampermonkey 脚本，批量取消曾经在 YouTube 点赞过的视频，适合清理账号历史记录。",contactTitle:"联系我",contactHtml:'邮箱：<a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',live2dOpen:"展开看板娘设置",live2dSettings:"看板娘设置",live2dModel:"看板娘角色",chooseLive2dModel:"选择看板娘角色",live2dSize:"看板娘大小",adjustLive2dSize:"调节看板娘大小",top:"顶部",topAria:"回到顶部",bottom:"底部",bottomAria:"跳到底部",style:"风格",styleAria:"切换网页风格",styleGroup:"选择 Apple、Linear、Spotify、Figma 或 Notion 风格",view:"视图",viewAria:"切换网页布局",viewGroup:"选择网页端或移动端布局",desktop:"网页端",mobile:"移动端",xhs:"小红书",xhsHome:"小红书主页",githubHome:"GitHub主页",bilibiliHome:"Bilibili主页",languageUpdated:"语言已切换",darkOn:"夜间模式已开启",darkOff:"夜间模式已关闭",mobileLayout:"已切换移动端布局",desktopLayout:"已切换网页端布局",bgRoleChanged:"欣赏角色已切换",playModeUpdated:"播放模式已更新",musicOn:"音乐已开启",musicOff:"音乐已关闭",live2dModelChanged:"看板娘角色已切换",songChanged:"歌曲已切换",roleChanged:"角色已切换",muted:"已静音",unmuted:"已取消静音",mute:"静音",unmute:"取消静音"
   },
   en:{
-    pageTitle:"Sakura_Love | Personal Site",pageDescription:"A clean, responsive personal website for profile, skills, projects, and contact links.",languageLabel:"Switch language",personalGallery:"Personal Gallery",intro:"A quiet personal homepage for competitions, engineering, reading, and a little anime-inspired warmth.",viewProjects:"View Projects",contactMe:"Contact Me",characterWindow:"Character Window",characterViewer:"Character Viewer",muteToggle:"Toggle character music mute",viewerStage:"Character image display window",viewerEmpty:"Open the viewer and character images will appear here.",viewerSettings:"Character viewer settings",character:"Character",chooseCharacter:"Choose background character",playMode:"Playback Mode",playModeLabel:"Background playback mode",singleRole:"Single Character",allRoles:"All Characters",music:"Music",enabled:"Enabled",volume:"Volume",volumeLabel:"Adjust character music volume",nextSong:"Next song",nextImage:"Next image",nextRole:"Next character",imageChanged:"Image changed",aboutNav:"About",skillsNav:"Skills",projectsNav:"Projects",contactNav:"Contact",aboutTitle:"About Me",education:"Education",awards:"Awards",machinery:"Mechanical Design",mathematics:"Mathematics",programming:"Programming",primary:"Primary School",junior:"Junior High",senior:"Senior High",bachelor:"Bachelor",master:"Master",primaryValue:"Anxi Experimental Primary School, Quanzhou",juniorValue:"Jinshan Middle School, Fuzhou",seniorValue:"Fuzhou No.1 High School, Fujian",bachelorValue:"Fuzhou University (Mechanical Engineering and Automation)",masterValue:"Xiamen University (Computer Science and Technology)",awardKey:"Award",mechAward:"National Second Prize in the first undergraduate mechanical design fundamentals practice competition.",mathAward:"First Prize, Fujian Province, 2024 National College Student Mathematics Competition, Non-Math A group.",icpc2024:"Bronze Medal, ICPC 2024 Shanghai Regional Contest.",ccpc2025:"Silver Medal, CCPC 2025 Fujian Invitational Contest.",gplt:"National Individual Third Prize, GPLT Team Programming Contest in 2024 and 2025.",baiduStar:"Provincial Silver Medal, Baidu Star Programming Contest 2025.",lanqiao:"First Prize in Fujian Province and National Individual Third Prize, Lanqiao Cup 2025 C++ A group.",skillsTitle:"Skills",projectsTitle:"Projects",projectLifeTitle:"Mountains in Pages, Moonlight in Mind",projectLifeAria:"View Mountains in Pages, Moonlight in Mind",projectLifeDesc:"A reading and late-night essay site with table-of-contents navigation and dark mode for immersive notes and inspiration.",projectQuotesTitle:"Soul Quotes Archive",projectQuotesAria:"View Soul Quotes Archive",projectQuotesDesc:"An interactive quote archive with collapsible categories and fast table-of-contents navigation.",projectKindleTitle:"Kindle Notes Exporter",projectKindleAria:"View Kindle Notes Exporter",projectKindleDesc:"A free online tool that locally processes uploaded My Clippings.txt files and exports notes while protecting privacy.",projectYoutubeTitle:"YouTube Unlike Helper",projectYoutubeAria:"View YouTube Unlike Helper",projectYoutubeDesc:"A browser console and Tampermonkey script for batch unliking previously liked YouTube videos.",contactTitle:"Contact",contactHtml:'Email: <a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub: <a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',live2dOpen:"Open Live2D settings",live2dSettings:"Live2D settings",live2dModel:"Live2D Model",chooseLive2dModel:"Choose Live2D model",live2dSize:"Live2D Size",adjustLive2dSize:"Adjust Live2D size",top:"Top",topAria:"Back to top",bottom:"Bottom",bottomAria:"Jump to bottom",style:"Style",styleAria:"Switch website style",styleGroup:"Choose Apple, Linear, Spotify, Figma, or Notion style",view:"View",viewAria:"Switch website layout",viewGroup:"Choose desktop or mobile layout",desktop:"Desktop",mobile:"Mobile",xhs:"Xiaohongshu",xhsHome:"Xiaohongshu profile",githubHome:"GitHub profile",bilibiliHome:"Bilibili profile",styleUpdated:"Style updated",languageUpdated:"Language switched",darkOn:"Dark mode enabled",darkOff:"Dark mode disabled",mobileLayout:"Switched to mobile layout",desktopLayout:"Switched to desktop layout",bgRoleChanged:"Character changed",playModeUpdated:"Playback mode updated",musicOn:"Music enabled",musicOff:"Music disabled",live2dModelChanged:"Live2D model changed",songChanged:"Song changed",roleChanged:"Character changed",muted:"Muted",unmuted:"Unmuted",mute:"Mute",unmute:"Unmute"
+    pageTitle:"Sakura_Love | Personal Site",pageDescription:"A clean, responsive personal website for profile, skills, projects, and contact links.",languageLabel:"Switch language",personalGallery:"Personal Gallery",intro:"A quiet personal homepage for competitions, engineering, reading, and a little anime-inspired warmth.",viewProjects:"View Projects",contactMe:"Contact Me",characterWindow:"Character Window",characterViewer:"Character Viewer",muteToggle:"Toggle character music mute",viewerStage:"Character image display window",viewerEmpty:"Open the viewer and character images will appear here.",viewerSettings:"Character viewer settings",character:"Character",chooseCharacter:"Choose background character",playMode:"Playback Mode",playModeLabel:"Background playback mode",singleRole:"Single Character",allRoles:"All Characters",music:"Music",enabled:"Enabled",volume:"Volume",volumeLabel:"Adjust character music volume",nextSong:"Next song",nextImage:"Next image",nextRole:"Next character",imageChanged:"Image changed",aboutNav:"About",skillsNav:"Skills",projectsNav:"Projects",contactNav:"Contact",aboutTitle:"About Me",education:"Education",awards:"Awards",machinery:"Mechanical Design",mathematics:"Mathematics",programming:"Programming",primary:"Primary School",junior:"Junior High",senior:"Senior High",bachelor:"Bachelor",master:"Master",primaryValue:"Anxi Experimental Primary School, Quanzhou",juniorValue:"Jinshan Middle School, Fuzhou",seniorValue:"Fuzhou No.1 High School, Fujian",bachelorValue:"Fuzhou University (Mechanical Engineering and Automation)",masterValue:"Xiamen University (Computer Science and Technology)",awardKey:"Award",mechAward:"National Second Prize in the first undergraduate mechanical design fundamentals practice competition.",mathAward:"First Prize, Fujian Province, 2024 National College Student Mathematics Competition, Non-Math A group.",icpc2024:"Bronze Medal, ICPC 2024 Shanghai Regional Contest.",ccpc2025:"Silver Medal, CCPC 2025 Fujian Invitational Contest.",gplt:"National Individual Third Prize, GPLT Team Programming Contest in 2024 and 2025.",baiduStar:"Provincial Silver Medal, Baidu Star Programming Contest 2025.",lanqiao:"First Prize in Fujian Province and National Individual Third Prize, Lanqiao Cup 2025 C++ A group.",skillsTitle:"Skills",projectsTitle:"Projects",projectLifeTitle:"Mountains in Pages, Moonlight in Mind",projectLifeAria:"View Mountains in Pages, Moonlight in Mind",projectLifeDesc:"A reading and late-night essay site with table-of-contents navigation and dark mode for immersive notes and inspiration.",projectQuotesTitle:"Soul Quotes Archive",projectQuotesAria:"View Soul Quotes Archive",projectQuotesDesc:"An interactive quote archive with collapsible categories and fast table-of-contents navigation.",projectKindleTitle:"Kindle Notes Exporter",projectKindleAria:"View Kindle Notes Exporter",projectKindleDesc:"A free online tool that locally processes uploaded My Clippings.txt files and exports notes while protecting privacy.",projectYoutubeTitle:"YouTube Unlike Helper",projectYoutubeAria:"View YouTube Unlike Helper",projectYoutubeDesc:"A browser console and Tampermonkey script for batch unliking previously liked YouTube videos.",contactTitle:"Contact",contactHtml:'Email: <a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub: <a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',live2dOpen:"Open Live2D settings",live2dSettings:"Live2D settings",live2dModel:"Live2D Model",chooseLive2dModel:"Choose Live2D model",live2dSize:"Live2D Size",live2dSwitch:"Live2D mascot",live2dToggle:"Live2D",live2dOn:"On",live2dOff:"Off",adjustLive2dSize:"Adjust Live2D size",top:"Top",topAria:"Back to top",bottom:"Bottom",bottomAria:"Jump to bottom",style:"Style",styleAria:"Switch website style",styleGroup:"Choose Apple, Linear, Spotify, Figma, or Notion style",view:"View",viewAria:"Switch website layout",viewGroup:"Choose desktop or mobile layout",desktop:"Desktop",mobile:"Mobile",xhs:"Xiaohongshu",xhsHome:"Xiaohongshu profile",githubHome:"GitHub profile",bilibiliHome:"Bilibili profile",languageUpdated:"Language switched",darkOn:"Dark mode enabled",darkOff:"Dark mode disabled",mobileLayout:"Switched to mobile layout",desktopLayout:"Switched to desktop layout",bgRoleChanged:"Character changed",playModeUpdated:"Playback mode updated",musicOn:"Music enabled",musicOff:"Music disabled",live2dModelChanged:"Live2D model changed",songChanged:"Song changed",roleChanged:"Character changed",muted:"Muted",unmuted:"Unmuted",mute:"Mute",unmute:"Unmute"
   }
 };
 const ui=(key)=>languageCopy[currentLanguage]?.[key]||languageCopy.zh[key]||key;
@@ -139,11 +232,11 @@ const applyLanguage=(mode)=>{
   const projectTitles=document.querySelectorAll(".project-title-btn"),projectTitleCopy=[copy.projectLifeTitle,copy.projectQuotesTitle,copy.projectKindleTitle,copy.projectYoutubeTitle],projectAriaCopy=[copy.projectLifeAria,copy.projectQuotesAria,copy.projectKindleAria,copy.projectYoutubeAria];projectTitles.forEach((el,index)=>{if(projectTitleCopy[index]){el.textContent=projectTitleCopy[index];el.setAttribute("aria-label",projectAriaCopy[index])}});
   const projectDescriptions=document.querySelectorAll(".project-grid .card p");[copy.projectLifeDesc,copy.projectQuotesDesc,copy.projectKindleDesc,copy.projectYoutubeDesc].forEach((text,index)=>{if(projectDescriptions[index])projectDescriptions[index].textContent=text});
   setText("#contact > h2",copy.contactTitle);setHtml("#contact > p",copy.contactHtml);
-  setAttr("#live2d-settings-toggle","aria-label",copy.live2dOpen);setAttr("#live2d-settings-panel","aria-label",copy.live2dSettings);setText(".live2d-settings-panel .control-group:nth-of-type(1) .control-title",copy.live2dModel);setAttr("#live2d-model","aria-label",copy.chooseLive2dModel);const live2dSizeTitle=$(".live2d-settings-panel .control-group:nth-of-type(2) .control-title");if(live2dSizeTitle&&live2dSizeValue)live2dSizeTitle.firstChild.nodeValue=`${copy.live2dSize} `;setAttr("#live2d-size","aria-label",copy.adjustLive2dSize);
+  setAttr("#live2d-settings-toggle","aria-label",copy.live2dOpen);setAttr("#live2d-settings-panel","aria-label",copy.live2dSettings);setText(".live2d-settings-panel .control-group:nth-of-type(1) .control-title",copy.live2dModel);setAttr("#live2d-model","aria-label",copy.chooseLive2dModel);const live2dSizeTitle=$(".live2d-settings-panel .control-group:nth-of-type(2) .control-title");if(live2dSizeTitle&&live2dSizeValue)live2dSizeTitle.firstChild.nodeValue=`${copy.live2dSize} `;setAttr("#live2d-size","aria-label",copy.adjustLive2dSize);setText(".live2d-toggle-switch > span",copy.live2dSwitch||copy.live2dToggle||"Live2D");setAttr(".live2d-toggle-switch","aria-label",currentLanguage==="en"?"Toggle Live2D mascot":"开关看板娘");syncLive2dToggleUI();
   setText('.jump-btn[href="#page-top"]',copy.top);setAttr('.jump-btn[href="#page-top"]',"aria-label",copy.topAria);setText('.jump-btn[href="#page-bottom"]',copy.bottom);setAttr('.jump-btn[href="#page-bottom"]',"aria-label",copy.bottomAria);
   setText(".design-style-switch > span",copy.style);setAttr(".design-style-switch","aria-label",copy.styleAria);setAttr(".design-style-options","aria-label",copy.styleGroup);setText(".view-mode-switch > span",copy.view);setAttr(".view-mode-switch","aria-label",copy.viewAria);setAttr(".view-mode-options","aria-label",copy.viewGroup);setText('.view-mode-btn[data-layout-mode="desktop"]',copy.desktop);setText('.view-mode-btn[data-layout-mode="mobile"]',copy.mobile);
   setAttr(".social-xhs","aria-label",copy.xhs);setAttr(".social-xhs","title",copy.xhs);setAttr(".social-links-bottom .social-xhs","aria-label",copy.xhsHome);setAttr(".social-github","aria-label","GitHub");setAttr(".social-github","title","GitHub");setAttr(".social-links-bottom .social-github","aria-label",copy.githubHome);setAttr(".social-bilibili","aria-label","Bilibili");setAttr(".social-bilibili","title","Bilibili");setAttr(".social-links-bottom .social-bilibili","aria-label",copy.bilibiliHome);
-  localStorage.setItem("languageMode",safe);playModeUI();updateMusicButtonState();
+  localStorage.setItem("languageMode",safe);playModeUI();updateMusicButtonState();syncLive2dToggleUI();
 };
 const setSidebarCollapsed=(collapsed)=>{
   document.body.classList.toggle("sidebar-collapsed",collapsed);
@@ -257,7 +350,7 @@ const renderTrackList=(listEl,tracks=[])=>{
       if(group.tracks.length>0){
         const firstTrack=group.tracks[0];
         const index=musicLibraryTracks.findIndex(item=>item.id===firstTrack.id);
-        if(index>=0)setMusicLibraryTrack(index,{autoplay:true});
+        if(index>=0)setMusicLibraryTrack(index,{autoplay:true,syncImage:true});
       }
     });
 
@@ -272,7 +365,7 @@ const syncMusicLibraryActive=()=>{
   const activeTrack=musicLibraryTracks[musicLibraryIndex];
   document.querySelectorAll(".music-role-group").forEach(group=>group.classList.toggle("is-active",group.dataset.role===activeTrack?.role));
 };
-const setMusicLibraryTrack=(index,{autoplay=false}={})=>{
+const setMusicLibraryTrack=(index,{autoplay=false,syncImage=false}={})=>{
   if(!musicLibraryAudio||!musicLibraryTracks.length)return;
   musicLibraryIndex=(index+musicLibraryTracks.length)%musicLibraryTracks.length;
   const track=musicLibraryTracks[musicLibraryIndex];
@@ -291,7 +384,7 @@ const setMusicLibraryTrack=(index,{autoplay=false}={})=>{
   if(musicLibrarySource)musicLibrarySource.title="";
   syncMusicLibraryActive();
   drawMusicLibraryProgress();
-  if(track.role)setBg(track.role);
+  if(syncImage&&track.role)setBg(track.role);
   if(autoplay)musicLibraryAudio.play().catch(()=>{});
 };
 const drawMusicLibraryProgress=()=>{
@@ -308,6 +401,13 @@ const drawMusicLibraryProgress=()=>{
     musicLibraryProgress.style.setProperty("--library-seek","0%");
   }
 };
+const syncMusicLibraryMuteUI=()=>{
+  if(!musicLibraryMute||!musicLibraryAudio)return;
+  const muted=musicLibraryAudio.muted;
+  musicLibraryMute.classList.toggle("is-muted",muted);
+  musicLibraryMute.setAttribute("aria-label",muted?"取消禁音":"禁音");
+  musicLibraryMute.setAttribute("title",muted?"取消禁音":"禁音");
+};
 const updateMusicLibraryPlayState=()=>{
   if(!musicLibraryPlay||!musicLibraryAudio)return;
   const playing=!musicLibraryAudio.paused&&!musicLibraryAudio.ended;
@@ -323,6 +423,16 @@ const commitMusicLibrarySeek=()=>{
     musicLibraryAudio.currentTime=Math.min(duration,Math.max(0,value));
     drawMusicLibraryProgress();
   }
+};
+const prevMusicLibraryTrack=()=>{
+  const role=currentRole;
+  const roleTracks=musicLibraryTracks.filter(t=>t.role===role&&t.audioUrl);
+  if(!roleTracks.length)return;
+  const currentId=musicLibraryTracks[musicLibraryIndex]?.id;
+  const currentIdx=roleTracks.findIndex(t=>t.id===currentId);
+  const prevTrack=roleTracks[(currentIdx-1+roleTracks.length)%roleTracks.length];
+  const index=musicLibraryTracks.findIndex(t=>t.id===prevTrack.id);
+  if(index>=0)setMusicLibraryTrack(index,{autoplay:true});
 };
 const nextMusicLibraryTrack=()=>{
   const role=currentRole;
@@ -347,7 +457,7 @@ const loadMusicLibrary=async()=>{
   setMusicLibraryStatus(`${musicLocalTracks.length} 首`);
   renderMusicLibraryList();
   const firstPlayable=musicLibraryTracks.find(track=>track.audioUrl);
-  if(firstPlayable)setMusicLibraryTrack(getMusicTrackIndex(firstPlayable),{autoplay:false});
+  if(firstPlayable)setMusicLibraryTrack(getMusicTrackIndex(firstPlayable),{autoplay:false,syncImage:true});
   requestAnimationFrame(()=>{syncMusicLibraryHeight();requestAnimationFrame(()=>syncMusicLibraryHeight())});
 };
 if(musicLibraryAudio){
@@ -368,18 +478,38 @@ if(musicLibraryAudio){
     musicLibraryVolume.addEventListener("input",()=>{
       const v=Math.min(100,Math.max(0,Number(musicLibraryVolume.value)||0));
       musicLibraryAudio.volume=v/100;
+      musicLibraryAudio.muted=false;
+      syncMusicLibraryMuteUI();
       musicLibraryVolume.style.setProperty("--library-vol",`${v}%`);
+    });
+  }
+  if(musicLibraryMute){
+    musicLibraryMute.addEventListener("click",()=>{
+      musicLibraryAudio.muted=!musicLibraryAudio.muted;
+      syncMusicLibraryMuteUI();
     });
   }
   player.addEventListener("play",()=>{if(!musicLibraryAudio.paused)musicLibraryAudio.pause()});
   loadMusicLibrary();
 }
 const projectAvatarUrl="assets/avatar.png";const loadProjectAvatar=()=>{const saved=localStorage.getItem("sidebarAvatar");const img=new Image();img.onload=()=>{localStorage.setItem("sidebarAvatarSource","project");applySidebarAvatar(projectAvatarUrl+"?v="+Date.now())};img.onerror=()=>{localStorage.removeItem("sidebarAvatarSource");if(saved&&saved.startsWith("data:"))applySidebarAvatar(saved)};img.src=projectAvatarUrl+"?v="+Date.now()};loadProjectAvatar();applyStyle(localStorage.getItem("stylePreset")||"apple");applyLayoutMode(detectLayoutMode());applyLanguage(currentLanguage);controls();playModeUI();updateSidebarActive();
+	/* 合成器预热：页面首次加载后 GPU 管线是冷的，第一次切风格时会同时创建图层+过渡导致卡顿。
+	   在空闲时短暂启用过渡追踪，触发浏览器预先建立合成图层和过渡管线，用户真正切换时就丝滑了。 */
+	const _warmupCompositor=()=>{
+	  if(!document.body.classList.contains("style-transitioning")){
+	    document.body.classList.add("style-transitioning");
+	    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+	      document.body.classList.remove("style-transitioning");
+	    }));
+	  }
+	};
+	setTimeout(_warmupCompositor,600);
+	window.addEventListener("load",()=>setTimeout(_warmupCompositor,400),{once:true});
 const bgOn=true,bgRole=localStorage.getItem("bgCharacter")||"02";localStorage.setItem("bgEnabled","true");if(bgToggle)bgToggle.checked=bgOn;if(bgCharacterSelect)bgCharacterSelect.value=bgCount[bgRole]?bgRole:"02";if(bgPlayModeSelect)bgPlayModeSelect.value=bgPlayMode;applyBg(bgOn,bgRole);
-if(musicToggle)musicToggle.checked=musicEnabled;if(musicVolumeInput){musicVolumeInput.value=String(Math.round(player.volume*100));musicVolumeInput.style.setProperty("--vol",`${Math.round(player.volume*100)}%`)}[styleSelect,bgCharacterSelect,bgPlayModeSelect,live2dModelSelect].forEach(fit);
+if(musicToggle)musicToggle.checked=musicEnabled;if(musicVolumeInput){musicVolumeInput.value=String(Math.round(player.volume*100));musicVolumeInput.style.setProperty("--vol",`${Math.round(player.volume*100)}%`)}[styleSelect,bgCharacterSelect,bgPlayModeSelect,live2dModelSelect].forEach(fit);applyLive2dVisibility();syncLive2dToggleUI();
 window.addEventListener("resize",()=>{applyLayoutMode(detectLayoutMode());updateSidebarActive();syncMusicLibraryHeight()},{passive:true});
-designStyleButtons.forEach(button=>button.addEventListener("click",()=>withViewportPreserved(()=>{applyStyle(button.dataset.designStyle);showToast(ui("styleUpdated"))},{frames:3,anchor:button})));
-if(styleSelect)styleSelect.addEventListener("change",e=>withViewportPreserved(()=>{applyStyle(e.target.value);fit(styleSelect);showToast(ui("styleUpdated"))},{frames:3,anchor:styleSelect}));
+designStyleButtons.forEach(button=>button.addEventListener("click",()=>applyStyleSmooth(button.dataset.designStyle)));
+if(styleSelect)styleSelect.addEventListener("change",e=>applyStyleSmooth(e.target.value,()=>fit(styleSelect)));
 if(languageToggle)languageToggle.addEventListener("click",()=>withViewportPreserved(()=>{applyLanguage(currentLanguage==="en"?"zh":"en");showToast(ui("languageUpdated"))},{frames:3,anchor:languageToggle}));
 const isLocalEnv=()=>window.location.protocol==="file:"||window.location.hostname==="127.0.0.1"||window.location.hostname==="localhost";
 if(sidebarAvatarButton&&sidebarAvatarInput){if(isLocalEnv()){sidebarAvatarButton.addEventListener("click",()=>sidebarAvatarInput.click())}else{sidebarAvatarButton.style.pointerEvents="none";sidebarAvatarButton.title=currentLanguage==="en"?"Avatar set by site owner":"头像由站长设置"}}
@@ -394,11 +524,13 @@ if(bgPlayModeSelect)bgPlayModeSelect.addEventListener("change",e=>withViewportPr
 if(musicToggle)musicToggle.addEventListener("change",()=>withViewportPreserved(()=>{musicEnabled=musicToggle.checked;localStorage.setItem("musicEnabled",String(musicEnabled));if(musicEnabled){isPagePaused=false;localStorage.setItem("pagePaused","false");clearInterval(bgTimer);if(isViewerEnabled())showScene(currentRole,{withMusic:true})}else{player.pause();scheduleBgOnly()}controls();showToast(musicEnabled?ui("musicOn"):ui("musicOff"))}));
 if(musicVolumeInput)musicVolumeInput.addEventListener("input",()=>{const v=Math.min(100,Math.max(0,Number(musicVolumeInput.value)||0));player.volume=v/100;localStorage.setItem("musicVolume",String(player.volume));musicVolumeInput.style.setProperty("--vol",`${v}%`)});
 if(live2dModelSelect)live2dModelSelect.addEventListener("change",()=>withViewportPreserved(()=>{const modelKey=getLive2dModelKey(live2dModelSelect.value);localStorage.setItem("live2dModel",modelKey);if(typeof switchLive2dModel==="function")switchLive2dModel(modelKey);showToast(ui("live2dModelChanged"))}));
+if(live2dToggleButton)live2dToggleButton.addEventListener("click",()=>withViewportPreserved(()=>{setLive2dEnabled(!live2dEnabled)},{frames:2,anchor:live2dToggleButton}));
 let live2dSizeInputFrame=0;
 if(live2dSizeInput)live2dSizeInput.addEventListener("input",()=>{if(live2dSizeInputFrame)cancelAnimationFrame(live2dSizeInputFrame);live2dSizeInputFrame=requestAnimationFrame(()=>{live2dSizeInputFrame=0;setLive2dSizePercent(live2dSizeInput.value,{freezePanel:true})})});
-if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextMusicLibraryTrack();showToast(ui("songChanged"))}));if(headerImageNextButton)headerImageNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextImageOnly();showToast(ui("imageChanged"))}));
+if(headerMusicPrevButton)headerMusicPrevButton.addEventListener("click",()=>withViewportPreserved(()=>{prevMusicLibraryTrack();showToast(ui("songChanged"))}));if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextMusicLibraryTrack();showToast(ui("songChanged"))}));if(headerImagePrevButton)headerImagePrevButton.addEventListener("click",()=>withViewportPreserved(()=>{prevImageOnly();showToast(ui("imageChanged"))}));if(headerImageNextButton)headerImageNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextImageOnly();showToast(ui("imageChanged"))}));
 if(pageMuteToggleButton)pageMuteToggleButton.addEventListener("click",()=>withViewportPreserved(()=>{isPagePaused=!isPagePaused;localStorage.setItem("pagePaused",String(isPagePaused));if(isPagePaused){player.pause()}else if(musicEnabled){if(player.src)player.play().then(startMusicProgressLoop).catch(()=>{});else showScene(currentRole,{withMusic:true})}controls();showToast(currentLanguage==="en"?(isPagePaused?"Music paused":"Music resumed"):(isPagePaused?"音乐已暂停":"音乐继续播放"))}));
 if(yearSpan)yearSpan.textContent=String(new Date().getFullYear());
+if(launcherMode)requestAnimationFrame(()=>requestAnimationFrame(forceLauncherInitialView));
 const revealTargets=document.querySelectorAll(".section,.card,.about-panel,.about-sub-panel,.chips li,.side-nav,.site-footer");
 if("IntersectionObserver" in window){
   const revealObserver=new IntersectionObserver((entries,observer)=>{entries.forEach(entry=>{if(!entry.isIntersecting)return;entry.target.classList.add("is-revealed");observer.unobserve(entry.target)})},{threshold:0.12,rootMargin:"0px 0px -8% 0px"});
@@ -406,7 +538,6 @@ if("IntersectionObserver" in window){
 }else{
   revealTargets.forEach(el=>el.classList.add("is-revealed"));
 }
-const live2dCanvas=$("#live2d-canvas"),live2dWidget=$("#live2d-widget"),live2dDialog=$("#live2d-dialog");
 let live2dSettingsTimer=null,live2dControlsActive=false,live2dLayoutFrame=0;
 const queueLive2dFrame=window.requestAnimationFrame?.bind(window)||((callback)=>setTimeout(callback,16));
 const LIVE2D_EDGE_MARGIN=12;
@@ -416,8 +547,65 @@ const normalizeLive2dSizePercent=(value)=>{const requested=Math.min(160,Math.max
 const getLive2dScale=()=>Math.min(getLive2dMaxScale(),Math.max(0.6,Number(live2dWidget?.style.getPropertyValue("--live2d-size"))||normalizeLive2dSizePercent(localStorage.getItem("live2dSize"))/100));
 const getLive2dMetrics=(scale=getLive2dScale(),custom=live2dWidget?.classList.contains("live2d-custom-position"))=>{const {width,height}=getLive2dBaseSize();const visualWidth=width*scale,visualHeight=height*scale;return {scale,width,height,visualWidth,visualHeight,offsetX:0,offsetY:custom?0:height-visualHeight}};
 const clampLive2dVisualLeftTop=(x,y,scale=getLive2dScale())=>{const {visualWidth,visualHeight}=getLive2dMetrics(scale,true);const maxX=window.innerWidth-LIVE2D_EDGE_MARGIN-visualWidth,maxY=window.innerHeight-LIVE2D_EDGE_MARGIN-visualHeight;return {x:clamp(x,LIVE2D_EDGE_MARGIN,Math.max(LIVE2D_EDGE_MARGIN,maxX)),y:clamp(y,LIVE2D_EDGE_MARGIN,Math.max(LIVE2D_EDGE_MARGIN,maxY))}};
-const positionLive2dChrome=({freezePanel=false}={})=>{if(!live2dWidget)return;const metrics=getLive2dMetrics();const rect=live2dWidget.getBoundingClientRect();const visualLeft=rect.left+metrics.offsetX,visualRight=visualLeft+metrics.visualWidth;const enoughRight=window.innerWidth-visualRight>=64||visualLeft<64;const toggleX=enoughRight?metrics.offsetX+metrics.visualWidth+8:metrics.offsetX-52;const toggleY=metrics.offsetY+metrics.visualHeight*0.42;live2dWidget.style.setProperty("--live2d-toggle-x",`${toggleX}px`);live2dWidget.style.setProperty("--live2d-toggle-y",`${toggleY}px`);if(!freezePanel){const panelX=enoughRight?metrics.offsetX+metrics.visualWidth+12:metrics.offsetX-226;live2dWidget.style.setProperty("--live2d-panel-x",`${panelX}px`);live2dWidget.style.setProperty("--live2d-panel-y",`${toggleY+32}px`)}};
-const setLive2dSizePercent=(value,{freezePanel=false}={})=>{if(!live2dWidget)return normalizeLive2dSizePercent(value);const size=normalizeLive2dSizePercent(value);localStorage.setItem("live2dSize",String(size));live2dWidget.style.setProperty("--live2d-size",String(size/100));const custom=live2dWidget.classList.contains("live2d-custom-position");if(custom){const currentX=Number.parseFloat(live2dWidget.style.left)||live2dWidget.getBoundingClientRect().left,currentY=Number.parseFloat(live2dWidget.style.top)||live2dWidget.getBoundingClientRect().top;const next=clampLive2dVisualLeftTop(currentX,currentY,size/100);live2dWidget.style.setProperty("--live2d-x",`${next.x}px`);live2dWidget.style.setProperty("--live2d-y",`${next.y}px`);live2dWidget.style.left=`${next.x}px`;live2dWidget.style.top=`${next.y}px`;localStorage.setItem("live2dX",String(next.x));localStorage.setItem("live2dY",String(next.y))}if(live2dSizeInput)live2dSizeInput.value=String(size);if(live2dSizeValue)live2dSizeValue.textContent=`${size}%`;positionLive2dChrome({freezePanel});scheduleLive2dRelayout();return size};
+const positionLive2dChrome=({freezePanel=false}={})=>{
+  if(!live2dWidget)return;
+  const rect=live2dWidget.getBoundingClientRect();
+  const rightSpace=window.innerWidth-rect.right;
+  const leftSpace=rect.left;
+  const requiredLeftSpace=freezePanel?64:226;
+  const canPlaceRight=rightSpace>=64;
+  const canPlaceLeft=leftSpace>=requiredLeftSpace;
+  const previousSide=live2dWidget.dataset.controlsSide;
+  let placeRight=true;
+  if(previousSide==="right"&&canPlaceRight)placeRight=true;
+  else if(previousSide==="left"&&canPlaceLeft)placeRight=false;
+  else if(canPlaceRight&&!canPlaceLeft)placeRight=true;
+  else if(!canPlaceRight&&canPlaceLeft)placeRight=false;
+  else placeRight=rightSpace>=leftSpace;
+  live2dWidget.dataset.controlsSide=placeRight?"right":"left";
+  const toggleX=placeRight?rect.width+8:-52;
+  const toggleY=clamp(rect.height*0.42,84,Math.max(84,rect.height-116));
+  live2dWidget.style.setProperty("--live2d-toggle-x",`${toggleX}px`);
+  live2dWidget.style.setProperty("--live2d-toggle-y",`${toggleY}px`);
+  if(!freezePanel){
+    const panelX=placeRight?rect.width+12:-226;
+    live2dWidget.style.setProperty("--live2d-panel-x",`${panelX}px`);
+    live2dWidget.style.setProperty("--live2d-panel-y",`${toggleY+32}px`);
+  }
+};
+const settleLive2dChrome=({freezePanel=false,frames=3}={})=>{
+  let pending=Math.max(1,frames);
+  const tick=()=>{
+    positionLive2dChrome({freezePanel});
+    scheduleLive2dRelayout();
+    pending-=1;
+    if(pending>0)requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+};
+const setLive2dSizePercent=(value,{freezePanel=false}={})=>{
+  if(!live2dWidget)return normalizeLive2dSizePercent(value);
+  const size=normalizeLive2dSizePercent(value);
+  localStorage.setItem("live2dSize",String(size));
+  live2dWidget.style.setProperty("--live2d-size",String(size/100));
+  const custom=live2dWidget.classList.contains("live2d-custom-position");
+  if(custom){
+    const currentX=Number.parseFloat(live2dWidget.style.left)||live2dWidget.getBoundingClientRect().left,currentY=Number.parseFloat(live2dWidget.style.top)||live2dWidget.getBoundingClientRect().top;
+    const next=clampLive2dVisualLeftTop(currentX,currentY,size/100);
+    live2dWidget.style.setProperty("--live2d-x",`${next.x}px`);
+    live2dWidget.style.setProperty("--live2d-y",`${next.y}px`);
+    live2dWidget.style.left=`${next.x}px`;
+    live2dWidget.style.top=`${next.y}px`;
+    localStorage.setItem("live2dX",String(next.x));
+    localStorage.setItem("live2dY",String(next.y));
+  }
+  if(live2dSizeInput)live2dSizeInput.value=String(size);
+  if(live2dSizeValue)live2dSizeValue.textContent=`${size}%`;
+  positionLive2dChrome({freezePanel});
+  scheduleLive2dRelayout();
+  settleLive2dChrome({freezePanel,frames:3});
+  return size
+};
 const isLive2dSettingsTarget=(target)=>Boolean(target?.closest?.(".live2d-settings-toggle,.live2d-settings-panel"));
 const markLive2dControlsActive=()=>{live2dControlsActive=true};
 const unmarkLive2dControlsActive=()=>{live2dControlsActive=false};
@@ -429,8 +617,9 @@ const showLive2dSettingsButton=({keep=false}={})=>{
   if(!live2dWidget)return;
   live2dWidget.classList.add("live2d-settings-visible");
   clearTimeout(live2dSettingsTimer);
-  if(!keep)live2dSettingsTimer=setTimeout(hideLive2dSettingsButton,3000);
+  if(!keep)live2dSettingsTimer=setTimeout(hideLive2dSettingsButton,3600);
 };
+const setLive2dLoading=(loading)=>{if(live2dWidget)live2dWidget.classList.toggle("live2d-loading",Boolean(loading))};
 const setLive2dSettingsOpen=(open)=>{
   if(!live2dWidget)return;
   live2dWidget.classList.toggle("live2d-settings-open",open);
@@ -473,8 +662,8 @@ const sanitizeWaifuText=(text)=>{
   return /<script|<iframe|javascript:/i.test(clean)?"":clean;
 };
 const pick=(arr)=>arr[Math.floor(Math.random()*arr.length)];
-const showLive2dDialog=(text=pick(live2dMessages))=>{if(!live2dDialog)return;const clean=sanitizeWaifuText(text)||pick(live2dMessages);clearTimeout(dialogTimer);live2dDialog.textContent=clean;live2dDialog.classList.add("visible");dialogTimer=setTimeout(()=>live2dDialog.classList.remove("visible"),2600)};
-const showNextLive2dHoverDialog=(force=false)=>{const now=Date.now();if(!force&&now-lastLive2dHoverAt<350)return;lastLive2dHoverAt=now;const message=live2dHoverMessages[live2dHoverIndex++%live2dHoverMessages.length];showLive2dDialog(typeof message==="function"?message():message)};
+const showLive2dDialog=(text=pick(live2dMessages))=>{if(!live2dDialog||!live2dEnabled)return;const clean=sanitizeWaifuText(text)||pick(live2dMessages);clearTimeout(dialogTimer);live2dDialog.textContent=clean;live2dDialog.classList.add("visible");dialogTimer=setTimeout(()=>live2dDialog.classList.remove("visible"),2600)};
+const showNextLive2dHoverDialog=(force=false)=>{if(!live2dEnabled)return;const now=Date.now();if(!force&&now-lastLive2dHoverAt<350)return;lastLive2dHoverAt=now;const message=live2dHoverMessages[live2dHoverIndex++%live2dHoverMessages.length];showLive2dDialog(typeof message==="function"?message():message)};
 let clickTextSeq=0,clickTextForward=true;
 const quoteOrderToggle=document.getElementById("quote-order-toggle");
 if(quoteOrderToggle){
@@ -542,6 +731,27 @@ const applyLive2dSettings=()=>{
   scheduleLive2dRelayout();
 };
 applyLive2dSettings();
+let live2dInitStarted=false,live2dInitPromise=null;
+const ensureLive2dInitialized=()=>{if(live2dInitStarted)return live2dInitPromise||Promise.resolve();live2dInitStarted=true;live2dInitPromise=initLive2d();return live2dInitPromise};
+const refreshLive2dAfterShow=()=>{
+  const settle=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    settleLive2dChrome({frames:4});
+    setLive2dLoading(false);
+  }));
+  if(!live2dEnabled)return;
+  setLive2dLoading(true);
+  if(!live2dInitStarted){
+    Promise.resolve(ensureLive2dInitialized()).catch(()=>{}).finally(settle);
+    return;
+  }
+  if(typeof switchLive2dModel==="function"){
+    Promise.resolve(switchLive2dModel(getLive2dModelKey(localStorage.getItem("live2dModel"))))
+      .catch(()=>{})
+      .finally(settle);
+    return;
+  }
+  settle();
+};
 const initLive2d=async()=>{
   if(!live2dCanvas||!live2dWidget)return;
   if(!window.PIXI||!window.PIXI.live2d||!window.PIXI.live2d.Live2DModel){
@@ -641,20 +851,14 @@ const initLive2d=async()=>{
     const updateLive2dDialogAnchor=()=>{
       const w=live2dWidget.clientWidth,h=live2dWidget.clientHeight;
       if(!model||!w||!h)return;
-      let x=w*0.5,y=h*0.18;
-      try{
-        const bounds=model.getBounds?.();
-        if(bounds&&Number.isFinite(bounds.x)&&Number.isFinite(bounds.y)&&bounds.width>0&&bounds.height>0){
-          x=clamp(bounds.x+bounds.width*0.5,36,w-36);
-          y=clamp(bounds.y,48,h-8);
-        }
-      }catch{}
       const metrics=getLive2dMetrics();
       const dialogHalf=Math.min(110,Math.max(72,window.innerWidth*0.26));
-      const absoluteX=live2dWidget.getBoundingClientRect().left+metrics.offsetX+x*metrics.scale;
+      const rect=live2dWidget.getBoundingClientRect();
+      const absoluteX=rect.left+metrics.offsetX+metrics.visualWidth*0.5;
       const safeAbsoluteX=clamp(absoluteX,dialogHalf+LIVE2D_EDGE_MARGIN,window.innerWidth-dialogHalf-LIVE2D_EDGE_MARGIN);
-      live2dWidget.style.setProperty("--live2d-dialog-x",`${safeAbsoluteX-live2dWidget.getBoundingClientRect().left}px`);
-      live2dWidget.style.setProperty("--live2d-dialog-y",`${metrics.offsetY+y*metrics.scale}px`);
+      live2dWidget.style.setProperty("--live2d-dialog-x",`${safeAbsoluteX-rect.left}px`);
+      const modelHeadY=h*0.98-naturalHeight*model.scale.y;live2dWidget.style.setProperty("--live2d-dialog-y",`${modelHeadY}px`);
+      live2dWidget.style.setProperty("--live2d-dialog-shift","-50%");
       positionLive2dChrome({freezePanel:live2dControlsActive});
     };
     app.ticker.add(()=>{hideConfiguredModelMarks();applyManualFocus();updateLive2dDialogAnchor()},undefined,-100);
@@ -674,6 +878,7 @@ const initLive2d=async()=>{
       const safeKey=getLive2dModelKey(modelKey);
       const nextConfig=live2dModels[safeKey];
       const token=++loadToken;
+      setLive2dLoading(true);
       live2dWidget.classList.remove("live2d-hidden");
       try{
         const nextModel=await loadLive2dModel(nextConfig);
@@ -687,8 +892,11 @@ const initLive2d=async()=>{
         hideConfiguredModelMarks();
         applyLive2dSettings();
         layout();
+        settleLive2dChrome({frames:4});
+        requestAnimationFrame(()=>requestAnimationFrame(()=>setLive2dLoading(false)));
         if(live2dModelSelect)live2dModelSelect.value=safeKey;
       }catch(err){
+        setLive2dLoading(false);
         if(token===loadToken)live2dWidget.classList.add("live2d-hidden");
         console.warn("Live2D model load failed:",err);
       }
@@ -701,7 +909,7 @@ const initLive2d=async()=>{
     });
     window.addEventListener("resize",applyLive2dSettings);
     window.addEventListener("pointermove",e=>{
-      if(!model)return;
+      if(!model||!live2dEnabled)return;
       if(live2dControlsActive||isLive2dSettingsTarget(e.target))return;
       setManualFocusFromEvent(e);
       const inLive2dZone=isAroundLive2dWidget(e);
@@ -824,11 +1032,11 @@ const initLive2d=async()=>{
     console.warn("Live2D model load failed:",err);
   }
 };
-if(document.readyState==="complete")initLive2d();else window.addEventListener("load",initLive2d);
+const startLive2d=()=>{if(live2dEnabled)ensureLive2dInitialized()};if(document.readyState==="complete")startLive2d();else window.addEventListener("load",startLive2d);
 
 document.addEventListener("visibilitychange",()=>{if(document.hidden){siteWasHidden=true;return}if(siteWasHidden){siteWasHidden=false;setTimeout(()=>showLive2dDialog(live2dReturnMessage),260)}});
 let lastHashClickAt=0;
-const flashSection=(sec,delay=0)=>{if(!sec)return;window.setTimeout(()=>{sec.classList.remove("flash-highlight");sec.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());void sec.offsetWidth;const ring=document.createElement("span");ring.className="section-glow-ring";ring.setAttribute("aria-hidden","true");sec.appendChild(ring);sec.classList.add("flash-highlight");window.clearTimeout(sec._flashHighlightTimer);sec._flashHighlightTimer=window.setTimeout(()=>{sec.classList.remove("flash-highlight");ring.remove()},1300)},delay)};
+const flashSection=(sec,delay=0)=>{if(!sec)return;window.setTimeout(()=>{sec.classList.remove("flash-highlight");sec.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());void sec.offsetWidth;const ring=document.createElement("span");ring.className="section-glow-ring";ring.setAttribute("aria-hidden","true");sec.appendChild(ring);sec.classList.add("flash-highlight");window.clearTimeout(sec._flashHighlightTimer);sec._flashHighlightTimer=window.setTimeout(()=>{sec.classList.remove("flash-highlight");ring.remove()},3200)},delay)};
 const getHashSection=()=>{const id=window.location.hash?decodeURIComponent(window.location.hash.slice(1)):"";return id?document.getElementById(id):null};
 hashActionLinks.forEach(a=>a.addEventListener("click",()=>{const id=a.getAttribute("href"),sec=id&&id.startsWith("#")?document.getElementById(id.slice(1)):null;if(!sec)return;lastHashClickAt=Date.now();flashSection(sec,240)}));
 window.addEventListener("hashchange",()=>{if(Date.now()-lastHashClickAt<800)return;flashSection(getHashSection(),240)});

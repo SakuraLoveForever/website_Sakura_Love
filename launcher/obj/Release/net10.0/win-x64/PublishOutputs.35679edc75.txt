@@ -1,0 +1,5 @@
+E:\ACM\AI_Script\github\website_Sakura_Love\launcher\publish\index.html
+E:\ACM\AI_Script\github\website_Sakura_Love\launcher\publish\404.html
+E:\ACM\AI_Script\github\website_Sakura_Love\launcher\publish\styles.css
+E:\ACM\AI_Script\github\website_Sakura_Love\launcher\publish\script.js
+E:\ACM\AI_Script\github\website_Sakura_Love\launcher\publish\SakuraLoveLauncher.exe
