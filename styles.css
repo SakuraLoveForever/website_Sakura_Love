@@ -915,11 +915,12 @@ h1 {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
   opacity: 0;
-  transition: opacity 0.7s ease;
+  transition: opacity 0.25s ease;
 }
 
 .bg-layer.visible {
@@ -1680,7 +1681,7 @@ body.sidebar-collapsed .sidebar-theme-toggle:hover .sidebar-theme-icon {
 .section > p,
 .section > details,
 .section > .chips,
-.section > .music-library-shell,
+.section .music-library-shell,
 .section > .project-grid,
 .section > .project-scroll-viewport {
   width: min(var(--content), 92%);
@@ -1695,7 +1696,7 @@ body.sidebar-collapsed .sidebar-theme-toggle:hover .sidebar-theme-icon {
   padding-bottom: 32px;
 }
 
-#music-library > .music-library-shell {
+#music-library .music-library-shell {
   width: min(var(--content-wide), 92%);
 }
 
@@ -1754,6 +1755,16 @@ body.theme-dark .section p {
   gap: 16px;
 }
 
+.music-library-details {
+  border: none;
+  outline: none;
+}
+
+.music-library-details > summary {
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
 .music-library-head {
   display: flex;
   align-items: center;
@@ -1766,6 +1777,18 @@ body.theme-dark .section p {
   margin: 0;
   color: var(--music-text);
   font-size: 24px;
+}
+
+.music-chevron {
+  width: 20px;
+  height: 20px;
+  color: var(--music-muted);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.music-library-details[open] .music-chevron {
+  transform: rotate(180deg);
 }
 
 .music-now-title {
@@ -1861,14 +1884,14 @@ body.theme-dark .section p {
   display: block;
   width: 100%;
   aspect-ratio: 16/9;
-  border-radius: 8px;
+  border-radius: 14px;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: border-color 0.3s ease, opacity 0.3s ease;
+  border: none;
+  transition: opacity 0.3s ease;
 }
 
 .music-role-group.is-active .music-role-thumb-sm {
-  border-color: rgba(41, 151, 255, 0.35);
+  /* active 状态无边框，圆角保持不变 */
 }
 
 /* -- 角色信息 -- */
@@ -1909,25 +1932,18 @@ body.theme-dark .section p {
 
 /* ---- 双栏主体 ---- */
 .music-library-body {
-  display: flex;
+  display: grid;
+  grid-template-columns: 340px 1fr;
   gap: 20px;
-  align-items: stretch;
 }
 
 .music-library-left {
-  width: 340px;
-  flex: none;
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.12) transparent;
   padding: 4px 4px 0 0;
-  will-change: scroll-position;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-overflow-scrolling: touch;
-  contain: layout style;
 }
 
 .music-library-left::-webkit-scrollbar {
@@ -1940,12 +1956,8 @@ body.theme-dark .section p {
 }
 
 .music-library-right {
-  flex: 1;
   min-width: 0;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
 }
 
 .music-library-stage {
@@ -1953,16 +1965,13 @@ body.theme-dark .section p {
   aspect-ratio: 1/1;
   width: 100%;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
-  background: var(--canvas);
+  background: transparent;
   isolation: isolate;
-  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.35);
 }
 
 .music-library-stage .bg-layer {
-  background-color: transparent;
-  background-size: contain;
+  border-radius: 14px;
 }
 
 /* ---- 底部播放栏 ---- */
@@ -2232,6 +2241,7 @@ body.theme-dark .section p {
   border-radius: var(--panel-radius);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 26px rgba(41, 151, 255, 0.32);
   pointer-events: none;
+  opacity: 0;
   animation: sectionGlowRing 3s cubic-bezier(0.22, 1, 0.36, 1) 1;
 }
 
@@ -4580,7 +4590,7 @@ body.layout-mobile .section > h2,
 body.layout-mobile .section > p,
 body.layout-mobile .section > details,
 body.layout-mobile .section > .chips,
-body.layout-mobile .section > .music-library-shell,
+body.layout-mobile .section .music-library-shell,
 body.layout-mobile .section > .project-grid,
 body.layout-mobile .section > .project-scroll-viewport {
   width: min(430px, calc(100% - 32px));
@@ -4923,7 +4933,7 @@ body.layout-mobile .live2d-widget {
   .section > p,
   .section > details,
   .section > .chips,
-  .section > .music-library-shell,
+  .section .music-library-shell,
   .section > .project-grid,
   .section > .project-scroll-viewport {
     width: calc(100% - 32px);

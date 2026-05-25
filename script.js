@@ -168,13 +168,14 @@ const applyStyleSmooth=(style,afterApply=()=>{})=>{
   }
 };
 const applyLayoutMode=(mode)=>{const safe=mode==="mobile"?"mobile":"desktop";document.body.classList.toggle("layout-mobile",safe==="mobile");layoutModeButtons.forEach(button=>{const active=button.dataset.layoutMode===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});localStorage.setItem("layoutMode",safe)};
-const setBg=(role)=>{if(!bgLayerA||!bgLayerB)return;const r=bgFiles[role]?.length?role:"02",files=bgFiles[r],idx=(bgSeq[r]||0)%files.length;bgSeq[r]=(bgSeq[r]||0)+1;currentRole=r;_suppressSelectChange=true;if(bgCharacterSelect)bgCharacterSelect.value=r;localStorage.setItem("bgCharacter",r);const next=activeBgLayer===bgLayerA?bgLayerB:bgLayerA;next.style.backgroundImage=`url("assets/backgrounds/${r}/${files[idx]}")`;next.classList.add("visible");if(activeBgLayer)activeBgLayer.classList.remove("visible");activeBgLayer=next};
+const setBg=(role)=>{if(!bgLayerA||!bgLayerB)return;if(Date.now()-(setBg._ts||0)<250)return;setBg._ts=Date.now();const r=bgFiles[role]?.length?role:"02",files=bgFiles[r],idx=(bgSeq[r]||0)%files.length;bgSeq[r]=(bgSeq[r]||0)+1;currentRole=r;_suppressSelectChange=true;if(bgCharacterSelect)bgCharacterSelect.value=r;localStorage.setItem("bgCharacter",r);const prev=activeBgLayer,next=activeBgLayer===bgLayerA?bgLayerB:bgLayerA;next.classList.remove("visible");const show=()=>{next.classList.add("visible");if(prev)prev.classList.remove("visible");activeBgLayer=next;_applyStageClip(next);requestAnimationFrame(()=>syncMusicLibraryHeight())};next.src=`assets/backgrounds/${r}/${files[idx]}`;next.onload=show;next.onerror=show;if(next.complete)show()};
+const _applyStageClip=(img)=>{if(!img||!img.naturalWidth||!img.naturalHeight)return;const s=img.closest(".music-library-stage");if(!s)return;const sw=s.clientWidth,sh=s.clientHeight;if(!sw||!sh)return;const ir=img.naturalWidth/img.naturalHeight,sr=sw/sh;let dw,dh;ir>sr?(dw=sw,dh=sw/ir):(dh=sh,dw=sh*ir);const ox=(sw-dw)/2,oy=(sh-dh)/2;img.style.clipPath=`inset(${Math.round(oy)}px ${Math.round(ox)}px ${Math.round(oy)}px ${Math.round(ox)}px round 14px)`};bgLayerA?.addEventListener("load",function(){_applyStageClip(this)});bgLayerB?.addEventListener("load",function(){_applyStageClip(this)});window.addEventListener("resize",()=>{[bgLayerA,bgLayerB].forEach(_applyStageClip)},{passive:true});
 const nextRole=()=>{const start=bgRoleOrder.indexOf(currentRole);return bgRoleOrder[(start+1+bgRoleOrder.length)%bgRoleOrder.length]||"02"};
 const nextSceneRole=(role=currentRole)=>bgPlayMode==="all"?nextRole():(bgCount[role]?role:"02");
 let _durationCheckTimer=0;const ensureDuration=()=>{clearTimeout(_durationCheckTimer);if(!Number.isFinite(player.duration)||player.duration<=0){_durationCheckTimer=setTimeout(()=>{if(!Number.isFinite(player.duration)||player.duration<=0){const saved=player.currentTime;const onSeeked=()=>{player.removeEventListener("seeked",onSeeked);if(Number.isFinite(player.duration)&&player.duration>0){player.currentTime=Math.min(saved,player.duration||0);progress()}};player.addEventListener("seeked",onSeeked);player.currentTime=1e8}},1200)}};const playRole=(role)=>{if(!musicEnabled)return;const r=musicCount[role]?role:"02",count=musicCount[r],idx=((musicSeq[r]||0)%count)+1;musicSeq[r]=(musicSeq[r]||0)+1;player.src=`assets/music/${r}/${idx}.mp3`;if(musicSeekInput){musicSeekInput.value="0";musicSeekInput.max="100";musicSeekInput.style.setProperty("--seek","0%")}if(muteProgressArc)muteProgressArc.style.strokeDashoffset="100";progress();if(!isPagePaused)player.play().then(startMusicProgressLoop).catch(()=>{});ensureDuration()};
 const showScene=(role,{withMusic=false}={})=>{const r=bgCount[role]?role:"02";setBg(r);if(withMusic)playRole(r)};
 const scheduleBgOnly=()=>{clearInterval(bgTimer);if(!musicEnabled)bgTimer=setInterval(()=>showScene(nextSceneRole()),3000)};
-const applyBg=(on,role)=>{clearInterval(bgTimer);if(animeViewer)animeViewer.classList.toggle("is-viewer-off",!on);if(!bgLayerA||!bgLayerB)return;if(!on){player.pause();bgLayerA.classList.remove("visible");bgLayerB.classList.remove("visible");bgLayerA.style.backgroundImage="";bgLayerB.style.backgroundImage="";return}showScene(role,{withMusic:musicEnabled});scheduleBgOnly()};
+const applyBg=(on,role)=>{clearInterval(bgTimer);if(animeViewer)animeViewer.classList.toggle("is-viewer-off",!on);if(!bgLayerA||!bgLayerB)return;if(!on){player.pause();bgLayerA.classList.remove("visible");bgLayerB.classList.remove("visible");bgLayerA.removeAttribute("src");bgLayerB.removeAttribute("src");return}showScene(role,{withMusic:musicEnabled});scheduleBgOnly()};
 const playNext=()=>{if(!isViewerEnabled())return;const role=nextSceneRole(currentRole);showScene(role,{withMusic:musicEnabled})};const prevImageOnly=()=>{if(!isViewerEnabled())return;const r=bgCount[currentRole]?currentRole:"02";const files=bgFiles[r];bgSeq[r]=((bgSeq[r]||1)-2+files.length)%files.length;setBg(r)};const nextImageOnly=()=>{if(!isViewerEnabled())return;setBg(bgCount[currentRole]?currentRole:"02")};
 const updateMusicButtonState=()=>{if(!pageMuteToggleButton)return;const active=Boolean(player.src)&&!player.paused&&!isPagePaused;const label=currentLanguage==="en"?(isPagePaused?"Resume music":"Pause music"):(isPagePaused?"继续播放":"暂停播放");pageMuteToggleButton.classList.toggle("is-playing",active);pageMuteToggleButton.classList.toggle("muted",isPagePaused);pageMuteToggleButton.setAttribute("aria-pressed",String(isPagePaused));pageMuteToggleButton.setAttribute("aria-label",label);pageMuteToggleButton.title=label};
 let musicProgressTimer=0;
@@ -385,7 +386,7 @@ const setMusicLibraryTrack=(index,{autoplay=false,syncImage=false}={})=>{
   syncMusicLibraryActive();
   drawMusicLibraryProgress();
   if(syncImage&&track.role)setBg(track.role);
-  if(autoplay)musicLibraryAudio.play().catch(()=>{});
+  if(autoplay){isPagePaused=true;player.pause();musicLibraryAudio.play().catch(()=>{})}
 };
 const drawMusicLibraryProgress=()=>{
   if(!musicLibraryAudio)return;
@@ -445,9 +446,11 @@ const nextMusicLibraryTrack=()=>{
   if(index>=0)setMusicLibraryTrack(index,{autoplay:true});
 };
 const syncMusicLibraryHeight=()=>{
+  const details=document.querySelector(".music-library-details");
+  if(!details||!details.open)return;
   const left=document.querySelector(".music-library-left");
   const stage=document.querySelector(".music-library-stage");
-  if(left&&stage)left.style.maxHeight=stage.offsetHeight+"px";
+  if(left&&stage){const h=stage.offsetHeight;left.style.minHeight=h+"px";left.style.maxHeight=h+"px"}
 };
 const loadMusicLibrary=async()=>{
   if(!musicLibraryAudio||musicLibraryLoaded)return;
@@ -460,6 +463,8 @@ const loadMusicLibrary=async()=>{
   if(firstPlayable)setMusicLibraryTrack(getMusicTrackIndex(firstPlayable),{autoplay:false,syncImage:true});
   requestAnimationFrame(()=>{syncMusicLibraryHeight();requestAnimationFrame(()=>syncMusicLibraryHeight())});
 };
+const _musicDetails=document.querySelector(".music-library-details");
+if(_musicDetails)_musicDetails.addEventListener("toggle",()=>{if(_musicDetails.open)requestAnimationFrame(()=>{syncMusicLibraryHeight();requestAnimationFrame(()=>syncMusicLibraryHeight())})});
 if(musicLibraryAudio){
   musicLibraryAudio.volume=0.7;
   musicLibraryAudio.addEventListener("play",()=>{player.pause();isPagePaused=true;controls();updateMusicLibraryPlayState()});
