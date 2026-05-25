@@ -1,8 +1,6 @@
-## 项目介绍
 这是我的个人网站，汇集了我的精华项目，充斥着绚丽的背景和曼妙的BGM，恭迎莅临！！！
 
-![预览图](Clip_20260512_000233.png)
-![预览图](Clip_20260512_000105.png)
+<img width="2408" height="1512" alt="Clip_20260525_235909" src="https://github.com/user-attachments/assets/a0074b1d-8551-43cd-90d5-a356dc60d700" />
 
 ## 食用指南
 ### Github网址
