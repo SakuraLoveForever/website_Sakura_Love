@@ -1079,3 +1079,153 @@ requestAnimationFrame(animateScroll)}
 	    speedValue.textContent=speedSlider.value;
 	  });
 	}
+
+/* ==== Tech collapse — high-tech expand/collapse animation ==== */
+(function() {
+  const TECH_PANELS = '.about-panel, .about-sub-panel, .music-library-details';
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const animateCollapse = (details, open) => {
+    const inner = details.querySelector(':scope > .panel-inner');
+    if (!inner) return;
+
+    // Prevent double-trigger during animation
+    if (details.dataset.techAnimating === 'true') return;
+
+    // Reduced motion: instant toggle
+    if (reducedMotion) {
+      details.open = open;
+      return;
+    }
+
+    if (open) {
+      // Opening: set open first so content computes, then animate height
+      details.open = true;
+      details.dataset.techAnimating = 'true';
+
+      // Trigger tech visual effects
+      details.classList.add('tech-expanding');
+      spawnTechParticles(details);
+
+      const targetH = inner.scrollHeight;
+      inner.style.height = '0px';
+      inner.offsetHeight; // force reflow
+      inner.style.height = targetH + 'px';
+
+      inner.addEventListener('transitionend', function handler() {
+        inner.removeEventListener('transitionend', handler);
+        inner.style.height = '';
+        details.classList.remove('tech-expanding');
+        details.dataset.techAnimating = 'false';
+      });
+    } else {
+      // Closing: animate icons back in sync, then collapse height
+      details.dataset.techAnimating = 'true';
+      details.classList.add('tech-collapsing');
+
+      const startH = inner.scrollHeight;
+      inner.style.height = startH + 'px';
+      inner.offsetHeight; // force reflow
+      inner.style.height = '0px';
+
+      inner.addEventListener('transitionend', function handler() {
+        inner.removeEventListener('transitionend', handler);
+        details.open = false;
+        details.classList.remove('tech-collapsing');
+        details.dataset.techAnimating = 'false';
+      });
+    }
+  };
+
+  // Spawn tiny glowing particles near the panel on expand
+  const spawnTechParticles = (el) => {
+    const rect = el.getBoundingClientRect();
+    const count = 8;
+    for (let i = 0; i < count; i++) {
+      const particle = document.createElement('span');
+      particle.className = 'tech-particle';
+      particle.style.left = (10 + Math.random() * 80) + '%';
+      particle.style.top = (20 + Math.random() * 60) + '%';
+      particle.style.animationDelay = (i * 0.04) + 's';
+      el.appendChild(particle);
+      particle.addEventListener('animationend', () => particle.remove());
+    }
+  };
+
+  // Delegate summary clicks on tech panels
+  const init = () => {
+    document.addEventListener('click', function(e) {
+      const summary = e.target.closest('summary');
+      if (!summary) return;
+
+      const details = summary.closest(TECH_PANELS);
+      if (!details) return;
+
+      // Only handle if it has a .panel-inner (our wrapped ones)
+      if (!details.querySelector(':scope > .panel-inner')) return;
+
+      e.preventDefault();
+
+      if (details.open) {
+        animateCollapse(details, false);
+      } else {
+        animateCollapse(details, true);
+      }
+    });
+
+    // Handle keyboard activation (Enter/Space on summary)
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const summary = e.target.closest('summary');
+      if (!summary) return;
+      const details = summary.closest(TECH_PANELS);
+      if (!details || !details.querySelector(':scope > .panel-inner')) return;
+      e.preventDefault();
+      if (details.open) {
+        animateCollapse(details, false);
+      } else {
+        animateCollapse(details, true);
+      }
+    });
+
+    // Initialize: set initial state for pre-opened panels
+    document.querySelectorAll(TECH_PANELS).forEach(function(details) {
+      const inner = details.querySelector(':scope > .panel-inner');
+      if (!inner) return;
+      if (details.open) {
+        inner.style.height = 'auto';
+      } else {
+        inner.style.height = '0px';
+      }
+    });
+  };
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    init();
+  } else {
+    document.addEventListener('DOMContentLoaded', init);
+  }
+})();
+/* ==== Particle network background ==== */
+(function() {
+  var container = document.getElementById('particle-canvas');
+  if (!container || !window.ParticleNetwork) return;
+
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) return;
+
+  var options = {
+    particleColor: '#888',
+    background: 'assets/particle-bg.jpg',
+    interactive: true,
+    speed: 'medium',
+    density: 'high'
+  };
+
+  new ParticleNetwork(container, options);
+
+  // Library sets container to position:relative, restore to fixed
+  container.style.position = 'fixed';
+  container.style.inset = '0';
+})();

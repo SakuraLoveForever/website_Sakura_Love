@@ -43,6 +43,7 @@
     <link rel="stylesheet" href="styles.css?v=202605241548" />
   </head>
   <body>
+    <div id="particle-canvas"></div>
     <script>
       (function () {
         var styleMap = {
@@ -154,31 +155,42 @@
           <section id="about" class="section">
             <h2>关于我</h2>
             <details class="about-panel">
-              <summary>学习经历</summary>
-              <ul class="about-list">
-                <li><span class="about-key">小学</span><span class="about-value">泉州市安溪县实验小学</span></li>
-                <li><span class="about-key">初中</span><span class="about-value">福州市金山中学</span></li>
-                <li><span class="about-key">高中</span><span class="about-value">福建省福州第一中学</span></li>
-                <li><span class="about-key">本科</span><span class="about-value">福州大学（机械工程及自动化）</span></li>
-                <li><span class="about-key">硕士</span><span class="about-value">厦门大学（计算机科学与技术）</span></li>
-              </ul>
+              <summary><span class="summary-icon"></span>学习经历</summary>
+              <div class="panel-inner">
+                <ul class="about-list">
+                  <li><span class="about-key">小学</span><span class="about-value">泉州市安溪县实验小学</span></li>
+                  <li><span class="about-key">初中</span><span class="about-value">福州市金山中学</span></li>
+                  <li><span class="about-key">高中</span><span class="about-value">福建省福州第一中学</span></li>
+                  <li><span class="about-key">本科</span><span class="about-value">福州大学（机械工程及自动化）</span></li>
+                  <li><span class="about-key">硕士</span><span class="about-value">厦门大学（计算机科学与技术）</span></li>
+                </ul>
+                <span class="scan-line"></span>
+              </div>
             </details>
             <details class="about-panel awards-panel">
-              <summary>获奖经历</summary>
+              <summary><span class="summary-icon"></span>获奖经历</summary>
+              <div class="panel-inner">
               <details class="about-sub-panel" open>
-                <summary>机械类</summary>
+                <summary><span class="summary-icon"></span>机械类</summary>
+                <div class="panel-inner">
                 <ul class="about-list">
                   <li><span class="about-key">奖项</span><span class="about-value">第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类-设计验证类）全国二等奖。</span></li>
                 </ul>
+                <span class="scan-line"></span>
+                </div>
               </details>
               <details class="about-sub-panel" open>
-                <summary>数学类</summary>
+                <summary><span class="summary-icon"></span>数学类</summary>
+                <div class="panel-inner">
                 <ul class="about-list">
                   <li><span class="about-key">奖项</span><span class="about-value">2024年全国大学生数学竞赛非数学A类福建省省一等奖。</span></li>
                 </ul>
+                <span class="scan-line"></span>
+                </div>
               </details>
               <details class="about-sub-panel" open>
-                <summary>计算机程序设计类</summary>
+                <summary><span class="summary-icon"></span>计算机程序设计类</summary>
+                <div class="panel-inner">
                 <ul class="about-list">
                   <li><span class="about-key">2024</span><span class="about-value">第49届ICPC国际大学生程序设计竞赛区域赛上海站铜牌。</span></li>
                   <li><span class="about-key">2025</span><span class="about-value">2025年中国大学生程序设计竞赛CCPC福建省邀请赛银奖。</span></li>
@@ -186,7 +198,11 @@
                   <li><span class="about-key">2025</span><span class="about-value">2025年百度之星程序设计大赛省赛银奖。</span></li>
                   <li><span class="about-key">2025</span><span class="about-value">2025年蓝桥杯C++A组福建省省一等奖，全国个人三等奖。</span></li>
                 </ul>
+                <span class="scan-line"></span>
+                </div>
               </details>
+              <span class="scan-line"></span>
+              </div>
             </details>
           </section>
 
@@ -257,6 +273,7 @@
                 <h2>音乐收藏</h2>
                 <svg class="music-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </summary>
+              <div class="panel-inner">
               <div class="music-library-shell">
 
                 <div class="music-library-body">
@@ -311,6 +328,7 @@
 
                 <p id="music-library-source" class="music-track-source"></p>
                 <audio id="music-library-audio" preload="metadata"></audio>
+              </div>
               </div>
             </details>
           </section>
@@ -722,6 +740,7 @@ var quotesData={
 window.quotesData=quotesData;
 </script>
 
+    <script src="particle-network.min.js"></script>
     <script src="script.js?v=202605241548"></script>
 
     <script>

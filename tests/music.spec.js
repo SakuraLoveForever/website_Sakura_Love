@@ -4,6 +4,12 @@ test.describe('音乐收藏模块', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#music-library');
     await page.waitForSelector('#music-library');
+    // Expand music library if collapsed
+    const details = page.locator('.music-library-details');
+    if (await details.isVisible() && !(await details.evaluate(el => el.open))) {
+      await page.locator('.music-library-head').click();
+      await page.waitForTimeout(500);
+    }
   });
 
   test('音乐收藏区域完整渲染', async ({ page }) => {

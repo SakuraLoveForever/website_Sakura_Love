@@ -6,83 +6,45 @@
     <title>404 | Sakura_Love</title>
     <meta name="description" content="页面不存在，玩一局围住小猫再返回主页。" />
     <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; }
       body {
-        margin: 0;
-        min-height: 100%;
-      }
-
-      body {
-        display: flex;
-        min-height: 100vh;
-        align-items: center;
-        justify-content: center;
-        padding: 32px 16px;
-        background: #eeeeee;
-        color: #1d1d1f;
+        display: flex; min-height: 100vh; align-items: center; justify-content: center;
+        padding: 32px 16px; background: #eeeeee; color: #1d1d1f;
         font-family: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       }
+      .not-found { width: min(720px, 100%); text-align: center; }
+      .not-found h1 { margin: 0 0 8px; font-size: clamp(42px, 10vw, 76px); line-height: 1; }
+      .not-found p { margin: 6px 0; color: #555555; font-size: clamp(17px, 3.8vw, 24px); line-height: 1.45; }
 
-      .not-found {
-        width: min(720px, 100%);
-        text-align: center;
-      }
+      #catch-the-cat { margin-top: 24px; display: flex; flex-direction: column; align-items: center; }
 
-      .not-found h1 {
-        margin: 0 0 8px;
-        font-size: clamp(42px, 10vw, 76px);
-        line-height: 1;
-      }
+      canvas { display: block; cursor: pointer; border-radius: 12px; touch-action: manipulation; }
 
-      .not-found p {
-        margin: 6px 0;
-        color: #555555;
-        font-size: clamp(17px, 3.8vw, 24px);
-        line-height: 1.45;
+      #game-status {
+        margin-bottom: 12px; font-size: 17px; font-weight: 600; min-height: 26px;
+        color: #333; transition: color 0.3s;
       }
+      #game-status.win { color: #2e7d32; }
+      #game-status.lose { color: #c62828; }
 
-      #catch-the-cat {
-        width: 100%;
-        margin-top: 28px;
-        overflow: hidden;
-        text-align: center;
+      #game-reset {
+        margin-top: 10px; padding: 8px 28px; font-size: 15px; font-weight: 600;
+        border: 2px solid #ccc; border-radius: 20px; background: #fff; color: #555;
+        cursor: pointer; transition: all 0.2s;
       }
+      #game-reset:hover { border-color: #2388d9; color: #2388d9; }
 
       .home-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 18px;
-        color: #2388d9;
-        font-size: 22px;
-        line-height: 1.2;
-        text-decoration: none;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        margin-top: 20px; color: #2388d9; font-size: 22px; line-height: 1.2; text-decoration: none;
       }
-
-      .home-link:hover {
-        color: #006fd6;
-        text-decoration: underline;
-      }
-
-      .home-link img {
-        width: 28px;
-        height: 28px;
-      }
+      .home-link:hover { color: #006fd6; text-decoration: underline; }
+      .home-link img { width: 28px; height: 28px; }
 
       @media (max-width: 520px) {
-        body {
-          align-items: flex-start;
-          padding-top: 24px;
-        }
-
-        .home-link {
-          font-size: 18px;
-        }
+        body { align-items: flex-start; padding-top: 24px; }
+        .home-link { font-size: 18px; }
       }
     </style>
   </head>
@@ -92,26 +54,313 @@
       <p>温馨提醒：您访问的页面不存在或已经被删除。</p>
       <p>先玩一局《围住小猫》吧。</p>
 
-      <div id="catch-the-cat" aria-label="围住小猫小游戏"></div>
+      <div id="catch-the-cat" aria-label="围住小猫小游戏">
+        <div id="game-status">点击小圆点，围住小猫 😺</div>
+        <canvas id="game-canvas" aria-label="游戏棋盘"></canvas>
+        <button id="game-reset" type="button">重新开局</button>
+      </div>
 
-      <a class="home-link" href="/" title="返回主页">
-        <img src="/assets/404-cat/images/home2.png" alt="" />
+      <a class="home-link" href="index.html" title="返回主页">
+        <img src="assets/404-cat/images/home2.png" alt="" />
         <span>返回主页</span>
       </a>
     </main>
 
-    <script src="/assets/404-cat/js/phaser.min.js"></script>
-    <script src="/assets/404-cat/js/catch-the-cat.js"></script>
     <script>
-      window.game = new CatchTheCatGame({
-        w: 11,
-        h: 11,
-        r: 20,
-        backgroundColor: 0xffffff,
-        parent: "catch-the-cat",
-        statusBarAlign: "center",
-        credit: "yansheng836/404pages"
+    (function() {
+      var W = 11, H = 11, R = 18, PAD = 30;
+      var canvas = document.getElementById("game-canvas");
+      var ctx = canvas.getContext("2d");
+      var statusEl = document.getElementById("game-status");
+      var resetBtn = document.getElementById("game-reset");
+
+      var SQRT3 = Math.sqrt(3);
+      var DX = 2 * R, DY = R * SQRT3;
+      var gridW = PAD * 2 + (W - 1) * DX + R * 2;
+      var gridH = PAD * 2 + (H - 1) * DY + R * 2;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = gridW * dpr;
+      canvas.height = gridH * dpr;
+      canvas.style.width = gridW + "px";
+      canvas.style.height = gridH + "px";
+      ctx.scale(dpr, dpr);
+
+      var state = "playing"; // playing | win | lose
+      var catI = 5, catJ = 5;
+      var walls = [];
+      for (var i = 0; i < W; i++) { walls[i] = []; for (var j = 0; j < H; j++) walls[i][j] = false; }
+
+      // --- Helpers ---
+      function getXY(i, j) {
+        var cx = PAD + R + i * DX;
+        var cy = PAD + R + j * DY;
+        if (j % 2 === 1) cx += R;
+        return { x: cx, y: cy };
+      }
+
+      function getNeighbors(i, j) {
+        var even = j % 2 === 0;
+        var offsets;
+        if (even) {
+          offsets = [[1,0],[0,-1],[-1,-1],[-1,0],[-1,1],[0,1]];
+        } else {
+          offsets = [[1,0],[1,-1],[0,-1],[-1,0],[0,1],[1,1]];
+        }
+        var result = [];
+        for (var k = 0; k < 6; k++) {
+          var ni = i + offsets[k][0], nj = j + offsets[k][1];
+          if (ni >= 0 && ni < W && nj >= 0 && nj < H) result.push({ i: ni, j: nj });
+        }
+        return result;
+      }
+
+      function catAtEdge() {
+        return catI === 0 || catI === W - 1 || catJ === 0 || catJ === H - 1;
+      }
+
+      // BFS from edge: all accessible edge cells
+      function findBestMove() {
+        var visited = [];
+        for (var i = 0; i < W; i++) { visited[i] = []; for (var j = 0; j < H; j++) visited[i][j] = -1; }
+
+        var queue = [];
+        // Seed with edge cells that are reachable
+        for (var i = 0; i < W; i++) {
+          for (var j = 0; j < H; j++) {
+            if (i === 0 || i === W - 1 || j === 0 || j === H - 1) {
+              if (!walls[i][j]) {
+                queue.push({ i: i, j: j, dist: 0 });
+                visited[i][j] = 0;
+              }
+            }
+          }
+        }
+
+        var head = 0;
+        while (head < queue.length) {
+          var cur = queue[head++];
+          var nbs = getNeighbors(cur.i, cur.j);
+          for (var k = 0; k < nbs.length; k++) {
+            var nb = nbs[k];
+            if (!walls[nb.i][nb.j] && visited[nb.i][nb.j] === -1) {
+              visited[nb.i][nb.j] = cur.dist + 1;
+              queue.push({ i: nb.i, j: nb.j, dist: cur.dist + 1 });
+            }
+          }
+        }
+
+        // Cat picks the neighbor with smallest distance to edge (farthest from trapped)
+        var catNbs = getNeighbors(catI, catJ);
+        var best = null, bestDist = Infinity;
+        for (var k = 0; k < catNbs.length; k++) {
+          var nb = catNbs[k];
+          if (!walls[nb.i][nb.j] && visited[nb.i][nb.j] !== -1 && visited[nb.i][nb.j] < bestDist) {
+            bestDist = visited[nb.i][nb.j];
+            best = nb;
+          }
+        }
+        return best; // null if no move (cat is trapped)
+      }
+
+      // --- Rendering ---
+      function draw() {
+        ctx.clearRect(0, 0, gridW, gridH);
+
+        // Grid lines
+        ctx.strokeStyle = "#e0e0e0";
+        ctx.lineWidth = 0.5;
+        for (var i = 0; i < W; i++) {
+          for (var j = 0; j < H; j++) {
+            var pos = getXY(i, j);
+            var nbs = getNeighbors(i, j);
+            for (var k = 0; k < nbs.length; k++) {
+              var np = getXY(nbs[k].i, nbs[k].j);
+              ctx.beginPath();
+              ctx.moveTo(pos.x, pos.y);
+              ctx.lineTo(np.x, np.y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Cells
+        for (var i = 0; i < W; i++) {
+          for (var j = 0; j < H; j++) {
+            var pos = getXY(i, j);
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, R * 0.82, 0, Math.PI * 2);
+
+            if (walls[i][j]) {
+              // Wall: dark filled circle
+              ctx.fillStyle = "#455a64";
+              ctx.fill();
+              ctx.strokeStyle = "#37474f";
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            } else {
+              // Empty cell: light circle
+              ctx.fillStyle = "#fafafa";
+              ctx.fill();
+              ctx.strokeStyle = "#bdbdbd";
+              ctx.lineWidth = 1.5;
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Cat
+        var catPos = getXY(catI, catJ);
+        // Cat body
+        ctx.beginPath();
+        ctx.arc(catPos.x, catPos.y, R * 0.7, 0, Math.PI * 2);
+        ctx.fillStyle = "#ff9800";
+        ctx.fill();
+        ctx.strokeStyle = "#e65100";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // Cat ears
+        var earR = R * 0.3;
+        ctx.beginPath();
+        ctx.arc(catPos.x - R * 0.4, catPos.y - R * 0.5, earR, 0, Math.PI * 2);
+        ctx.arc(catPos.x + R * 0.4, catPos.y - R * 0.5, earR, 0, Math.PI * 2);
+        ctx.fillStyle = "#ff9800";
+        ctx.fill();
+        ctx.strokeStyle = "#e65100";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Cat eyes
+        ctx.fillStyle = "#333";
+        ctx.beginPath();
+        ctx.arc(catPos.x - R * 0.2, catPos.y - R * 0.15, R * 0.11, 0, Math.PI * 2);
+        ctx.arc(catPos.x + R * 0.2, catPos.y - R * 0.15, R * 0.11, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cat nose
+        ctx.fillStyle = "#e91e63";
+        ctx.beginPath();
+        ctx.arc(catPos.x, catPos.y + R * 0.05, R * 0.08, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cat mouth
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(catPos.x, catPos.y + R * 0.1);
+        ctx.lineTo(catPos.x - R * 0.15, catPos.y + R * 0.28);
+        ctx.moveTo(catPos.x, catPos.y + R * 0.1);
+        ctx.lineTo(catPos.x + R * 0.15, catPos.y + R * 0.28);
+        ctx.stroke();
+
+        // Whiskers
+        ctx.strokeStyle = "#666";
+        ctx.lineWidth = 0.8;
+        for (var s = -1; s <= 1; s += 2) {
+          ctx.beginPath();
+          ctx.moveTo(catPos.x + s * R * 0.15, catPos.y - R * 0.05);
+          ctx.lineTo(catPos.x + s * R * 0.7, catPos.y - R * 0.25);
+          ctx.moveTo(catPos.x + s * R * 0.15, catPos.y + R * 0.05);
+          ctx.lineTo(catPos.x + s * R * 0.7, catPos.y - R * 0.05);
+          ctx.moveTo(catPos.x + s * R * 0.15, catPos.y + R * 0.12);
+          ctx.lineTo(catPos.x + s * R * 0.65, catPos.y + R * 0.2);
+          ctx.stroke();
+        }
+      }
+
+      function setStatus(msg, cls) {
+        statusEl.textContent = msg;
+        statusEl.className = cls || "";
+      }
+
+      // --- Random walls ---
+      function randomWalls() {
+        for (var n = 0; n < 8; n++) {
+          var ri = Math.floor(Math.random() * W);
+          var rj = Math.floor(Math.random() * H);
+          if (ri === catI && rj === catJ) continue;
+          walls[ri][rj] = true;
+        }
+      }
+
+      // --- Reset ---
+      function reset() {
+        for (var i = 0; i < W; i++)
+          for (var j = 0; j < H; j++)
+            walls[i][j] = false;
+        catI = 5; catJ = 5;
+        state = "playing";
+        randomWalls();
+        setStatus("点击小圆点，围住小猫 😺");
+        draw();
+      }
+
+      // --- Player click ---
+      canvas.addEventListener("click", function(e) {
+        if (state !== "playing") { setStatus("游戏已结束，点击「重新开局」再来一局 🎮"); return; }
+
+        var rect = canvas.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var my = e.clientY - rect.top;
+
+        // Find clicked cell
+        var clickedI = -1, clickedJ = -1, minDist = Infinity;
+        for (var i = 0; i < W; i++) {
+          for (var j = 0; j < H; j++) {
+            var pos = getXY(i, j);
+            var dx = mx - pos.x, dy = my - pos.y;
+            var dist = dx * dx + dy * dy;
+            if (dist < minDist) { minDist = dist; clickedI = i; clickedJ = j; }
+          }
+        }
+
+        if (clickedI < 0 || minDist > R * R * 2.5) return;
+        if (walls[clickedI][clickedJ]) { setStatus("这里已经是墙了 🧱"); return; }
+        if (clickedI === catI && clickedJ === catJ) { setStatus("小猫在这里！不能点击 😾"); return; }
+
+        // Place wall
+        walls[clickedI][clickedJ] = true;
+
+        // Check if cat is already trapped
+        var move = findBestMove();
+        if (!move) {
+          state = "win";
+          setStatus("🎉 小猫无路可走，你赢了！", "win");
+          draw();
+          return;
+        }
+
+        // Check if cat is at edge (shouldn't normally happen on player's turn)
+        if (catAtEdge()) {
+          state = "lose";
+          setStatus("😿 小猫已经跑到边缘了，你输了", "lose");
+          draw();
+          return;
+        }
+
+        // Cat moves
+        catI = move.i;
+        catJ = move.j;
+        draw();
+
+        // Check after cat moves
+        if (catAtEdge()) {
+          state = "lose";
+          setStatus("😿 小猫跑到了地图边缘，你输了", "lose");
+        }
       });
+
+      resetBtn.addEventListener("click", reset);
+
+      // --- Keyboard ---
+      document.addEventListener("keydown", function(e) {
+        if (e.key === "r" || e.key === "R") reset();
+      });
+
+      randomWalls();
+      draw();
+    })();
     </script>
   </body>
 </html>
