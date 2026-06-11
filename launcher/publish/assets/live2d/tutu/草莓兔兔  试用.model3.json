@@ -3,11 +3,11 @@
 	"FileReferences": {
 		"Moc": "草莓兔兔  试用.moc3",
 		"Textures": [
-			"草莓兔兔  试用.4096/texture_00.png",
-			"草莓兔兔  试用.4096/texture_01.png",
-			"草莓兔兔  试用.4096/texture_02.png",
-			"草莓兔兔  试用.4096/texture_03.png",
-			"草莓兔兔  试用.4096/texture_04.png"
+			"草莓兔兔  试用.2048/texture_00.webp",
+			"草莓兔兔  试用.2048/texture_01.webp",
+			"草莓兔兔  试用.2048/texture_02.webp",
+			"草莓兔兔  试用.2048/texture_03.webp",
+			"草莓兔兔  试用.2048/texture_04.webp"
 		],
 		"Physics": "草莓兔兔  试用.physics3.json",
 		"DisplayInfo": "草莓兔兔  试用.cdi3.json"

@@ -20,6 +20,7 @@ let activeDesignStyleKey=localStorage.getItem("stylePreset")||"apple";
 let activeDesignStyleClass=styleMap[activeDesignStyleKey]||styleMap.apple;
 const live2dModels={
   tutu:{name:"草莓兔兔",path:"assets/live2d/tutu/草莓兔兔  试用.model3.json",scale:0.92,watermarkParam:"Param261"},
+  designGenius:{name:"设计天才·白",path:"live2d-widget-v3-main/Resources/model/DesignGenius/Design_genius(1).model3.json",scale:0.92},
   mao:{name:"Mao",path:"live2d-widget-v3-main/Resources/model/Mao/Mao.model3.json",scale:0.92},
   hiyori:{name:"Hiyori",path:"live2d-widget-v3-main/Resources/model/Hiyori/Hiyori.model3.json",scale:0.92},
   haru:{name:"Haru",path:"live2d-widget-v3-main/Resources/model/Haru/Haru.model3.json",scale:0.92},
@@ -318,15 +319,18 @@ const renderTrackList=(listEl,tracks=[])=>{
     card.dataset.role=role;
 
     // 头像
+    const thumbWrap=document.createElement("div");
+    thumbWrap.className="music-role-thumb-wrap";
     const img=document.createElement("img");
     img.className="music-role-thumb-sm";
     const firstBg=bgFiles[role]?.[0]||"1.jpg";
     img.src=`assets/backgrounds/${role}/${firstBg}`;
     img.alt=group.roleName;
-    img.loading="lazy";
+    img.loading="eager";
     img.onerror=function(){this.style.opacity="0.3"};
+    thumbWrap.appendChild(img);
 
-    // 信息行：名字 + 歌曲数
+    // 信息行：名字 + 歌曲数 + 图片数
     const info=document.createElement("div");
     info.className="music-role-info";
 
@@ -335,13 +339,22 @@ const renderTrackList=(listEl,tracks=[])=>{
     nameEl.textContent=group.roleName;
     nameEl.title=group.roleName;
 
-    const countEl=document.createElement("span");
-    countEl.className="music-role-count";
-    countEl.textContent=`${group.tracks.length}首`;
+    const counts=document.createElement("span");
+    counts.className="music-role-counts";
 
+    const songCount=document.createElement("span");
+    songCount.className="music-role-count";
+    songCount.textContent=`${group.tracks.length}首`;
+
+    const imgCount=document.createElement("span");
+    imgCount.className="music-role-img-count";
+    imgCount.textContent=`${bgCount[role]||0}张`;
+
+    counts.appendChild(songCount);
+    counts.appendChild(imgCount);
     info.appendChild(nameEl);
-    info.appendChild(countEl);
-    card.appendChild(img);
+    info.appendChild(counts);
+    card.appendChild(thumbWrap);
     card.appendChild(info);
 
     // 点击卡片：切换角色并播放第一首曲目
@@ -445,6 +458,10 @@ const loadMusicLibrary=async()=>{
   syncMusicTrackGroups();
   setMusicLibraryStatus(`${musicLocalTracks.length} 首`);
   renderMusicLibraryList();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const _md=document.querySelector(".music-library-details");
+    if(_md&&!_md.open){_md.open=true;_md.offsetHeight;_md.open=false}
+  }));
   const firstPlayable=musicLibraryTracks.find(track=>track.audioUrl);
   if(firstPlayable)setMusicLibraryTrack(getMusicTrackIndex(firstPlayable),{autoplay:false,syncImage:true});
   requestAnimationFrame(()=>{syncMusicLibraryHeight();requestAnimationFrame(()=>syncMusicLibraryHeight())});
@@ -615,6 +632,7 @@ const setLive2dSettingsOpen=(open)=>{
 };
 if(live2dSettingsToggle)live2dSettingsToggle.addEventListener("click",e=>{
   e.stopPropagation();
+  if(speedPanel&&!speedPanel.hidden){speedPanel.hidden=true;speedToggle&&speedToggle.setAttribute("aria-expanded","false")}
   setLive2dSettingsOpen(!live2dWidget?.classList.contains("live2d-settings-open"));
 });
 if(live2dSettingsPanel){
@@ -742,6 +760,11 @@ const initLive2d=async()=>{
     return;
   }
   try{
+    const _preloadKey=getLive2dModelKey(localStorage.getItem("live2dModel"));
+    const _preloadConfig=live2dModels[_preloadKey];
+    let _preloadedModel=null;
+    const _modelPreloadPromise=_preloadConfig?loadLive2dModel(_preloadConfig).then(m=>{_preloadedModel=m}).catch(()=>null):Promise.resolve(null);
+    if(!live2dWidget.clientWidth||!live2dWidget.clientHeight)await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     const app=new PIXI.Application({view:live2dCanvas,autoStart:true,transparent:true,backgroundAlpha:0,width:live2dWidget.clientWidth,height:live2dWidget.clientHeight,antialias:true,resolution:window.devicePixelRatio||1,autoDensity:true,preserveDrawingBuffer:true});
     let model=null,modelConfig=null,naturalWidth=0,naturalHeight=0,loadToken=0,manualFocusPoint={nx:0,ny:0};
     const setModelParameter=(id,value)=>{
@@ -863,27 +886,62 @@ const initLive2d=async()=>{
       updateLive2dDialogAnchor();
     };
     live2dRelayout=layout;
+    let _firstSwitch=true;
     switchLive2dModel=async(modelKey)=>{
       const safeKey=getLive2dModelKey(modelKey);
+      if(modelConfig===live2dModels[safeKey]&&model)return;
       const nextConfig=live2dModels[safeKey];
       const token=++loadToken;
       live2dWidget.classList.remove("live2d-hidden");
       try{
-        const nextModel=await loadLive2dModel(nextConfig);
+        let nextModel;
+        if(_firstSwitch&&safeKey===_preloadKey&&_preloadedModel){
+          _firstSwitch=false;await _modelPreloadPromise;nextModel=_preloadedModel;_preloadedModel=null;
+        }else{
+          _firstSwitch=false;nextModel=await loadLive2dModel(nextConfig);
+        }
         if(token!==loadToken){nextModel.destroy?.();return}
-        if(model){app.stage.removeChild(model);model.destroy?.()}
+        const prevModel=model;
         model=nextModel;
         modelConfig=nextConfig;
         naturalWidth=model.width;
         naturalHeight=model.height;
-        app.stage.addChild(model);
         hideConfiguredModelMarks();
-        applyLive2dSettings();
-        layout();
-        settleLive2dChrome({frames:4});
+        {
+          const w=live2dWidget.clientWidth,h=live2dWidget.clientHeight;
+          if(model&&w&&h&&naturalWidth&&naturalHeight){
+            app.renderer.resolution=Math.min(2,window.devicePixelRatio||1);
+            app.renderer.resize(w,h);
+            const s=Math.min(w/naturalWidth,h/naturalHeight)*(modelConfig.scale||0.92);
+            model.scale.set(s,s);
+            model.anchor.set(0.5,1);
+            model.position.set(w*0.5,h*0.98);
+          }
+        }
+        if(prevModel){
+          const _fadeOut=prevModel,_fadeIn=model;
+          _fadeIn.alpha=0;
+          app.stage.addChild(_fadeIn);
+          let _elapsed=0;
+          const _fadeTick=()=>{
+            _elapsed+=app.ticker.deltaMS;
+            const t=Math.min(1,_elapsed/180);
+            const ease=t>=1?1:1-Math.pow(2,-10*t);
+            _fadeIn.alpha=ease;
+            if(t>=1){
+              app.ticker.remove(_fadeTick);
+              if(_fadeOut.parent)app.stage.removeChild(_fadeOut);
+              _fadeOut.destroy?.();
+              _fadeIn.alpha=1;
+            }
+          };
+          app.ticker.add(_fadeTick);
+        }else{
+          app.stage.addChild(model);
+        }
         if(live2dModelSelect)live2dModelSelect.value=safeKey;
       }catch(err){
-        if(token===loadToken)live2dWidget.classList.add("live2d-hidden");
+        if(token===loadToken&&!model)live2dWidget.classList.add("live2d-hidden");
         console.warn("Live2D model load failed:",err);
       }
     };
@@ -1023,11 +1081,11 @@ const initLive2d=async()=>{
     console.warn("Live2D model load failed:",err);
   }
 };
-const startLive2d=()=>{if(live2dEnabled)ensureLive2dInitialized()};if(document.readyState==="complete")startLive2d();else window.addEventListener("load",startLive2d);
+const startLive2d=()=>{if(live2dEnabled)ensureLive2dInitialized()};startLive2d();window.addEventListener("load",startLive2d,{once:true});
 
 document.addEventListener("visibilitychange",()=>{if(document.hidden){siteWasHidden=true;return}if(siteWasHidden){siteWasHidden=false;setTimeout(()=>showLive2dDialog(live2dReturnMessage),260)}});
 let lastHashClickAt=0;
-const flashSection=(sec,delay=0)=>{if(!sec)return;window.setTimeout(()=>{sec.classList.remove("flash-highlight");sec.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());void sec.offsetWidth;const ring=document.createElement("span");ring.className="section-glow-ring";ring.setAttribute("aria-hidden","true");sec.appendChild(ring);sec.classList.add("flash-highlight");window.clearTimeout(sec._flashHighlightTimer);sec._flashHighlightTimer=window.setTimeout(()=>{sec.classList.remove("flash-highlight");ring.remove()},3200)},delay)};
+const flashSection=(sec,delay=0)=>{if(!sec)return;window.setTimeout(()=>{const isHero=sec.classList.contains("hero");const ringParent=isHero?(sec.querySelector(".hero-inner")||sec):sec;sec.classList.remove("flash-highlight");if(isHero&&ringParent!==sec)ringParent.classList.remove("flash-highlight");ringParent.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());sec.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());void sec.offsetWidth;const ring=document.createElement("span");ring.className="section-glow-ring";ring.setAttribute("aria-hidden","true");ringParent.appendChild(ring);sec.classList.add("flash-highlight");if(isHero&&ringParent!==sec)ringParent.classList.add("flash-highlight");window.clearTimeout(sec._flashHighlightTimer);sec._flashHighlightTimer=window.setTimeout(()=>{sec.classList.remove("flash-highlight");if(isHero&&ringParent!==sec)ringParent.classList.remove("flash-highlight");ring.remove()},3200)},delay)};
 const getHashSection=()=>{const id=window.location.hash?decodeURIComponent(window.location.hash.slice(1)):"";return id?document.getElementById(id):null};
 hashActionLinks.forEach(a=>a.addEventListener("click",()=>{const id=a.getAttribute("href"),sec=id&&id.startsWith("#")?document.getElementById(id.slice(1)):null;if(!sec)return;lastHashClickAt=Date.now();flashSection(sec,240)}));
 window.addEventListener("hashchange",()=>{if(Date.now()-lastHashClickAt<800)return;flashSection(getHashSection(),240)});
@@ -1051,18 +1109,22 @@ requestAnimationFrame(animateScroll)}
 	if(speedToggle&&speedPanel&&speedSlider&&speedValue){
 	  speedToggle.addEventListener("click",e=>{
 	    e.stopPropagation();
+	    setLive2dSettingsOpen(false);
 	    const show=!speedPanel.hidden;
 	    speedPanel.hidden=show;
 	    speedToggle.setAttribute("aria-expanded",String(!show));
+	    showLive2dSettingsButton({keep:!!show});
 	  });
 	  speedPanel.addEventListener("click",e=>e.stopPropagation());
-	  speedPanel.addEventListener("pointerdown",e=>e.stopPropagation());
+	  speedPanel.addEventListener("pointerdown",e=>{e.stopPropagation();showLive2dSettingsButton()});
+	  speedPanel.addEventListener("input",()=>showLive2dSettingsButton());
 	  document.addEventListener("click",()=>{
 	    if(!speedPanel.hidden){speedPanel.hidden=true;speedToggle.setAttribute("aria-expanded","false")}
 	  });
 	  speedSlider.addEventListener("input",()=>{
 	    speedPxPerSec=Number(speedSlider.value);
 	    speedValue.textContent=speedSlider.value;
+	    showLive2dSettingsButton();
 	  });
 	}
 
@@ -1076,44 +1138,39 @@ requestAnimationFrame(animateScroll)}
     const inner = details.querySelector(':scope > .panel-inner');
     if (!inner) return;
 
-    // Prevent double-trigger during animation
     if (details.dataset.techAnimating === 'true') return;
 
-    // Reduced motion: instant toggle
     if (reducedMotion) {
       details.open = open;
       return;
     }
 
     if (open) {
-      // Opening: set open first so content computes, then animate height
       details.open = true;
       details.dataset.techAnimating = 'true';
-
-      // Trigger tech visual effects
       details.classList.add('tech-expanding');
       spawnTechParticles(details);
 
-      const targetH = inner.scrollHeight;
-      inner.style.height = '0px';
-      inner.offsetHeight; // force reflow
-      inner.style.height = targetH + 'px';
+      // Clear any leftover inline height from init — let max-height control sizing
+      inner.style.removeProperty('height');
+
+      inner.style.transition = 'none';
+      inner.style.maxHeight = '0px';
+      inner.getBoundingClientRect();
+      inner.style.transition = '';
+      inner.style.maxHeight = '';
 
       inner.addEventListener('transitionend', function handler() {
         inner.removeEventListener('transitionend', handler);
-        inner.style.height = '';
         details.classList.remove('tech-expanding');
         details.dataset.techAnimating = 'false';
       });
     } else {
-      // Closing: animate icons back in sync, then collapse height
       details.dataset.techAnimating = 'true';
       details.classList.add('tech-collapsing');
 
-      const startH = inner.scrollHeight;
-      inner.style.height = startH + 'px';
-      inner.offsetHeight; // force reflow
-      inner.style.height = '0px';
+      // Clear any leftover inline height so max-height transition can drive the collapse
+      inner.style.removeProperty('height');
 
       inner.addEventListener('transitionend', function handler() {
         inner.removeEventListener('transitionend', handler);
@@ -1175,15 +1232,16 @@ requestAnimationFrame(animateScroll)}
       }
     });
 
-    // Initialize: set initial state for pre-opened panels
+    // Initialize: pre-opened panels need height:auto so they're visible from the start.
+    // Closed panels don't need an inline height — the browser hides their content natively,
+    // and CSS max-height:0 handles the transition starting point when they open.
     document.querySelectorAll(TECH_PANELS).forEach(function(details) {
       const inner = details.querySelector(':scope > .panel-inner');
       if (!inner) return;
       if (details.open) {
         inner.style.height = 'auto';
-      } else {
-        inner.style.height = '0px';
       }
+      // closed panels: do NOT set height:0px — it would block the open animation
     });
   };
 

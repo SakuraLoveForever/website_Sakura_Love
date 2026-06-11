@@ -21,6 +21,7 @@ const mimeTypes = {
   ".ico": "image/x-icon",
   ".mp3": "audio/mpeg",
   ".wav": "audio/wav",
+  ".webp": "image/webp",
   ".moc3": "application/octet-stream",
   ".zip": "application/zip"
 };

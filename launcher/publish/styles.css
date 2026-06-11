@@ -1816,6 +1816,7 @@ body.theme-dark .section p {
 .music-library-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 1fr;
   gap: 12px;
   align-content: flex-start;
   padding-right: 4px;
@@ -1833,6 +1834,7 @@ body.theme-dark .section p {
   cursor: pointer;
   transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
+  min-height: 0;
 }
 
 .music-role-group:hover {
@@ -1864,11 +1866,20 @@ body.theme-dark .section p {
 }
 
 /* -- 角色缩略图 -- */
-.music-role-thumb-sm {
-  display: block;
+.music-role-thumb-wrap {
+  position: relative;
   width: 100%;
   aspect-ratio: 16/9;
   border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.04);
+  flex-shrink: 0;
+}
+
+.music-role-thumb-sm {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: border-color 0.3s ease, opacity 0.3s ease;
@@ -1883,11 +1894,12 @@ body.theme-dark .section p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
 }
 
 .music-role-name {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-width: 0;
   color: var(--music-text);
   font-size: 13px;
   font-weight: 700;
@@ -1909,7 +1921,25 @@ body.theme-dark .section p {
   white-space: nowrap;
 }
 
-.music-role-group.is-active .music-role-count {
+.music-role-img-count {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--music-muted);
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+
+.music-role-counts {
+  display: flex;
+  gap: 5px;
+  flex-wrap: nowrap;
+}
+
+.music-role-group.is-active .music-role-count,
+.music-role-group.is-active .music-role-img-count {
   color: var(--primary);
   background: rgba(41, 151, 255, 0.14);
 }
@@ -2210,7 +2240,9 @@ body.theme-dark .section p {
 /* -- 移除旧顶栏 -- */
 .music-library-topbar { display: none; }
 
-.hero.flash-highlight,
+.hero.flash-highlight .hero-inner {
+  position: relative;
+}
 .section.flash-highlight,
 .site-footer.flash-highlight {
   position: relative;
@@ -2320,11 +2352,21 @@ body.theme-dark .about-sub-panel:hover {
   position: relative;
 }
 
-/* Height animation via CSS custom property — driven by JS */
 .about-panel > .panel-inner,
 .about-sub-panel > .panel-inner,
 .music-library-details > .panel-inner {
-  transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  max-height: 0;
+  transition: max-height 0.35s ease-out;
+}
+.about-panel[open] > .panel-inner,
+.about-sub-panel[open] > .panel-inner,
+.music-library-details[open] > .panel-inner {
+  max-height: 3000px;
+}
+.about-panel.tech-collapsing > .panel-inner,
+.about-sub-panel.tech-collapsing > .panel-inner,
+.music-library-details.tech-collapsing > .panel-inner {
+  max-height: 0 !important;
 }
 
 /* Glow border pulse on expand */
@@ -2336,7 +2378,7 @@ body.theme-dark .about-sub-panel:hover {
 
 .about-panel.tech-expanding,
 .about-sub-panel.tech-expanding {
-  animation: tech-border-pulse 0.8s ease-out;
+  animation: tech-border-pulse 0.45s ease-out;
   border-color: rgba(99, 200, 255, 0.5);
 }
 
@@ -2362,7 +2404,7 @@ body.theme-dark .about-sub-panel:hover {
 .about-panel.tech-expanding .scan-line,
 .about-sub-panel.tech-expanding .scan-line,
 .music-library-details.tech-expanding .scan-line {
-  animation: scan-sweep 0.6s ease-out forwards;
+  animation: scan-sweep 0.35s ease-out forwards;
 }
 
 @keyframes scan-sweep {
