@@ -1894,16 +1894,45 @@ body.theme-dark .section p {
   width: 100%;
   aspect-ratio: 16/9;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: auto;  /* 图片长边溢出时出现滚动条 */
   background: rgba(255,255,255,0.04);
   flex-shrink: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.18) transparent;
+}
+
+.music-role-thumb-wrap::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.music-role-thumb-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.music-role-thumb-wrap::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.music-role-thumb-wrap::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 .music-role-thumb-sm {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  min-height: 100%;
+  /*
+   * CSS 替换元素比例规则：
+   * 1. width=100% → 宽度填满容器
+   * 2. height=auto → 由宽高比算出（= width / 图片比例）
+   * 3. min-height=100% → 若算出的高度 < 容器高度，则高度=容器高度，
+   *    并按比例反推宽度（>100%），该方向出现滚动条
+   *
+   * 结果：短边永远顶满容器，长边溢出可滚动。不裁剪任何内容。
+   */
   border: none;
   transition: opacity 0.3s ease;
 }

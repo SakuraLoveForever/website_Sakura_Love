@@ -303,6 +303,36 @@ const getAdjacentMusicIndex=(delta)=>{
   const nextTrack=visibleTracks[(currentVisibleIndex+delta+visibleTracks.length)%visibleTracks.length];
   return getMusicTrackIndex(nextTrack);
 };
+/* 恢复已保存的缩略图滚动位置（CSS 自动处理图片缩放，无需 JS fit） */
+const restoreThumbScroll=(role,wrap)=>{
+  if(!wrap)return;
+  try{
+    const saved=localStorage.getItem(`music-thumb-scroll-${role}`);
+    if(saved){
+      const pos=JSON.parse(saved);
+      // 延迟一帧确保布局完成再设置滚动位置
+      requestAnimationFrame(()=>{
+        wrap.scrollLeft=pos.sl||0;
+        wrap.scrollTop=pos.st||0;
+      });
+    }
+  }catch(e){}
+};
+/* 保存所有缩略图的滚动位置到 localStorage，返回 {saved, total} */
+const saveAllThumbScrollPositions=()=>{
+  let saved=0,total=0;
+  document.querySelectorAll(".music-role-thumb-wrap").forEach(wrap=>{
+    const card=wrap.closest(".music-role-group");
+    const role=card?.dataset.role;
+    if(!role)return;
+    total++;
+    try{
+      localStorage.setItem(`music-thumb-scroll-${role}`,JSON.stringify({sl:wrap.scrollLeft,st:wrap.scrollTop}));
+      saved++;
+    }catch(e){}
+  });
+  return {saved,total};
+};
 const renderTrackList=(listEl,tracks=[])=>{
   if(!listEl)return;
   listEl.replaceChildren();
@@ -330,6 +360,13 @@ const renderTrackList=(listEl,tracks=[])=>{
     img.alt=group.roleName;
     img.loading="eager";
     img.onerror=function(){this.style.opacity="0.3"};
+    // CSS 自动处理图片缩放+溢出滚动；这里只恢复已保存的滚动位置
+    img.onload=function(){
+      restoreThumbScroll(role,thumbWrap);
+    };
+    if(img.complete&&img.naturalWidth>0){
+      restoreThumbScroll(role,thumbWrap);
+    }
     thumbWrap.appendChild(img);
 
     // 信息行：名字 + 歌曲数 + 图片数
@@ -509,6 +546,19 @@ if(musicLibraryAudio){
     musicLibraryMute.addEventListener("click",()=>{
       musicLibraryAudio.muted=!musicLibraryAudio.muted;
       syncMusicLibraryMuteUI();
+    });
+  }
+  const _saveThumbPosBtn=document.getElementById("music-save-thumb-pos");
+  if(_saveThumbPosBtn){
+    _saveThumbPosBtn.addEventListener("click",()=>{
+      const result=saveAllThumbScrollPositions();
+      if(result.total===0){
+        showToast("⚠️ 没有可保存的缩略图");
+      }else if(result.saved===result.total){
+        showToast(`✓ 已保存 ${result.saved} 个缩略图位置`);
+      }else{
+        showToast(`⚠️ 仅保存 ${result.saved}/${result.total} 个（${result.total-result.saved} 个失败）`);
+      }
     });
   }
   player.addEventListener("play",()=>{if(!musicLibraryAudio.paused)musicLibraryAudio.pause()});
