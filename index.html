@@ -11,6 +11,7 @@
     <script>
       (function () {
         var styleMap = {
+          upscayl: "design-upscayl",
           apple: "design-apple",
           linear: "design-linear",
           spotify: "design-spotify",
@@ -18,19 +19,20 @@
           notion: "design-notion"
         };
         var bgMap = {
+          upscayl: "#000000",
           apple: "#1d1d1f",
           linear: "#010102",
           spotify: "#121212",
           figma: "#121116",
           notion: "#07101f"
         };
-        var saved = localStorage.getItem("stylePreset") || "apple";
-        var safe = styleMap[saved] ? saved : "apple";
+        var saved = localStorage.getItem("stylePreset") || "upscayl";
+        var safe = styleMap[saved] ? saved : "upscayl";
         var root = document.documentElement;
         root.dataset.initialStyle = safe;
         root.classList.add("style-boot-pending");
         root.style.setProperty("--canvas", bgMap[safe] || bgMap.apple);
-        root.style.setProperty("--text", safe === "notion" ? "#dce7ff" : safe === "figma" ? "#f5f3ff" : safe === "spotify" ? "#f6f6f6" : safe === "linear" ? "#f7f8f8" : "#f5f5f7");
+        root.style.setProperty("--text", safe === "upscayl" ? "#e8e6e3" : safe === "notion" ? "#dce7ff" : safe === "figma" ? "#f5f3ff" : safe === "spotify" ? "#f6f6f6" : safe === "linear" ? "#f7f8f8" : "#f5f5f7");
         root.style.backgroundColor = bgMap[safe] || bgMap.apple;
         root.style.colorScheme = "dark";
       })();
@@ -40,21 +42,22 @@
         visibility: hidden;
       }
     </style>
-    <link rel="stylesheet" href="styles.css?v=202605241548" />
+    <link rel="stylesheet" href="styles.css?v=20260930-quotes-visible" />
   </head>
   <body>
     <div id="particle-canvas"></div>
     <script>
       (function () {
         var styleMap = {
+          upscayl: "design-upscayl",
           apple: "design-apple",
           linear: "design-linear",
           spotify: "design-spotify",
           figma: "design-figma",
           notion: "design-notion"
         };
-        var safe = document.documentElement.dataset.initialStyle || "apple";
-        var nextClass = styleMap[safe] || styleMap.apple;
+        var safe = document.documentElement.dataset.initialStyle || "upscayl";
+        var nextClass = styleMap[safe] || styleMap.upscayl;
         document.documentElement.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--canvas").trim() || document.documentElement.style.backgroundColor;
         document.body.classList.add(nextClass);
         if (safe === "apple") {
@@ -403,8 +406,9 @@
         <div class="footer-settings-title" aria-hidden="true">页面设置</div>
         <div class="design-style-switch" aria-label="切换网页风格">
           <span>风格</span>
-          <div class="design-style-options" role="group" aria-label="选择 Apple、Linear、Spotify、Figma 或 Notion 风格">
-            <button class="design-style-btn active" type="button" data-design-style="apple" aria-pressed="true">Apple</button>
+          <div class="design-style-options" role="group" aria-label="选择 Upscayl、Apple、Linear、Spotify、Figma 或 Notion 风格">
+            <button class="design-style-btn active" type="button" data-design-style="upscayl" aria-pressed="true">Upscayl</button>
+            <button class="design-style-btn" type="button" data-design-style="apple" aria-pressed="false">Apple</button>
             <button class="design-style-btn" type="button" data-design-style="linear" aria-pressed="false">Linear</button>
             <button class="design-style-btn" type="button" data-design-style="spotify" aria-pressed="false">Spotify</button>
             <button class="design-style-btn" type="button" data-design-style="figma" aria-pressed="false">Figma</button>
@@ -417,6 +421,17 @@
             <button class="view-mode-btn active" type="button" data-layout-mode="desktop" aria-pressed="true">网页端</button>
             <button class="view-mode-btn" type="button" data-layout-mode="mobile" aria-pressed="false">移动端</button>
           </div>
+        </div>
+
+        <div class="particle-width-switch">
+          <label for="particle-line-width">粒子粗细</label>
+          <input id="particle-line-width" type="range" min="0.8" max="3.2" step="0.2" value="1.6" aria-label="调节粒子粗细" />
+          <output id="particle-line-width-value" for="particle-line-width">1.6px</output>
+        </div>
+
+        <div class="particle-motion-switch">
+          <span>粒子运动</span>
+          <button id="particle-motion-toggle" class="page-toggle-btn active" type="button" aria-label="暂停粒子运动" aria-pressed="true">暂停</button>
         </div>
 
         <div class="live2d-toggle-switch" aria-label="开关看板娘">
@@ -745,8 +760,8 @@ var quotesData={
 window.quotesData=quotesData;
 </script>
 
-    <script src="particle-network.min.js"></script>
-    <script src="script.js?v=202605241548"></script>
+    <script src="particle-network.min.js?v=20260930-motion"></script>
+    <script src="script.js?v=20260930-quotes-visible"></script>
 
     <script>
 (function(){

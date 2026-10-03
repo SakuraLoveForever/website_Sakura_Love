@@ -22,6 +22,7 @@ const mimeTypes = {
   ".mp3": "audio/mpeg",
   ".wav": "audio/wav",
   ".webp": "image/webp",
+  ".woff2": "font/woff2",
   ".moc3": "application/octet-stream",
   ".zip": "application/zip"
 };

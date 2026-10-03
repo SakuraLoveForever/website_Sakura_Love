@@ -4,8 +4,8 @@
 
 ## ✨ 特性
 
-- **5 种设计风格** — 一键切换 Apple / Linear / Spotify / Figma / Notion 主题，带平滑过渡动画
-- **粒子动画** — 动态 Canvas 粒子背景
+- **6 种设计风格** — 默认 Upscayl，也可切换 Apple / Linear / Spotify / Figma / Notion 主题，带平滑过渡动画
+- **粒子动画** — 动态 Canvas 粒子背景，页面设置中可调节粒子粗细、暂停或恢复运动
 - **Live2D 角色** — 可交互的 Live2D 看板娘（草莓兔兔、Mao、Hiyori、Haru、Natori、Mark）
 - **背景画廊** — 多角色背景图切换，支持轮播模式
 - **音乐播放** — 内置音乐模块，支持音量/进度控制
@@ -24,11 +24,13 @@
 - CSS View Transitions API (风格切换动画)
 - GitHub Pages 部署
 
+粒子网络基于 Julian Laval 的 [canvas-particle-network](https://github.com/JulianLaval/canvas-particle-network)（MIT 许可），本站对线条粗细、交互和运动控制做了适配。
+
 ## 🏗 项目结构
 
 ```
 ├── index.html          # 主页面
-├── styles.css          # 全局样式 + 5 套设计主题
+├── styles.css          # 全局样式 + 6 套设计主题
 ├── script.js           # 核心逻辑（风格切换 / Live2D / 音乐 / 背景）
 ├── particle-network.min.js  # 粒子动画
 ├── server.js           # 本地开发服务器
