@@ -6,23 +6,19 @@
     <title>Sakura_Love | 个人主页</title>
     <meta
       name="description"
-      content="一个简洁、响应式的个人网页模板，展示个人介绍、技能、项目与联系方式。"
+      content="一个简洁、响应式的个人网页模板，展示个人介绍、项目与联系方式。"
     />
     <script>
       (function () {
         var styleMap = {
           apple: "design-apple",
-          linear: "design-linear",
-          spotify: "design-spotify",
-          figma: "design-figma",
-          notion: "design-notion"
+          shadcn: "design-shadcn",
+          tailwind: "design-tailwind"
         };
         var bgMap = {
           apple: "#1d1d1f",
-          linear: "#010102",
-          spotify: "#121212",
-          figma: "#121116",
-          notion: "#07101f"
+          shadcn: "#fafafa",
+          tailwind: "#fffbf7"
         };
         var saved = localStorage.getItem("stylePreset") || "apple";
         var safe = styleMap[saved] ? saved : "apple";
@@ -30,9 +26,9 @@
         root.dataset.initialStyle = safe;
         root.classList.add("style-boot-pending");
         root.style.setProperty("--canvas", bgMap[safe] || bgMap.apple);
-        root.style.setProperty("--text", safe === "notion" ? "#dce7ff" : safe === "figma" ? "#f5f3ff" : safe === "spotify" ? "#f6f6f6" : safe === "linear" ? "#f7f8f8" : "#f5f5f7");
+        root.style.setProperty("--text", safe === "shadcn" ? "#18181b" : safe === "tailwind" ? "#292524" : "#f5f5f7");
         root.style.backgroundColor = bgMap[safe] || bgMap.apple;
-        root.style.colorScheme = "dark";
+        root.style.colorScheme = safe === "apple" ? "dark" : "light";
       })();
     </script>
     <style>
@@ -40,7 +36,8 @@
         visibility: hidden;
       }
     </style>
-    <link rel="stylesheet" href="styles.css?v=202605241548" />
+    <link rel="stylesheet" href="styles.css?v=20261007-10" />
+    <link rel="stylesheet" href="themes.css?v=20261007-10" />
   </head>
   <body>
     <div id="particle-canvas"></div>
@@ -48,10 +45,8 @@
       (function () {
         var styleMap = {
           apple: "design-apple",
-          linear: "design-linear",
-          spotify: "design-spotify",
-          figma: "design-figma",
-          notion: "design-notion"
+          shadcn: "design-shadcn",
+          tailwind: "design-tailwind"
         };
         var safe = document.documentElement.dataset.initialStyle || "apple";
         var nextClass = styleMap[safe] || styleMap.apple;
@@ -87,23 +82,6 @@
       </nav>
     </header>
 
-    <main>
-      <section id="hero" class="hero">
-        <div class="hero-inner container">
-          <div class="hero-copy">
-            <p class="eyebrow">Personal Gallery</p>
-            <h1 data-char-slide>Sakura_Love</h1>
-            <p class="intro" data-char-slide>把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。</p>
-            <div class="hero-actions">
-              <a class="btn primary" href="#projects">查看项目</a>
-              <a class="btn secondary" href="#contact">联系我</a>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <div class="page-shell">
         <aside class="side-nav" aria-label="页面导航">
           <div class="sidebar-brand">
             <div class="sidebar-logo-link">
@@ -127,10 +105,6 @@
               <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v4"/><path d="M17 3v4"/><path d="M4.5 8h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/></svg>
               <span class="sidebar-label">关于我</span>
             </a>
-            <a class="sidebar-link" href="#skills" data-nav-key="skills">
-              <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h12"/><path d="M8 12h12"/><path d="M8 17h12"/><path d="m3.5 7 1 1 2-2"/><path d="m3.5 12 1 1 2-2"/><path d="m3.5 17 1 1 2-2"/></svg>
-              <span class="sidebar-label">技能</span>
-            </a>
             <a class="sidebar-link" href="#projects" data-nav-key="projects">
               <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h16"/><path d="M7 4h10a2 2 0 0 1 2 2v14H5V6a2 2 0 0 1 2-2Z"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
               <span class="sidebar-label">项目</span>
@@ -150,6 +124,25 @@
           </nav>
 
         </aside>
+
+    <main>
+      <section id="hero" class="hero">
+        <div class="hero-inner container">
+          <div class="hero-copy">
+            <p class="eyebrow">Personal Gallery</p>
+            <h1 data-char-slide>Sakura_Love</h1>
+            <p class="intro" data-char-slide>把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。</p>
+            <div class="hero-actions">
+              <a class="btn primary" href="#projects">查看项目</a>
+              <a class="btn secondary" href="#contact">联系我</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <div class="page-shell">
+
 
         <div class="content-flow">
           <section id="about" class="section">
@@ -206,51 +199,165 @@
             </details>
           </section>
 
-          <section id="skills" class="section">
-            <h2>技能</h2>
-            <ul class="chips">
-              <li><a href="https://baike.baidu.com/item/HTML5" target="_blank" rel="noreferrer">HTML5</a></li>
-              <li><a href="https://baike.baidu.com/item/CSS3" target="_blank" rel="noreferrer">CSS3</a></li>
-              <li><a href="https://baike.baidu.com/item/JavaScript" target="_blank" rel="noreferrer">JavaScript</a></li>
-              <li><a href="https://baike.baidu.com/item/TypeScript" target="_blank" rel="noreferrer">TypeScript</a></li>
-              <li><a href="https://baike.baidu.com/item/react/18077599" target="_blank" rel="noreferrer">React</a></li>
-              <li><a href="https://baike.baidu.com/item/Node.js" target="_blank" rel="noreferrer">Node.js</a></li>
-              <li><a href="https://baike.baidu.com/item/Git" target="_blank" rel="noreferrer">Git</a></li>
-            </ul>
-          </section>
-
           <section id="projects" class="section">
+            <div class="projects-eyebrow">SELECTED WORK / <span>12</span></div>
             <h2>项目</h2>
+            <p class="projects-intro">把想法做成工具，也把热爱写进作品。</p>
+            <div class="projects-toolbar">
+              <div class="project-filters" role="group" aria-label="筛选项目">
+                <button type="button" data-project-filter="all" aria-pressed="true">全部作品</button>
+                <button type="button" data-project-filter="tools" aria-pressed="false">效率工具</button>
+                <button type="button" data-project-filter="web" aria-pressed="false">Web 作品</button>
+                <button type="button" data-project-filter="browser" aria-pressed="false">浏览器工具</button>
+                <button type="button" data-project-filter="anime" aria-pressed="false">动漫与 AI</button>
+              </div>
+              <span id="project-result-count" role="status" aria-live="polite">12 个作品</span>
+            </div>
             <div class="project-grid">
-              <article class="card">
-                <h3>
-                  <a class="project-title-btn" href="https://sakuraloveforever.github.io/Life-Insights/" target="_blank" rel="noreferrer" aria-label="查看卷里山河，心头月色">卷里山河，心头月色</a>
-                </h3>
-                <p>阅读与长夜随记，支持目录导航与夜间模式，适合沉浸式阅读与记录灵感。</p>
+              <article class="card card--feature" data-project-category="tools">
+                <a class="card-cover" href="https://github.com/SakuraLoveForever/MacroFlowStudio" target="_blank" rel="noreferrer" aria-label="MacroFlowStudio">
+                  <img src="assets/projects/macroflow.jpg" width="1280" height="800" loading="lazy" decoding="async" alt="" />
+                  <span class="project-feature-label" data-project-copy="featured">精选项目</span>
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">Windows 自动化</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/MacroFlowStudio" target="_blank" rel="noreferrer" aria-label="查看MacroFlowStudio">MacroFlowStudio</a>
+                  </h3>
+                  <p>键鼠宏录制与工作流编排，支持图像定位和离线 OCR。</p>
+                </div>
               </article>
-              <article class="card">
-                <h3>
-                  <a class="project-title-btn" href="https://sakuraloveforever.github.io/soul_quotes_archive/" target="_blank" rel="noreferrer" aria-label="查看心灵鸡汤 - 互动语录">心灵鸡汤 - 互动语录</a>
-                </h3>
-                <p>可交互的语录归档网站，支持分类展开收起和目录快速跳转浏览。</p>
+              <article class="card" data-project-category="web">
+                <a class="card-cover" href="https://sakuraloveforever.github.io/Life-Insights/" target="_blank" rel="noreferrer" aria-label="Life Insights">
+                  <img src="assets/projects/life.jpg" width="1280" height="800" loading="lazy" decoding="async" alt="" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">Web 站点</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://sakuraloveforever.github.io/Life-Insights/" target="_blank" rel="noreferrer" aria-label="查看卷里山河，心头月色">卷里山河，心头月色</a>
+                  </h3>
+                  <p>记录阅读与长夜随记，支持目录导航和夜间模式。</p>
+                </div>
               </article>
-              <article class="card">
-                <h3>
-                  <a class="project-title-btn" href="https://sakuraloveforever.github.io/kindle-notes-exporter/" target="_blank" rel="noreferrer" aria-label="查看Kindle笔记导出工具">Kindle笔记导出工具</a>
-                </h3>
-                <p>免费在线工具，支持上传 My Clippings.txt 并本地处理导出，保护隐私。</p>
+              <article class="card" data-project-category="web">
+                <a class="card-cover" href="https://sakuraloveforever.github.io/soul_quotes_archive/" target="_blank" rel="noreferrer" aria-label="Soul Quotes Archive">
+                  <img src="assets/projects/quotes.jpg" width="1280" height="800" loading="lazy" decoding="async" alt="" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">Web 站点</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://sakuraloveforever.github.io/soul_quotes_archive/" target="_blank" rel="noreferrer" aria-label="查看心灵鸡汤 - 互动语录">心灵鸡汤 - 互动语录</a>
+                  </h3>
+                  <p>收藏语录与灵感，按分类浏览和快速跳转。</p>
+                </div>
               </article>
-              <article class="card">
-                <h3>
-                  <a class="project-title-btn" href="https://greasyfork.org/zh-CN/scripts/574715-youtube-%E6%89%B9%E9%87%8F%E5%8F%96%E6%B6%88%E7%82%B9%E8%B5%9E%E5%8A%A9%E6%89%8B-%E7%B2%BE%E5%87%86%E7%89%88" target="_blank" rel="noreferrer" aria-label="查看YouTube取消点赞脚本">YouTube取消点赞脚本</a>
-                </h3>
-                <p>浏览器控制台与 Tampermonkey 脚本，批量取消曾经在 YouTube 点赞过的视频，适合清理账号历史记录。</p>
+              <article class="card" data-project-category="web">
+                <a class="card-cover" href="https://github.com/SakuraLoveForever/kindle_notes_exporter" target="_blank" rel="noreferrer" aria-label="Kindle Notes Exporter">
+                  <img src="assets/projects/kindle-preview.png" alt="Kindle笔记导出工具界面截图" loading="lazy" decoding="async" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">在线工具</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/kindle_notes_exporter" target="_blank" rel="noreferrer" aria-label="查看Kindle笔记导出工具">Kindle笔记导出工具</a>
+                  </h3>
+                  <p>本地解析 Kindle 阅读笔记，便捷导出并保护隐私。</p>
+                </div>
               </article>
-              <article class="card">
-                <h3>
-                  <a class="project-title-btn" href="https://github.com/SakuraLoveForever/SakuraLoveForever" target="_blank" rel="noreferrer" aria-label="查看GitHub个人首页">GitHub个人首页</a>
-                </h3>
-                <p>GitHub个人首页美化展示，个性化README配置，展示技术栈与项目导航。</p>
+              <article class="card" data-project-category="tools">
+                <a class="card-cover" href="https://github.com/SakuraLoveForever/PC_System_Auto_Scripts" target="_blank" rel="noreferrer" aria-label="PC Guardian">
+                  <img src="assets/projects/pc-guardian-preview.png" alt="电脑守护精灵界面截图" loading="lazy" decoding="async" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">Windows 工具</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/PC_System_Auto_Scripts" target="_blank" rel="noreferrer" aria-label="查看电脑守护精灵">电脑守护精灵</a>
+                  </h3>
+                  <p>管理 Windows 启动项与定时电源计划。</p>
+                </div>
+              </article>
+              <article class="card" data-project-category="tools">
+                <a class="card-cover" href="https://github.com/SakuraLoveForever/FileGo" target="_blank" rel="noreferrer" aria-label="FileGo">
+                  <img src="assets/projects/filego.jpg" width="1280" height="800" loading="lazy" decoding="async" alt="" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">Windows 工具</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/FileGo" target="_blank" rel="noreferrer" aria-label="查看FileGo">FileGo</a>
+                  </h3>
+                  <p>文件传输与定时任务，让重复操作自动完成。</p>
+                </div>
+              </article>
+              <article class="card" data-project-category="browser">
+                <a class="card-cover card-cover--symbol" href="https://github.com/SakuraLoveForever/tab-sync" target="_blank" rel="noreferrer" aria-label="tab-sync">
+                  <span class="card-cover-mark" aria-hidden="true">TS</span><span class="card-cover-kind" aria-hidden="true">BROWSER UTILITY</span>
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">浏览器工具</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/tab-sync" target="_blank" rel="noreferrer" aria-label="查看tab-sync">tab-sync</a>
+                  </h3>
+                  <p>在 Chrome、Edge 和 Firefox 之间迁移标签页。</p>
+                </div>
+              </article>
+              <article class="card" data-project-category="tools">
+                <a class="card-cover" href="https://github.com/SakuraLoveForever/AppCounter" target="_blank" rel="noreferrer" aria-label="AppCounter">
+                  <img src="assets/projects/appcounter.jpg" width="1280" height="800" loading="lazy" decoding="async" alt="" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">Windows 工具</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/AppCounter" target="_blank" rel="noreferrer" aria-label="查看AppCounter">AppCounter</a>
+                  </h3>
+                  <p>统计 Windows 应用使用时间，了解自己的数字习惯。</p>
+                </div>
+              </article>
+              <article class="card" data-project-category="browser">
+                <a class="card-cover" href="https://greasyfork.org/zh-CN/scripts/574715-youtube-%E6%89%B9%E9%87%8F%E5%8F%96%E6%B6%88%E7%82%B9%E8%B5%9E%E5%8A%A9%E6%89%8B-%E7%B2%BE%E5%87%86%E7%89%88" target="_blank" rel="noreferrer" aria-label="YouTube Unlike Helper">
+                  <img src="assets/projects/youtube-unlike-preview.png" alt="YouTube取消点赞脚本界面截图" loading="lazy" decoding="async" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">浏览器脚本</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://greasyfork.org/zh-CN/scripts/574715-youtube-%E6%89%B9%E9%87%8F%E5%8F%96%E6%B6%88%E7%82%B9%E8%B5%9E%E5%8A%A9%E6%89%8B-%E7%B2%BE%E5%87%86%E7%89%88" target="_blank" rel="noreferrer" aria-label="查看YouTube取消点赞脚本">YouTube取消点赞脚本</a>
+                  </h3>
+                  <p>批量取消 YouTube 点赞，简化重复点击。</p>
+                </div>
+              </article>
+              <article class="card" data-project-category="tools">
+                <a class="card-cover" href="https://github.com/SakuraLoveForever/auto_clean" target="_blank" rel="noreferrer" aria-label="auto_clean">
+                  <img src="assets/projects/autoclean-preview.png" alt="AutoClean 定时清理工具界面截图" loading="lazy" decoding="async" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">Windows 工具</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/auto_clean" target="_blank" rel="noreferrer" aria-label="查看auto_clean">auto_clean</a>
+                  </h3>
+                  <p>自动清理文件，减少手动整理的时间。</p>
+                </div>
+              </article>
+              <article class="card" data-project-category="anime">
+                <a class="card-cover" href="https://github.com/SakuraLoveForever/Anime" target="_blank" rel="noreferrer" aria-label="AI Anime Tracker">
+                  <img src="assets/projects/anime.jpg" width="1280" height="800" loading="lazy" decoding="async" alt="" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">AI 应用</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/Anime" target="_blank" rel="noreferrer" aria-label="查看AI追番助手">AI 追番助手</a>
+                  </h3>
+                  <p>多源番剧搜索与追剧管理，支持 DeepSeek 智能填充。</p>
+                </div>
+              </article>
+              <article class="card" data-project-category="web">
+                <a class="card-cover" href="https://github.com/SakuraLoveForever/SakuraLoveForever" target="_blank" rel="noreferrer" aria-label="GitHub Profile">
+                  <img src="assets/projects/github-profile-preview.png" alt="GitHub个人首页界面截图" loading="lazy" decoding="async" />
+                </a>
+                <div class="card-body">
+                  <span class="card-tag">个人主页</span>
+                  <h3>
+                    <a class="project-title-btn" href="https://github.com/SakuraLoveForever/SakuraLoveForever" target="_blank" rel="noreferrer" aria-label="查看GitHub个人首页">GitHub个人首页</a>
+                  </h3>
+                  <p>技术栈、开发成果与个人介绍的 GitHub 入口。</p>
+                </div>
               </article>
             </div>
           </section>
@@ -270,8 +377,11 @@
                   </div>
                   <div class="music-library-right">
                     <div class="music-library-stage">
-                      <div id="bg-layer-a" class="bg-layer"></div>
-                      <div id="bg-layer-b" class="bg-layer"></div>
+                      <img id="bg-layer-a" class="bg-layer" alt="" />
+                      <img id="bg-layer-b" class="bg-layer" alt="" />
+                      <span class="holo-grid" aria-hidden="true"></span>
+                      <span class="holo-scan" aria-hidden="true"></span>
+                      <canvas id="music-spectrum" class="holo-spectrum" aria-hidden="true"></canvas>
                     </div>
                   </div>
                 </div>
@@ -281,19 +391,31 @@
                     <span id="music-library-artist" class="player-bar-artist"></span>
                   </div>
                   <div class="player-bar-center">
-                    <button id="header-music-next" class="player-bar-btn" type="button" aria-label="切换BGM" title="切换当前角色BGM">
-                      <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="19" cy="16" r="3"/></svg>
-                    </button>
-                    <button id="music-library-play" class="player-bar-play" type="button" aria-label="播放" aria-pressed="false">
-                      <svg class="music-play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7-11-7Z"/></svg>
-                      <svg class="music-pause-icon" viewBox="0 0 24 24"><path d="M7 5h4v14H7z"/><path d="M13 5h4v14h-4z"/></svg>
-                    </button>
-                    <button id="header-image-next" class="player-bar-btn" type="button" aria-label="切换图片" title="切换当前角色图片">
-                      <svg viewBox="0 0 24 24"><rect fill="none" stroke="currentColor" stroke-width="2" x="3" y="3" width="18" height="18" rx="3"/><circle fill="currentColor" cx="8.5" cy="8.5" r="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M3 17l5-5 3 3 4-4 6 6"/></svg>
-                    </button>
-                    <button id="music-save-thumb-pos" class="player-bar-btn" type="button" aria-label="保存缩略图位置" title="保存缩略图位置">
-                      <svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
-                    </button>
+                    <div class="player-bar-group">
+                      <button id="header-music-prev" class="player-bar-btn" type="button" aria-label="上一首" title="上一首">
+                        <svg viewBox="0 0 24 24"><path d="M15 18V5L3 7v13"/><circle cx="18" cy="18" r="3"/><circle cx="5" cy="16" r="3"/></svg>
+                      </button>
+                      <button id="music-library-play" class="player-bar-play" type="button" aria-label="播放" aria-pressed="false">
+                        <svg class="music-play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7-11-7Z"/></svg>
+                        <svg class="music-pause-icon" viewBox="0 0 24 24"><path d="M7 5h4v14H7z"/><path d="M13 5h4v14h-4z"/></svg>
+                      </button>
+                      <button id="header-music-next" class="player-bar-btn" type="button" aria-label="下一首" title="下一首">
+                        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="19" cy="16" r="3"/></svg>
+                      </button>
+                    </div>
+                    <span class="player-bar-sep"></span>
+                    <div class="player-bar-group">
+                      <button id="header-image-prev" class="player-bar-btn" type="button" aria-label="上一张" title="上一张图片">
+                        <svg viewBox="0 0 24 24"><rect fill="none" stroke="currentColor" stroke-width="2" x="3" y="3" width="18" height="18" rx="3"/><circle fill="currentColor" cx="15.5" cy="8.5" r="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M21 17l-5-5-3 3-4-4-6 6"/></svg>
+                      </button>
+                      <button id="header-image-next" class="player-bar-btn" type="button" aria-label="下一张" title="下一张图片">
+                        <svg viewBox="0 0 24 24"><rect fill="none" stroke="currentColor" stroke-width="2" x="3" y="3" width="18" height="18" rx="3"/><circle fill="currentColor" cx="8.5" cy="8.5" r="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M3 17l5-5 3 3 4-4 6 6"/></svg>
+                      </button>
+                      <span class="player-bar-sep"></span>
+                      <button id="music-save-thumb-pos" class="player-bar-btn" type="button" aria-label="保存缩略图位置" title="保存缩略图位置">
+                        <svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                      </button>
+                    </div>
                   </div>
                   <div class="player-bar-right">
                     <span id="music-library-time" class="music-library-time">00:00 / 00:00</span>
@@ -327,18 +449,14 @@
     <div id="live2d-widget" class="live2d-widget">
       <canvas id="live2d-canvas"></canvas>
       <div id="live2d-dialog" class="live2d-dialog" aria-hidden="true"></div>
-      <button id="live2d-settings-toggle" class="live2d-settings-toggle" type="button" aria-label="展开看板娘设置" aria-expanded="false">
+      <button id="live2d-resize-handle" class="live2d-resize-handle" type="button" aria-label="拖动调整看板娘大小" title="拖动调整大小">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 21H3v-6M15 3h6v6M3 21l7.5-7.5M21 3l-7.5 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button id="live2d-settings-toggle" class="live2d-settings-toggle" type="button" aria-label="展开看板娘设置" aria-expanded="false" aria-controls="live2d-settings-panel" title="看板娘设置">
         <span aria-hidden="true"></span>
       </button>
-      <button id="project-speed-toggle" class="live2d-speed-btn" type="button" aria-label="调节滚动速度" title="滚动速度">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h4l2-6 3 14 3-10 2 8h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div id="project-speed-panel" class="live2d-speed-panel" hidden>
-        <label for="project-speed-slider">滚动速度</label>
-        <input id="project-speed-slider" type="range" min="5" max="300" step="1" value="100" aria-label="调节项目卡片滚动速度" />
-        <span id="project-speed-value">100</span>
-      </div>
-      <div id="live2d-settings-panel" class="live2d-settings-panel" aria-label="看板娘设置">
+      <div id="live2d-settings-panel" class="live2d-settings-panel" aria-label="看板娘设置" inert>
+        <header class="live2d-panel-head"><strong id="live2d-panel-title">看板娘设置</strong><button id="live2d-settings-close" type="button" aria-label="关闭看板娘设置">×</button></header>
         <div class="control-group">
           <div class="control-title">看板娘角色</div>
           <select id="live2d-model" aria-label="选择看板娘角色">
@@ -347,22 +465,27 @@
             <option value="mao">Mao</option>
             <option value="hiyori">Hiyori</option>
             <option value="haru">Haru</option>
-            <option value="natori">Natori</option>
-            <option value="mark">Mark</option>
           </select>
+          <button id="live2d-next-model" type="button">切换看板娘 →</button>
         </div>
 
         <div class="control-group">
           <div class="control-title">看板娘大小 <span id="live2d-size-value">100%</span></div>
+          <!--
+            step 必须是 1：normalizeLive2dSizePercent 会把尺寸夹到视口允许的最大值
+            （例如 1280×720 下是 124%），不是 5 的整数倍。step=5 时浏览器会把
+            input.value 吸附到步进网格 → 滑块显示 125 而实际尺寸是 124，三者不一致。
+          -->
           <input
             id="live2d-size"
             type="range"
             min="60"
             max="160"
-            step="5"
+            step="1"
             value="100"
             aria-label="调节看板娘大小"
           />
+          <div class="live2d-size-actions"><button type="button" data-live2d-size-step="-10" aria-label="缩小看板娘">−</button><button id="live2d-size-reset" type="button">100%</button><button type="button" data-live2d-size-step="10" aria-label="放大看板娘">＋</button></div>
         </div>
       </div>
     </div>
@@ -377,14 +500,14 @@
     <footer id="page-bottom" class="site-footer">
       <div class="container">
         <div class="footer-settings-title" aria-hidden="true">页面设置</div>
+        <fieldset class="settings-group">
+          <legend id="appearance-settings-label">外观</legend>
         <div class="design-style-switch" aria-label="切换网页风格">
           <span>风格</span>
-          <div class="design-style-options" role="group" aria-label="选择 Apple、Linear、Spotify、Figma 或 Notion 风格">
+          <div class="design-style-options" role="group" aria-label="选择 Apple、shadcn/ui 或 Tailwind Blog 风格">
             <button class="design-style-btn active" type="button" data-design-style="apple" aria-pressed="true">Apple</button>
-            <button class="design-style-btn" type="button" data-design-style="linear" aria-pressed="false">Linear</button>
-            <button class="design-style-btn" type="button" data-design-style="spotify" aria-pressed="false">Spotify</button>
-            <button class="design-style-btn" type="button" data-design-style="figma" aria-pressed="false">Figma</button>
-            <button class="design-style-btn" type="button" data-design-style="notion" aria-pressed="false">Notion</button>
+            <button class="design-style-btn" type="button" data-design-style="shadcn" aria-pressed="false">shadcn/ui</button>
+            <button class="design-style-btn" type="button" data-design-style="tailwind" aria-pressed="false">Tailwind Blog</button>
           </div>
         </div>
         <div class="view-mode-switch" aria-label="切换网页布局">
@@ -395,11 +518,33 @@
           </div>
         </div>
 
+        </fieldset>
+        <fieldset class="settings-group">
+          <legend id="animation-settings-label">动画与互动</legend>
+        <div class="particle-width-switch">
+          <label for="particle-line-width">粒子粗细</label>
+          <input id="particle-line-width" type="range" min="0.8" max="3.2" step="0.2" value="1.6" aria-label="调节粒子粗细" />
+          <output id="particle-line-width-value" for="particle-line-width">1.6px</output>
+        </div>
+
+        <div class="particle-motion-switch">
+          <span>粒子运动</span>
+          <button id="particle-motion-toggle" class="page-toggle-btn active" type="button" aria-label="暂停粒子运动" aria-pressed="true">暂停</button>
+        </div>
+
         <div class="live2d-toggle-switch" aria-label="开关看板娘">
           <span>看板娘</span>
           <button id="live2d-toggle" class="page-toggle-btn" type="button" aria-pressed="true">开启</button>
         </div>
 
+        <div class="quote-category-switch" aria-label="切换语录分类">
+          <span>语录</span>
+          <select id="quote-category-select" class="quote-category-select" aria-label="选择语录分类">
+            <option value="all">全部随机</option>
+          </select>
+          <button id="quote-order-toggle" class="quote-order-btn" type="button" aria-label="切换语录顺序" title="切换正序/倒序">正序</button>
+        </div>
+        </fieldset>
         <div class="social-links social-links-bottom">
           <a class="social-xhs" href="https://www.xiaohongshu.com/user/profile/5e72db210000000001000d66" target="_blank" rel="noreferrer" aria-label="小红书主页" title="小红书">
             <span class="social-icon" aria-hidden="true"></span>
@@ -410,13 +555,6 @@
           <a class="social-bilibili" href="https://space.bilibili.com/481036572" target="_blank" rel="noreferrer" aria-label="Bilibili主页" title="Bilibili">
             <span class="social-icon" aria-hidden="true"></span>
           </a>
-        </div>
-        <div class="quote-category-switch" aria-label="切换语录分类">
-          <span>语录</span>
-          <select id="quote-category-select" class="quote-category-select" aria-label="选择语录分类">
-            <option value="all">全部随机</option>
-          </select>
-          <button id="quote-order-toggle" class="quote-order-btn" type="button" aria-label="切换语录顺序" title="切换正序/倒序">正序</button>
         </div>
         <p>© <span id="year"></span> Sakura_Love. All rights reserved.</p>
       </div>
@@ -497,7 +635,7 @@ var quotesData={
 "倾巢之下，焉有完卵",
 "不知江月待何人，但见长江送流水",
 "共情能力好像是对心软的人的惩罚，自己的生活一团乱麻，还是会为世界上无能为力的事情心痛",
-"在这个暧昧至极的时代，小说里的爱情至死不渝。",
+"在这个暧昧至极的时代，小说里的爱情至死不渝",
 "烟花易逝，人情长存",
 "即便未尝死亡之至，却已知晓珍惜彼时。礼弥未懂命中之意，千纮已知深爱彼此！",
 "活着为了樱岛麻衣，死了为了散华礼弥",
@@ -721,8 +859,9 @@ var quotesData={
 window.quotesData=quotesData;
 </script>
 
-    <script src="particle-network.min.js"></script>
-    <script src="script.js?v=202605241548"></script>
+    <script src="particle-network.min.js?v=20261006-6"></script>
+    <script src="assets/vendor/motion-14.0.0.js"></script>
+    <script src="script.js?v=20261007-10"></script>
 
     <script>
 (function(){

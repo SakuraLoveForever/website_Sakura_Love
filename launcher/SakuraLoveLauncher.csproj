@@ -20,7 +20,11 @@
     <Content Include="..\index.html" Link="index.html" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\404.html" Link="404.html" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\styles.css" Link="styles.css" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\themes.css" Link="themes.css" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\script.js" Link="script.js" CopyToPublishDirectory="PreserveNewest" />
+    <!-- 站点通过 <script src> 直接加载，必须一并发布；漏掉会导致粒子模块调用
+         network.stop()/start() 时在发布版里抛错（发布目录里残留的是不含该 API 的旧版） -->
+    <Content Include="..\particle-network.min.js" Link="particle-network.min.js" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <Target Name="CopySiteAssetsAfterPublish" AfterTargets="Publish">

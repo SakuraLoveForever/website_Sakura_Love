@@ -1,0 +1,105 @@
+/* Visual references: shadcn-ui/ui and timlrx/tailwind-nextjs-starter-blog (MIT).
+   Adapted to the site's existing HTML components. */
+body:is(.design-shadcn, .design-tailwind) {
+  --content: 1080px;
+  --content-wide: 1180px;
+  --primary: #3f3f46;
+  --primary-strong: #27272a;
+  --primary-on-dark: #3f3f46;
+  --ink: #18181b;
+  --text: #18181b;
+  --text-on-dark: #18181b;
+  --muted: #71717a;
+  --muted-on-dark: #71717a;
+  --canvas: #fafafa;
+  --canvas-parchment: #f4f4f5;
+  --surface-pearl: #ffffff;
+  --surface-dark: #ffffff;
+  --surface-dark-2: #f4f4f5;
+  --surface-dark-3: #e4e4e7;
+  --surface-black: #fafafa;
+  --hairline: #e4e4e7;
+  --divider-soft: #f4f4f5;
+  --panel-radius: 10px;
+  --control-radius: 6px;
+  --nav-height: 56px;
+  color-scheme: light;
+  font-family: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+body.design-tailwind {
+  --primary: #be185d;
+  --primary-strong: #9d174d;
+  --primary-on-dark: #be185d;
+  --ink: #292524;
+  --text: #292524;
+  --text-on-dark: #292524;
+  --muted: #78716c;
+  --muted-on-dark: #78716c;
+  --canvas: #fffbf7;
+  --canvas-parchment: #fff5ed;
+  --surface-dark-2: #fff1f2;
+  --surface-dark-3: #ffe4e6;
+  --surface-black: #fffbf7;
+  --hairline: #e7e0d9;
+  --divider-soft: #f5eee8;
+  --panel-radius: 16px;
+  --control-radius: 8px;
+  line-height: 1.75;
+}
+body:is(.design-shadcn, .design-tailwind) :is(.site-header, .side-nav, .about-panel, .about-sub-panel, .card, .music-library-shell, .live2d-settings-panel) {
+  background: var(--surface-pearl);
+  color: var(--text);
+  border-color: var(--hairline);
+  box-shadow: none;
+}
+body:is(.design-shadcn, .design-tailwind) .side-nav { border-radius: var(--panel-radius); }
+body:is(.design-shadcn, .design-tailwind) :is(.sidebar-logo-text, .logo, .sidebar-toggle) { color: var(--text); }
+body:is(.design-shadcn, .design-tailwind) .sidebar-link { color: var(--muted); border-radius: var(--control-radius); }
+body:is(.design-shadcn, .design-tailwind) .sidebar-link:is(:hover, :focus-visible, .active) {
+  color: var(--text); background: var(--surface-dark-2); border-color: var(--hairline); box-shadow: none; transform: none;
+}
+body:is(.design-shadcn, .design-tailwind) .sidebar-link.active::before { background: var(--primary); box-shadow: none; width: 2px; }
+body:is(.design-shadcn, .design-tailwind) .sidebar-link .sidebar-icon { filter: none; }
+body:is(.design-shadcn, .design-tailwind) .hero { background: var(--canvas); min-height: min(720px, calc(100vh - var(--nav-height))); padding: 96px 0; }
+body:is(.design-shadcn, .design-tailwind) .hero h1 { font-family: inherit; font-size: clamp(40px, 5vw, 64px); letter-spacing: -.045em; line-height: 1.1; }
+body:is(.design-shadcn, .design-tailwind) .intro { color: var(--muted); font-size: clamp(18px, 2.2vw, 23px); line-height: 1.65; overflow-wrap: normal; text-wrap: balance; }
+body.design-shadcn .hero-inner { align-items: flex-start; text-align: left; max-width: 1080px; }
+body.design-shadcn .intro { margin: 24px 0 32px; }
+body.design-shadcn .hero-actions { justify-content: flex-start; }
+body.design-tailwind .hero { background: radial-gradient(ellipse at 50% 30%, #fff1f2, transparent 65%), var(--canvas); }
+body.design-tailwind .eyebrow { color: var(--primary); }
+body:is(.design-shadcn, .design-tailwind) .section > h2 { font-size: clamp(26px, 3vw, 34px); letter-spacing: -.025em; }
+body:is(.design-shadcn, .design-tailwind) :is(.section p, .about-value, .card p) { color: var(--muted); }
+body:is(.design-shadcn, .design-tailwind) .section :is(h2, h3, .about-key) { color: var(--text); }
+body:is(.design-shadcn, .design-tailwind) #projects .card { border-radius: var(--panel-radius); }
+body.design-tailwind #projects .card-body { padding: 22px; gap: 12px; }
+body:is(.design-shadcn, .design-tailwind) :is(.btn, .jump-btn, .language-switch, .page-toggle-btn, .quote-category-select, .anime-viewer-settings, select) {
+  background: var(--surface-pearl); color: var(--text); border-color: var(--hairline); border-radius: var(--control-radius); box-shadow: none;
+}
+body:is(.design-shadcn, .design-tailwind) :is(.btn.primary, .design-style-btn.active, .view-mode-btn.active, .page-toggle-btn.active, .project-filter.active) {
+  background: var(--primary); border-color: var(--primary); color: #ffffff;
+}
+body:is(.design-shadcn, .design-tailwind) .btn.primary:hover { background: var(--primary-strong); box-shadow: none; animation: none; }
+body:is(.design-shadcn, .design-tailwind) :is(.design-style-options, .view-mode-options, .project-filter, .project-tag) {
+  background: var(--surface-dark-2); border-color: var(--hairline); color: var(--muted);
+}
+body:is(.design-shadcn, .design-tailwind) .project-filter[aria-pressed="true"] { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+body:is(.design-shadcn, .design-tailwind) .project-feature-label { background: var(--surface-dark-2); color: var(--primary); border-color: var(--hairline); }
+body:is(.design-shadcn, .design-tailwind) .card-cover--symbol { background: var(--surface-dark-2); color: var(--text); }
+body:is(.design-shadcn, .design-tailwind) .card-cover--symbol :is(.card-cover-mark, .card-cover-kind) { color: var(--primary); }
+body:is(.design-shadcn, .design-tailwind) .social-links a.social-github { background: var(--surface-dark-2); color: var(--text); border-color: var(--hairline); }
+body:is(.design-shadcn, .design-tailwind) .social-links-bottom a { color: var(--muted); }
+body:is(.design-shadcn, .design-tailwind) .site-footer { background: var(--canvas); border-color: var(--hairline); }
+body:is(.design-shadcn, .design-tailwind) .music-library {
+  --music-panel: var(--surface-pearl); --music-panel-strong: var(--surface-dark-2);
+  --music-line: var(--hairline); --music-text: var(--text); --music-muted: var(--muted);
+  --music-accent: var(--primary); --music-accent-2: var(--primary-strong);
+}
+body:is(.design-shadcn, .design-tailwind) :is(button, a, summary, select, input):focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+body:is(.design-shadcn, .design-tailwind) .click-pop-text { background: color-mix(in srgb, var(--text) 75%, transparent); }
+body:is(.design-shadcn, .design-tailwind) #particle-canvas > canvas { opacity: .12; }
+@media (max-width: 833px) {
+  body:is(.design-shadcn, .design-tailwind) .hero { min-height: 560px; padding: 64px 0; }
+}
