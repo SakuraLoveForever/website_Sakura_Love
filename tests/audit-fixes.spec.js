@@ -16,7 +16,7 @@ test('354px 移动布局导航有文字，设置控件完整容纳', async ({ pa
   await page.goto('/');
   await expect(page.locator('body')).toHaveCSS('padding-left', '0px');
   await expect(page.locator('.sidebar-label').first()).toHaveCSS('opacity', '1');
-  for (const style of ['apple', 'shadcn', 'tailwind']) {
+  for (const style of ['apple', 'fuwari', 'astropaper']) {
     await page.locator(`[data-design-style="${style}"]`).click();
     await expect(page.locator('body')).toHaveClass(new RegExp(`design-${style}`));
     const overflow = await page.locator('#page-bottom').evaluate(footer => [...footer.querySelectorAll('button,input,a')].filter(el => {
@@ -50,12 +50,13 @@ test('角色缩略图使用小图，键盘可选择并告知播放行为', async
 });
 
 test('暂停粒子后鼠标和普通点击均不会重绘或增殖', async ({ page }) => {
-  // 2026-10-06：粒子运动改为「默认开启」，暂停必须由用户显式点击触发，
-  // 所以这里不再依赖 prefers-reduced-motion，而是真的把开关按一下。
+  // 已删除开关，模拟之前保存的暂停状态。
+  await page.addInitScript(() => {
+    localStorage.setItem('particleMotionEnabled', 'false');
+    localStorage.setItem('particleMotionVersion', '2');
+  });
   await page.goto('/');
-  await expect(page.locator('#particle-motion-toggle')).toHaveAttribute('aria-pressed', 'true');
-  await page.evaluate(() => document.querySelector('#particle-motion-toggle').click());
-  await expect(page.locator('#particle-motion-toggle')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('#particle-canvas canvas')).toHaveCount(1);
   await page.evaluate(() => {
     window.particleDraws = 0;
     const context = document.querySelector('#particle-canvas canvas').getContext('2d');

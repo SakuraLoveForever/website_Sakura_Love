@@ -12,13 +12,13 @@
       (function () {
         var styleMap = {
           apple: "design-apple",
-          shadcn: "design-shadcn",
-          tailwind: "design-tailwind"
+          fuwari: "design-fuwari",
+          astropaper: "design-astropaper"
         };
         var bgMap = {
           apple: "#1d1d1f",
-          shadcn: "#fafafa",
-          tailwind: "#fffbf7"
+          fuwari: "#141821",
+          astropaper: "#212737"
         };
         var saved = localStorage.getItem("stylePreset") || "apple";
         var safe = styleMap[saved] ? saved : "apple";
@@ -26,9 +26,9 @@
         root.dataset.initialStyle = safe;
         root.classList.add("style-boot-pending");
         root.style.setProperty("--canvas", bgMap[safe] || bgMap.apple);
-        root.style.setProperty("--text", safe === "shadcn" ? "#18181b" : safe === "tailwind" ? "#292524" : "#f5f5f7");
+        root.style.setProperty("--text", safe === "fuwari" ? "#e5e9f0" : safe === "astropaper" ? "#eaedf3" : "#f5f5f7");
         root.style.backgroundColor = bgMap[safe] || bgMap.apple;
-        root.style.colorScheme = safe === "apple" ? "dark" : "light";
+        root.style.colorScheme = "dark";
       })();
     </script>
     <style>
@@ -36,8 +36,8 @@
         visibility: hidden;
       }
     </style>
-    <link rel="stylesheet" href="styles.css?v=20261007-10" />
-    <link rel="stylesheet" href="themes.css?v=20261007-10" />
+    <link rel="stylesheet" href="styles.css?v=20261020-12" />
+    <link rel="stylesheet" href="themes.css?v=20261020-12" />
   </head>
   <body>
     <div id="particle-canvas"></div>
@@ -45,16 +45,14 @@
       (function () {
         var styleMap = {
           apple: "design-apple",
-          shadcn: "design-shadcn",
-          tailwind: "design-tailwind"
+          fuwari: "design-fuwari",
+          astropaper: "design-astropaper"
         };
         var safe = document.documentElement.dataset.initialStyle || "apple";
         var nextClass = styleMap[safe] || styleMap.apple;
         document.documentElement.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--canvas").trim() || document.documentElement.style.backgroundColor;
         document.body.classList.add(nextClass);
-        if (safe === "apple") {
-          document.body.classList.add("theme-dark");
-        }
+        document.body.classList.add("theme-dark");
         document.documentElement.classList.remove("style-boot-pending");
       })();
     </script>
@@ -75,9 +73,6 @@
               <span class="social-icon" aria-hidden="true"></span>
             </a>
           </div>
-          <button id="language-toggle" class="language-switch" type="button" aria-label="切换语言" title="切换语言">
-            <span class="language-text">EN</span>
-          </button>
         </div>
       </nav>
     </header>
@@ -200,7 +195,7 @@
           </section>
 
           <section id="projects" class="section">
-            <div class="projects-eyebrow">SELECTED WORK / <span>12</span></div>
+            <div class="projects-eyebrow">精选作品 / <span>12</span></div>
             <h2>项目</h2>
             <p class="projects-intro">把想法做成工具，也把热爱写进作品。</p>
             <div class="projects-toolbar">
@@ -391,6 +386,10 @@
                     <span id="music-library-artist" class="player-bar-artist"></span>
                   </div>
                   <div class="player-bar-center">
+                    <select id="music-library-mode" class="music-playback-mode" aria-label="音乐收藏播放模式" title="歌曲结束后按此模式自动续播">
+                      <option value="sequential">顺序播放</option>
+                      <option value="random">随机播放</option>
+                    </select>
                     <div class="player-bar-group">
                       <button id="header-music-prev" class="player-bar-btn" type="button" aria-label="上一首" title="上一首">
                         <svg viewBox="0 0 24 24"><path d="M15 18V5L3 7v13"/><circle cx="18" cy="18" r="3"/><circle cx="5" cy="16" r="3"/></svg>
@@ -424,7 +423,7 @@
                       <svg class="mute-on-icon" viewBox="0 0 24 24"><path d="M12 3v10.55c-.34-.06-.66-.1-1-.1-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5V7h4V3h-8Z"/></svg>
                       <svg class="mute-off-icon" viewBox="0 0 24 24"><path d="M12 3v10.55c-.34-.06-.66-.1-1-.1-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5V7h4V3h-8Z"/><line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2"/></svg>
                     </button>
-                    <input id="music-library-volume" class="music-library-vol" type="range" min="0" max="100" step="1" value="70" aria-label="音量" title="音量" />
+                    <input id="music-library-volume" class="music-library-vol" type="range" min="0" max="100" step="1" value="30" aria-label="音量" title="音量" />
                   </div>
                 </div>
 
@@ -504,39 +503,15 @@
           <legend id="appearance-settings-label">外观</legend>
         <div class="design-style-switch" aria-label="切换网页风格">
           <span>风格</span>
-          <div class="design-style-options" role="group" aria-label="选择 Apple、shadcn/ui 或 Tailwind Blog 风格">
+          <div class="design-style-options" role="group" aria-label="选择 Apple、Fuwari Dark 或 AstroPaper Dark 风格">
             <button class="design-style-btn active" type="button" data-design-style="apple" aria-pressed="true">Apple</button>
-            <button class="design-style-btn" type="button" data-design-style="shadcn" aria-pressed="false">shadcn/ui</button>
-            <button class="design-style-btn" type="button" data-design-style="tailwind" aria-pressed="false">Tailwind Blog</button>
+            <button class="design-style-btn" type="button" data-design-style="fuwari" aria-pressed="false">Fuwari Dark</button>
+            <button class="design-style-btn" type="button" data-design-style="astropaper" aria-pressed="false">AstroPaper Dark</button>
           </div>
         </div>
-        <div class="view-mode-switch" aria-label="切换网页布局">
-          <span>视图</span>
-          <div class="view-mode-options" role="group" aria-label="选择网页端或移动端布局">
-            <button class="view-mode-btn active" type="button" data-layout-mode="desktop" aria-pressed="true">网页端</button>
-            <button class="view-mode-btn" type="button" data-layout-mode="mobile" aria-pressed="false">移动端</button>
-          </div>
-        </div>
-
         </fieldset>
         <fieldset class="settings-group">
-          <legend id="animation-settings-label">动画与互动</legend>
-        <div class="particle-width-switch">
-          <label for="particle-line-width">粒子粗细</label>
-          <input id="particle-line-width" type="range" min="0.8" max="3.2" step="0.2" value="1.6" aria-label="调节粒子粗细" />
-          <output id="particle-line-width-value" for="particle-line-width">1.6px</output>
-        </div>
-
-        <div class="particle-motion-switch">
-          <span>粒子运动</span>
-          <button id="particle-motion-toggle" class="page-toggle-btn active" type="button" aria-label="暂停粒子运动" aria-pressed="true">暂停</button>
-        </div>
-
-        <div class="live2d-toggle-switch" aria-label="开关看板娘">
-          <span>看板娘</span>
-          <button id="live2d-toggle" class="page-toggle-btn" type="button" aria-pressed="true">开启</button>
-        </div>
-
+          <legend id="animation-settings-label">语录</legend>
         <div class="quote-category-switch" aria-label="切换语录分类">
           <span>语录</span>
           <select id="quote-category-select" class="quote-category-select" aria-label="选择语录分类">
@@ -556,7 +531,7 @@
             <span class="social-icon" aria-hidden="true"></span>
           </a>
         </div>
-        <p>© <span id="year"></span> Sakura_Love. All rights reserved.</p>
+        <p>© <span id="year"></span> Sakura_Love. 保留所有权利。</p>
       </div>
     </footer>
 
@@ -861,7 +836,7 @@ window.quotesData=quotesData;
 
     <script src="particle-network.min.js?v=20261006-6"></script>
     <script src="assets/vendor/motion-14.0.0.js"></script>
-    <script src="script.js?v=20261007-10"></script>
+    <script src="script.js?v=20261020-12"></script>
 
     <script>
 (function(){

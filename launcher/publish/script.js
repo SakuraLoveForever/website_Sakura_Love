@@ -3,21 +3,21 @@ document.documentElement.classList.add("js");
  * 构建标记：用来确认浏览器实际加载的是哪一份 script.js。
  * 排查「改了没生效」时，在控制台执行 document.documentElement.dataset.build 即可。
  */
-document.documentElement.dataset.build = "20261007-10";
-console.info("[Sakura_Love] build 20261007-10 · 紧凑排版 + Motion 交互");
+document.documentElement.dataset.build = "20261020-12";
+console.info("[Sakura_Love] build 20261020-12 · 紧凑排版 + Motion 交互");
 const launcherMode=new URLSearchParams(window.location.search).has("launcher");
 if(launcherMode)document.documentElement.classList.add("launcher-desktop-view");
 if(launcherMode&&"scrollRestoration"in history)history.scrollRestoration="manual";
 const forceLauncherInitialView=()=>{if(launcherMode)window.scrollTo({top:0,left:0,behavior:"auto"})};
 if(launcherMode)window.addEventListener("load",()=>requestAnimationFrame(()=>requestAnimationFrame(forceLauncherInitialView)),{once:true});
 const $=(s)=>document.querySelector(s);
-const yearSpan=$("#year"),styleSelect=$("#style-select"),languageToggle=$("#language-toggle"),sidebarToggle=$("#sidebar-toggle"),sidebarAvatarButton=$("#sidebar-avatar-button"),sidebarAvatarInput=$("#sidebar-avatar-input"),sidebarLogoMark=$(".sidebar-logo-mark"),sidebarLinks=document.querySelectorAll(".sidebar-link"),designStyleButtons=document.querySelectorAll(".design-style-btn"),layoutModeButtons=document.querySelectorAll(".view-mode-btn"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),musicSeekInput=$("#music-seek"),musicTimeDisplay=$("#music-time-display"),headerMusicPrevButton=$("#header-music-prev"),headerMusicNextButton=$("#header-music-next"),headerImagePrevButton=$("#header-image-prev"),headerImageNextButton=$("#header-image-next"),pageMuteToggleButton=$("#page-mute-toggle"),muteProgressArc=$("#mute-progress-arc"),animeViewer=$(".anime-viewer"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dCanvas=$("#live2d-canvas"),live2dWidget=$("#live2d-widget"),live2dDialog=$("#live2d-dialog"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),live2dSettingsToggle=$("#live2d-settings-toggle"),live2dSettingsPanel=$("#live2d-settings-panel"),live2dToggleButton=$("#live2d-toggle"),hashActionLinks=document.querySelectorAll(".hero-actions a[href^='#'],.sidebar-link[href^='#']"),toastRoot=$("#toast-root");
+const yearSpan=$("#year"),styleSelect=$("#style-select"),sidebarToggle=$("#sidebar-toggle"),sidebarAvatarButton=$("#sidebar-avatar-button"),sidebarAvatarInput=$("#sidebar-avatar-input"),sidebarLogoMark=$(".sidebar-logo-mark"),sidebarLinks=document.querySelectorAll(".sidebar-link"),designStyleButtons=document.querySelectorAll(".design-style-btn"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),musicSeekInput=$("#music-seek"),musicTimeDisplay=$("#music-time-display"),headerMusicPrevButton=$("#header-music-prev"),headerMusicNextButton=$("#header-music-next"),headerImagePrevButton=$("#header-image-prev"),headerImageNextButton=$("#header-image-next"),pageMuteToggleButton=$("#page-mute-toggle"),muteProgressArc=$("#mute-progress-arc"),animeViewer=$(".anime-viewer"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dCanvas=$("#live2d-canvas"),live2dWidget=$("#live2d-widget"),live2dDialog=$("#live2d-dialog"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),live2dSettingsToggle=$("#live2d-settings-toggle"),live2dSettingsPanel=$("#live2d-settings-panel"),live2dToggleButton=$("#live2d-toggle"),toastRoot=$("#toast-root");
 const musicLibraryAudio=$("#music-library-audio"),musicLibraryArtist=$("#music-library-artist"),musicLibraryTitle=$("#music-library-title"),musicLibraryStatus=$("#music-api-status"),musicLocalList=$("#music-local-list"),musicLocalCount=$("#music-local-count"),musicLibraryPlay=$("#music-library-play"),musicLibraryProgress=$("#music-library-progress"),musicLibraryVolume=$("#music-library-volume"),musicLibraryMute=$("#music-library-mute"),musicLibraryTime=$("#music-library-time"),musicLibrarySource=$("#music-library-source");
-const styleMap={apple:"design-apple",shadcn:"design-shadcn",tailwind:"design-tailwind"};
+const styleMap={apple:"design-apple",fuwari:"design-fuwari",astropaper:"design-astropaper"};
 const rootThemeTokens={
   apple:{canvas:"#1d1d1f",text:"#f5f5f7",scheme:"dark"},
-  shadcn:{canvas:"#fafafa",text:"#18181b",scheme:"light"},
-  tailwind:{canvas:"#fffbf7",text:"#292524",scheme:"light"}
+  fuwari:{canvas:"#141821",text:"#e5e9f0",scheme:"dark"},
+  astropaper:{canvas:"#212737",text:"#eaedf3",scheme:"dark"}
 };
 const legacyStyleClasses=["style-warm","style-tech","style-minimal","style-melancholy"];
 let activeDesignStyleKey=localStorage.getItem("stylePreset")||"apple";
@@ -69,7 +69,7 @@ const bgCount=Object.fromEntries(Object.entries(bgFiles).map(([role,files])=>[ro
 const musicCount={"02":4,chitanda:2,kaguya:1,yachiyo:1,iroha:1,eriyi:2,elaina:1,chtholly:1,sora:3,akame:4,mine:4,esdeath:4,krul:1,shinoa:1,violet:4,toki:4};
 let bgPlayMode=localStorage.getItem("bgPlayMode")||"single",activeBgLayer=bgLayerA,bgTimer=null,currentRole=localStorage.getItem("bgCharacter")||"02",isPagePaused=true,musicEnabled=localStorage.getItem("musicEnabled")!=="false",live2dEnabled=localStorage.getItem("live2dEnabled")!=="false",_suppressSelectChange=false;
 const bgSeq={},musicSeq={},player=new Audio();
-player.loop=false;player.preload="auto";player.volume=Math.min(1,Math.max(0,Number(localStorage.getItem("musicVolume"))||0.6));player.muted=false;localStorage.removeItem("pageMuted");
+player.loop=false;player.preload="auto";player.volume=Math.min(1,Math.max(0,Number(localStorage.getItem("musicVolume")??0.3)||0));player.muted=false;localStorage.removeItem("pageMuted");
 if(live2dWidget)live2dWidget.classList.toggle("live2d-hidden",!live2dEnabled);
 const isViewerEnabled=()=>true;
 const showToast=(message)=>{if(!toastRoot)return;toastRoot.replaceChildren();const toast=document.createElement("div");toast.className="toast";toast.textContent=message;toastRoot.appendChild(toast);setTimeout(()=>toast.remove(),500)};
@@ -104,7 +104,7 @@ const withViewportPreserved=(action,{frames=2,anchor=null}={})=>{
   };
   requestAnimationFrame(tick);
 };
-const detectLayoutMode=()=>launcherMode?"desktop":/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent)||window.matchMedia?.("(pointer: coarse)")?.matches&&window.innerWidth<=920||window.innerWidth<=700?"mobile":"desktop";
+const detectLayoutMode=()=>window.innerWidth<=833?"mobile":"desktop";
 let stylePersistTimer=0;
 const persistStylePreset=(safe)=>{
   clearTimeout(stylePersistTimer);
@@ -129,7 +129,7 @@ const applyStyle=(k)=>{
   if(activeDesignStyleKey===safe
     &&activeDesignStyleClass===nextClass
     &&document.body.classList.contains(nextClass)
-    &&document.body.classList.contains("theme-dark")===(safe==="apple")){
+    &&document.body.classList.contains("theme-dark")){
     if(styleSelect&&styleSelect.value!==safe)styleSelect.value=safe;
     designStyleButtons.forEach(button=>{const active=button.dataset.designStyle===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});
     return
@@ -139,7 +139,7 @@ const applyStyle=(k)=>{
   legacyStyleClasses.forEach(cls=>{if(cls!==nextClass)document.body.classList.remove(cls)});
   activeDesignStyleKey=safe;
   activeDesignStyleClass=nextClass;
-  document.body.classList.toggle("theme-dark",safe==="apple");
+  document.body.classList.add("theme-dark");
   syncRootThemeTokens(safe);
   designStyleButtons.forEach(button=>{const active=button.dataset.designStyle===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});
   if(styleSelect&&styleSelect.value!==safe)styleSelect.value=safe;
@@ -183,7 +183,19 @@ const applyStyleSmooth=(style,afterApply=()=>{})=>{
     })
   }
 };
-const applyLayoutMode=(mode)=>{const safe=mode==="mobile"?"mobile":"desktop";document.body.classList.toggle("layout-mobile",safe==="mobile");layoutModeButtons.forEach(button=>{const active=button.dataset.layoutMode===safe;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active))});localStorage.setItem("layoutMode",safe);syncLive2dRuntime();window.dispatchEvent(new Event("site-layout-change"))};
+const applyLayoutMode=()=>{
+  const mobile=detectLayoutMode()==="mobile";
+  const changed=document.body.classList.contains("layout-mobile")!==mobile;
+  document.body.classList.toggle("layout-mobile",mobile);
+  if(localStorage.getItem("sidebarCollapsed")===null){
+    const collapsed=!mobile&&window.innerWidth<=1100;
+    document.body.classList.toggle("sidebar-collapsed",collapsed);
+    sidebarToggle?.setAttribute("aria-pressed",String(collapsed));
+    sidebarToggle?.setAttribute("aria-label",collapsed?"展开侧栏":"收起侧栏");
+  }
+  localStorage.removeItem("layoutMode");
+  if(changed){syncLive2dRuntime();window.dispatchEvent(new Event("site-layout-change"))}
+};
 const setBg=(role)=>{if(!bgLayerA||!bgLayerB)return;if(Date.now()-(setBg._ts||0)<250)return;setBg._ts=Date.now();const r=bgFiles[role]?.length?role:"02",files=bgFiles[r],idx=(bgSeq[r]||0)%files.length;bgSeq[r]=(bgSeq[r]||0)+1;currentRole=r;_suppressSelectChange=true;if(bgCharacterSelect)bgCharacterSelect.value=r;localStorage.setItem("bgCharacter",r);const prev=activeBgLayer,next=activeBgLayer===bgLayerA?bgLayerB:bgLayerA;next.classList.remove("visible");const show=()=>{next.classList.add("visible");if(prev)prev.classList.remove("visible");activeBgLayer=next;_applyStageClip(next);requestAnimationFrame(()=>syncMusicLibraryHeight())};next.src=`assets/backgrounds/${r}/${files[idx]}`;next.onload=show;next.onerror=show;if(next.complete)show()};
 const _applyStageClip=(img)=>{if(!img||!img.naturalWidth||!img.naturalHeight)return;const s=img.closest(".music-library-stage");if(!s)return;const sw=s.clientWidth,sh=s.clientHeight;if(!sw||!sh)return;const ir=img.naturalWidth/img.naturalHeight,sr=sw/sh;let dw,dh;ir>sr?(dw=sw,dh=sw/ir):(dh=sh,dw=sh*ir);const ox=(sw-dw)/2,oy=(sh-dh)/2;img.style.clipPath=`inset(${Math.round(oy)}px ${Math.round(ox)}px ${Math.round(oy)}px ${Math.round(ox)}px round 14px)`};bgLayerA?.addEventListener("load",function(){_applyStageClip(this)});bgLayerB?.addEventListener("load",function(){_applyStageClip(this)});window.addEventListener("resize",()=>{[bgLayerA,bgLayerB].forEach(_applyStageClip)},{passive:true});
 const nextRole=()=>{const start=bgRoleOrder.indexOf(currentRole);return bgRoleOrder[(start+1+bgRoleOrder.length)%bgRoleOrder.length]||"02"};
@@ -227,16 +239,13 @@ const setLive2dEnabled=(enabled,{persist=true,initialize=true}={})=>{
     else settleLive2dChrome({frames:4});
   }
 };
-let currentLanguage=localStorage.getItem("languageMode")==="en"?"en":"zh";
+const currentLanguage="zh";
 const languageCopy={
   zh:{
-    pageTitle:"Sakura_Love | 个人主页",pageDescription:"一个简洁、响应式的个人网页模板，展示个人介绍、项目与联系方式。",languageLabel:"切换语言",personalGallery:"个人画廊",intro:"把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。",viewProjects:"查看项目",contactMe:"联系我",characterWindow:"角色窗口",characterViewer:"角色欣赏",muteToggle:"角色音乐静音开关",viewerStage:"角色图片展示窗口",viewerEmpty:"打开欣赏窗口后，这里会展示角色图片。",viewerSettings:"角色欣赏设置",character:"角色",chooseCharacter:"选择背景角色",playMode:"播放模式",playModeLabel:"背景播放模式",singleRole:"单角色",allRoles:"全角色",music:"音乐",enabled:"开启",volume:"音量",volumeLabel:"调节角色音乐音量",prevSongLabel:"上一首",nextSong:"切歌",nextSongLabel:"下一首",playBtn:"播放",pauseBtn:"暂停",prevImage:"上一张",nextImageLabel:"下一张",nextImageChanged:"换图",nextRole:"切角色",imageChanged:"图片已切换",muteMusic:"禁音",unmuteMusic:"取消禁音",musicProgress:"音乐播放进度",saveThumbPos:"保存缩略图位置",songCountTemplate:"{n}首",imageCountTemplate:"{n}张",noPlayableTemplate:"{title} 暂无可播放",musicCountTemplate:"{n} 首",aboutNav:"关于",projectsNav:"项目",contactNav:"联系",aboutTitle:"关于我",education:"学习经历",awards:"获奖经历",machinery:"机械类",mathematics:"数学类",programming:"计算机程序设计类",primary:"小学",junior:"初中",senior:"高中",bachelor:"本科",master:"硕士",primaryValue:"泉州市安溪县实验小学",juniorValue:"福州市金山中学",seniorValue:"福建省福州第一中学",bachelorValue:"福州大学（机械工程及自动化）",masterValue:"厦门大学（计算机科学与技术）",awardKey:"奖项",mechAward:"第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类、设计验证类）全国二等奖。",mathAward:"2024年全国大学生数学竞赛非数学A类福建省一等奖。",icpc2024:"第49届 ICPC 国际大学生程序设计竞赛区域赛上海站铜牌。",ccpc2025:"2025年中国大学生程序设计竞赛 CCPC 福建省邀请赛银奖。",gplt:"2024、2025 年团体程序设计天梯赛 GPLT 全国个人三等奖。",baiduStar:"2025年百度之星程序设计大赛省赛银奖。",lanqiao:"2025年蓝桥杯 C++ A 组福建省一等奖，全国个人三等奖。",projectsTitle:"项目",contactTitle:"联系我",contactHtml:'邮箱：<a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',projectLifeTitle:"卷里山河，心头月色",projectLifeAria:"查看卷里山河，心头月色",projectLifeDesc:"记录阅读与长夜随记，支持目录导航和夜间模式。",projectQuotesTitle:"心灵鸡汤 - 互动语录",projectQuotesAria:"查看心灵鸡汤 - 互动语录",projectQuotesDesc:"收藏语录与灵感，按分类浏览和快速跳转。",projectKindleTitle:"Kindle笔记导出工具",projectKindleAria:"查看 Kindle 笔记导出工具",projectKindleDesc:"本地解析 Kindle 阅读笔记，便捷导出并保护隐私。",projectYoutubeTitle:"YouTube取消点赞脚本",projectYoutubeAria:"查看 YouTube 取消点赞脚本",projectYoutubeDesc:"批量取消 YouTube 点赞，简化重复点击。",projectGithubTitle:"GitHub个人首页",projectGithubAria:"查看GitHub个人首页",projectGithubDesc:"技术栈、开发成果与个人介绍的 GitHub 入口。",projectPcGuardTitle:"电脑守护精灵",projectPcGuardAria:"查看电脑守护精灵",projectPcGuardDesc:"管理 Windows 启动项与定时电源计划。",projectAnimeTitle:"AI 追番助手",projectAnimeAria:"查看AI 追番助手",projectAnimeDesc:"多源番剧搜索与追剧管理，支持 DeepSeek 智能填充。",projectMacroflowTitle:"MacroFlowStudio",projectMacroflowDesc:"键鼠宏录制与工作流编排，支持图像定位和离线 OCR。",projectMacroflowAria:"查看 MacroFlowStudio",projectFilegoTitle:"FileGo",projectFilegoDesc:"文件传输与定时任务，让重复操作自动完成。",projectFilegoAria:"查看 FileGo",projectTabsyncTitle:"tab-sync",projectTabsyncDesc:"在 Chrome、Edge 和 Firefox 之间迁移标签页。",projectTabsyncAria:"查看 tab-sync",projectAppcounterTitle:"AppCounter",projectAppcounterDesc:"统计 Windows 应用使用时间，了解自己的数字习惯。",projectAppcounterAria:"查看 AppCounter",projectAutocleanTitle:"auto_clean",projectAutocleanDesc:"自动清理文件，减少手动整理的时间。",projectAutocleanAria:"查看 auto_clean",live2dOpen:"展开看板娘设置",live2dSettings:"看板娘设置",live2dToggle:"看板娘",live2dSwitch:"看板娘",live2dOn:"开启",live2dOff:"关闭",live2dModel:"看板娘角色",chooseLive2dModel:"选择看板娘角色",live2dSize:"看板娘大小",adjustLive2dSize:"调节看板娘大小",top:"顶部",topAria:"回到顶部",bottom:"底部",bottomAria:"跳到底部",style:"风格",styleAria:"切换网页风格",styleGroup:"选择 Apple、shadcn/ui 或 Tailwind Blog 风格",view:"视图",viewAria:"切换网页布局",viewGroup:"选择网页端或移动端布局",desktop:"网页端",mobile:"移动端",xhs:"小红书",xhsHome:"小红书主页",githubHome:"GitHub主页",bilibiliHome:"Bilibili主页",quoteCategory:"语录",quoteAllRandom:"全部随机",quoteOrder:"正序",quoteReverse:"倒序",switchQuoteCategory:"切换语录分类",chooseQuoteCategory:"选择语录分类",switchQuoteOrder:"切换语录顺序",toggleQuoteOrder:"切换正序/倒序",scrollSpeed:"滚动速度",adjustScrollSpeed:"调节滚动速度",adjustProjectScrollSpeed:"调节项目卡片滚动速度",musicLibraryTitle:"音乐收藏",pageSettingsTitle:"页面设置",thumbPosNoData:"⚠️ 没有可保存的缩略图",thumbPosSaved:"✓ 已保存 {n} 个缩略图位置",thumbPosPartial:"⚠️ 仅保存 {s}/{t} 个（{f} 个失败）",musicPausedToast:"音乐已暂停",musicResumedToast:"音乐继续播放",avatarSaveProject:"头像已保存到项目中",avatarSaveLocal:"头像已更新 — 请将下载的 avatar.png 放入 assets/ 文件夹",imageTooLarge:"图片太大了",avatarSetByOwner:"头像由站长设置",live2dToggleAria:"开关看板娘",live2dDefaultName:"看板娘",live2dReturnMessage:"哇，你终于回来了~",resumeCharMusic:"继续播放",pauseCharMusic:"暂停播放",languageUpdated:"语言已切换",darkOn:"夜间模式已开启",darkOff:"夜间模式已关闭",mobileLayout:"已切换移动端布局",desktopLayout:"已切换网页端布局",bgRoleChanged:"欣赏角色已切换",playModeUpdated:"播放模式已更新",musicOn:"音乐已开启",musicOff:"音乐已关闭",live2dModelChanged:"看板娘角色已切换",songChanged:"歌曲已切换",roleChanged:"角色已切换",muted:"已静音",unmuted:"已取消静音",mute:"静音",unmute:"取消静音"
+    pageTitle:"Sakura_Love | 个人主页",pageDescription:"一个简洁、响应式的个人网页模板，展示个人介绍、项目与联系方式。",languageLabel:"切换语言",personalGallery:"个人画廊",intro:"把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。",viewProjects:"查看项目",contactMe:"联系我",characterWindow:"角色窗口",characterViewer:"角色欣赏",muteToggle:"角色音乐静音开关",viewerStage:"角色图片展示窗口",viewerEmpty:"打开欣赏窗口后，这里会展示角色图片。",viewerSettings:"角色欣赏设置",character:"角色",chooseCharacter:"选择背景角色",playMode:"播放模式",playModeLabel:"背景播放模式",singleRole:"单角色",allRoles:"全角色",music:"音乐",enabled:"开启",volume:"音量",volumeLabel:"调节角色音乐音量",prevSongLabel:"上一首",nextSong:"切歌",nextSongLabel:"下一首",playBtn:"播放",pauseBtn:"暂停",prevImage:"上一张",nextImageLabel:"下一张",nextImageChanged:"换图",nextRole:"切角色",imageChanged:"图片已切换",muteMusic:"禁音",unmuteMusic:"取消禁音",musicProgress:"音乐播放进度",saveThumbPos:"保存缩略图位置",songCountTemplate:"{n}首",imageCountTemplate:"{n}张",noPlayableTemplate:"{title} 暂无可播放",musicCountTemplate:"{n} 首",aboutNav:"关于",projectsNav:"项目",contactNav:"联系",aboutTitle:"关于我",education:"学习经历",awards:"获奖经历",machinery:"机械类",mathematics:"数学类",programming:"计算机程序设计类",primary:"小学",junior:"初中",senior:"高中",bachelor:"本科",master:"硕士",primaryValue:"泉州市安溪县实验小学",juniorValue:"福州市金山中学",seniorValue:"福建省福州第一中学",bachelorValue:"福州大学（机械工程及自动化）",masterValue:"厦门大学（计算机科学与技术）",awardKey:"奖项",mechAward:"第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类、设计验证类）全国二等奖。",mathAward:"2024年全国大学生数学竞赛非数学A类福建省一等奖。",icpc2024:"第49届 ICPC 国际大学生程序设计竞赛区域赛上海站铜牌。",ccpc2025:"2025年中国大学生程序设计竞赛 CCPC 福建省邀请赛银奖。",gplt:"2024、2025 年团体程序设计天梯赛 GPLT 全国个人三等奖。",baiduStar:"2025年百度之星程序设计大赛省赛银奖。",lanqiao:"2025年蓝桥杯 C++ A 组福建省一等奖，全国个人三等奖。",projectsTitle:"项目",contactTitle:"联系我",contactHtml:'邮箱：<a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',projectLifeTitle:"卷里山河，心头月色",projectLifeAria:"查看卷里山河，心头月色",projectLifeDesc:"记录阅读与长夜随记，支持目录导航和夜间模式。",projectQuotesTitle:"心灵鸡汤 - 互动语录",projectQuotesAria:"查看心灵鸡汤 - 互动语录",projectQuotesDesc:"收藏语录与灵感，按分类浏览和快速跳转。",projectKindleTitle:"Kindle笔记导出工具",projectKindleAria:"查看 Kindle 笔记导出工具",projectKindleDesc:"本地解析 Kindle 阅读笔记，便捷导出并保护隐私。",projectYoutubeTitle:"YouTube取消点赞脚本",projectYoutubeAria:"查看 YouTube 取消点赞脚本",projectYoutubeDesc:"批量取消 YouTube 点赞，简化重复点击。",projectGithubTitle:"GitHub个人首页",projectGithubAria:"查看GitHub个人首页",projectGithubDesc:"技术栈、开发成果与个人介绍的 GitHub 入口。",projectPcGuardTitle:"电脑守护精灵",projectPcGuardAria:"查看电脑守护精灵",projectPcGuardDesc:"管理 Windows 启动项与定时电源计划。",projectAnimeTitle:"AI 追番助手",projectAnimeAria:"查看AI 追番助手",projectAnimeDesc:"多源番剧搜索与追剧管理，支持 DeepSeek 智能填充。",projectMacroflowTitle:"MacroFlowStudio",projectMacroflowDesc:"键鼠宏录制与工作流编排，支持图像定位和离线 OCR。",projectMacroflowAria:"查看 MacroFlowStudio",projectFilegoTitle:"FileGo",projectFilegoDesc:"文件传输与定时任务，让重复操作自动完成。",projectFilegoAria:"查看 FileGo",projectTabsyncTitle:"tab-sync",projectTabsyncDesc:"在 Chrome、Edge 和 Firefox 之间迁移标签页。",projectTabsyncAria:"查看 tab-sync",projectAppcounterTitle:"AppCounter",projectAppcounterDesc:"统计 Windows 应用使用时间，了解自己的数字习惯。",projectAppcounterAria:"查看 AppCounter",projectAutocleanTitle:"auto_clean",projectAutocleanDesc:"自动清理文件，减少手动整理的时间。",projectAutocleanAria:"查看 auto_clean",live2dOpen:"展开看板娘设置",live2dSettings:"看板娘设置",live2dToggle:"看板娘",live2dSwitch:"看板娘",live2dOn:"开启",live2dOff:"关闭",live2dModel:"看板娘角色",chooseLive2dModel:"选择看板娘角色",live2dSize:"看板娘大小",adjustLive2dSize:"调节看板娘大小",top:"顶部",topAria:"回到顶部",bottom:"底部",bottomAria:"跳到底部",style:"风格",styleAria:"切换网页风格",styleGroup:"选择 Apple、Fuwari Dark 或 AstroPaper Dark 风格",view:"视图",viewAria:"切换网页布局",viewGroup:"选择网页端或移动端布局",desktop:"网页端",mobile:"移动端",xhs:"小红书",xhsHome:"小红书主页",githubHome:"GitHub主页",bilibiliHome:"Bilibili主页",quoteCategory:"语录",quoteAllRandom:"全部随机",quoteOrder:"正序",quoteReverse:"倒序",switchQuoteCategory:"切换语录分类",chooseQuoteCategory:"选择语录分类",switchQuoteOrder:"切换语录顺序",toggleQuoteOrder:"切换正序/倒序",scrollSpeed:"滚动速度",adjustScrollSpeed:"调节滚动速度",adjustProjectScrollSpeed:"调节项目卡片滚动速度",musicLibraryTitle:"音乐收藏",pageSettingsTitle:"页面设置",thumbPosNoData:"⚠️ 没有可保存的缩略图",thumbPosSaved:"✓ 已保存 {n} 个缩略图位置",thumbPosPartial:"⚠️ 仅保存 {s}/{t} 个（{f} 个失败）",musicPausedToast:"音乐已暂停",musicResumedToast:"音乐继续播放",avatarSaveProject:"头像已保存到项目中",avatarSaveLocal:"头像已更新 — 请将下载的 avatar.png 放入 assets/ 文件夹",imageTooLarge:"图片太大了",avatarSetByOwner:"头像由站长设置",live2dToggleAria:"开关看板娘",live2dDefaultName:"看板娘",live2dReturnMessage:"哇，你终于回来了~",resumeCharMusic:"继续播放",pauseCharMusic:"暂停播放",languageUpdated:"语言已切换",darkOn:"夜间模式已开启",darkOff:"夜间模式已关闭",mobileLayout:"已切换移动端布局",desktopLayout:"已切换网页端布局",bgRoleChanged:"欣赏角色已切换",playModeUpdated:"播放模式已更新",musicOn:"音乐已开启",musicOff:"音乐已关闭",live2dModelChanged:"看板娘角色已切换",roleChanged:"角色已切换",muted:"已静音",unmuted:"已取消静音",mute:"静音",unmute:"取消静音"
   },
-  en:{
-    pageTitle:"Sakura_Love | Personal Site",pageDescription:"A clean, responsive personal website for profile, projects, and contact links.",languageLabel:"Switch language",personalGallery:"Personal Gallery",intro:"A quiet personal homepage for competitions, engineering, reading, and a little anime-inspired warmth.",viewProjects:"View Projects",contactMe:"Contact Me",characterWindow:"Character Window",characterViewer:"Character Viewer",muteToggle:"Toggle character music mute",viewerStage:"Character image display window",viewerEmpty:"Open the viewer and character images will appear here.",viewerSettings:"Character viewer settings",character:"Character",chooseCharacter:"Choose background character",playMode:"Playback Mode",playModeLabel:"Background playback mode",singleRole:"Single Character",allRoles:"All Characters",music:"Music",enabled:"Enabled",volume:"Volume",volumeLabel:"Adjust character music volume",prevSongLabel:"Previous song",nextSong:"Next song",nextSongLabel:"Next song",playBtn:"Play",pauseBtn:"Pause",prevImage:"Previous image",nextImageLabel:"Next image",nextImageChanged:"Next image",nextRole:"Next character",imageChanged:"Image changed",muteMusic:"Mute",unmuteMusic:"Unmute",musicProgress:"Playback progress",saveThumbPos:"Save thumbnail position",songCountTemplate:"{n} songs",imageCountTemplate:"{n} images",noPlayableTemplate:"{title} not playable",musicCountTemplate:"{n} tracks",aboutNav:"About",projectsNav:"Projects",contactNav:"Contact",aboutTitle:"About Me",education:"Education",awards:"Awards",machinery:"Mechanical Design",mathematics:"Mathematics",programming:"Programming",primary:"Primary School",junior:"Junior High",senior:"Senior High",bachelor:"Bachelor",master:"Master",primaryValue:"Anxi Experimental Primary School, Quanzhou",juniorValue:"Jinshan Middle School, Fuzhou",seniorValue:"Fuzhou No.1 High School, Fujian",bachelorValue:"Fuzhou University (Mechanical Engineering and Automation)",masterValue:"Xiamen University (Computer Science and Technology)",awardKey:"Award",mechAward:"National Second Prize in the first undergraduate mechanical design fundamentals practice competition.",mathAward:"First Prize, Fujian Province, 2024 National College Student Mathematics Competition, Non-Math A group.",icpc2024:"Bronze Medal, ICPC 2024 Shanghai Regional Contest.",ccpc2025:"Silver Medal, CCPC 2025 Fujian Invitational Contest.",gplt:"National Individual Third Prize, GPLT Team Programming Contest in 2024 and 2025.",baiduStar:"Provincial Silver Medal, Baidu Star Programming Contest 2025.",lanqiao:"First Prize in Fujian Province and National Individual Third Prize, Lanqiao Cup 2025 C++ A group.",projectsTitle:"Projects",contactTitle:"Contact",contactHtml:'Email: <a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub: <a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',projectLifeTitle:"Mountains in Pages, Moonlight in Mind",projectLifeAria:"View Mountains in Pages, Moonlight in Mind",projectLifeDesc:"Reading notes with a table of contents and night mode.",projectQuotesTitle:"Soul Quotes Archive",projectQuotesAria:"View Soul Quotes Archive",projectQuotesDesc:"Browse collected quotes and inspiration by category.",projectKindleTitle:"Kindle Notes Exporter",projectKindleAria:"View Kindle Notes Exporter",projectKindleDesc:"Parse and export Kindle notes locally, keeping your data private.",projectYoutubeTitle:"YouTube Unlike Helper",projectYoutubeAria:"View YouTube Unlike Helper",projectYoutubeDesc:"Remove YouTube likes in batches with fewer repetitive clicks.",projectGithubTitle:"GitHub Profile",projectGithubAria:"View GitHub Profile",projectGithubDesc:"Explore my technology stack, projects, and GitHub profile.",projectPcGuardTitle:"PC Guardian",projectPcGuardAria:"View PC Guardian",projectPcGuardDesc:"Manage Windows startup entries and scheduled power plans.",projectAnimeTitle:"AI Anime Tracker",projectAnimeAria:"View AI Anime Tracker",projectAnimeDesc:"Find and track anime, with DeepSeek-assisted information filling.",projectMacroflowTitle:"MacroFlowStudio",projectMacroflowDesc:"A macro studio for workflows, image matching, and offline OCR.",projectMacroflowAria:"View MacroFlowStudio",projectFilegoTitle:"FileGo",projectFilegoDesc:"File transfers and scheduled tasks for everyday automation.",projectFilegoAria:"View FileGo",projectTabsyncTitle:"tab-sync",projectTabsyncDesc:"Move tabs between Chrome, Edge, and Firefox.",projectTabsyncAria:"View tab-sync",projectAppcounterTitle:"AppCounter",projectAppcounterDesc:"Track time spent in Windows apps and understand your digital habits.",projectAppcounterAria:"View AppCounter",projectAutocleanTitle:"auto_clean",projectAutocleanDesc:"Automate file cleanup and spend less time organizing.",projectAutocleanAria:"View auto_clean",live2dOpen:"Open Live2D settings",live2dSettings:"Live2D settings",live2dToggle:"Live2D",live2dSwitch:"Live2D mascot",live2dModel:"Live2D Model",chooseLive2dModel:"Choose Live2D model",live2dSize:"Live2D Size",adjustLive2dSize:"Adjust Live2D size",top:"Top",topAria:"Back to top",bottom:"Bottom",bottomAria:"Jump to bottom",style:"Style",styleAria:"Switch website style",styleGroup:"Choose Apple, shadcn/ui, or Tailwind Blog style",view:"View",viewAria:"Switch website layout",viewGroup:"Choose desktop or mobile layout",desktop:"Desktop",mobile:"Mobile",xhs:"Xiaohongshu",xhsHome:"Xiaohongshu profile",githubHome:"GitHub profile",bilibiliHome:"Bilibili profile",quoteCategory:"Quotes",quoteAllRandom:"All Random",quoteOrder:"Forward",quoteReverse:"Reverse",switchQuoteCategory:"Switch quote category",chooseQuoteCategory:"Choose quote category",switchQuoteOrder:"Switch quote order",toggleQuoteOrder:"Toggle order",scrollSpeed:"Scroll Speed",adjustScrollSpeed:"Adjust scroll speed",adjustProjectScrollSpeed:"Adjust project card scroll speed",musicLibraryTitle:"Music Collection",pageSettingsTitle:"Page Settings",thumbPosNoData:"No thumbnails to save",thumbPosSaved:"Saved {n} thumbnail positions",thumbPosPartial:"Only saved {s}/{t} ({f} failed)",musicPausedToast:"Music paused",musicResumedToast:"Music resumed",avatarSaveProject:"Avatar saved to project",avatarSaveLocal:"Avatar updated — place avatar.png into assets/ folder",imageTooLarge:"Image is too large",avatarSetByOwner:"Avatar set by site owner",live2dToggleAria:"Toggle Live2D mascot",live2dDefaultName:"Live2D mascot",live2dReturnMessage:"Hey, you're back~",resumeCharMusic:"Resume music",pauseCharMusic:"Pause music",languageUpdated:"Language switched",darkOn:"Dark mode enabled",darkOff:"Dark mode disabled",mobileLayout:"Switched to mobile layout",desktopLayout:"Switched to desktop layout",bgRoleChanged:"Character changed",playModeUpdated:"Playback mode updated",musicOn:"Music enabled",musicOff:"Music disabled",live2dModelChanged:"Live2D model changed",songChanged:"Song changed",roleChanged:"Character changed",muted:"Muted",unmuted:"Unmuted",mute:"Mute",unmute:"Unmute"
-  }
 };
-const ui=(key)=>languageCopy[currentLanguage]?.[key]||languageCopy.zh[key]||key;
+const ui=(key)=>languageCopy.zh[key]||key;
 const setText=(selector,text)=>{const el=$(selector);if(el)el.textContent=text};
 const setHtml=(selector,html)=>{const el=$(selector);if(el)el.innerHTML=html};
 const setAttr=(selector,attr,value)=>{const el=$(selector);if(el)el.setAttribute(attr,value)};
@@ -266,11 +275,10 @@ document.querySelectorAll("[data-project-filter]").forEach(button=>button.addEve
   updateSidebarActive();
 }));
 let live2dReturnMessage="";
-const applyLanguage=(mode)=>{
-  const safe=mode==="en"?"en":"zh",copy=languageCopy[mode==="en"?"en":"zh"];
-  currentLanguage=safe;document.documentElement.lang=safe==="en"?"en":"zh-CN";document.title=copy.pageTitle;
+const applyLanguage=()=>{
+  const safe="zh",copy=languageCopy.zh;
+  document.documentElement.lang="zh-CN";document.title=copy.pageTitle;
   const meta=document.querySelector('meta[name="description"]');if(meta)meta.setAttribute("content",copy.pageDescription);
-  if(languageToggle){languageToggle.setAttribute("aria-label",copy.languageLabel);languageToggle.setAttribute("title",copy.languageLabel);const text=languageToggle.querySelector(".language-text");if(text)text.textContent=safe==="en"?"中":"EN"}
   setText(".hero-copy .eyebrow",copy.personalGallery);setText(".hero-copy .intro",copy.intro);setText(".hero-actions .btn.primary",copy.viewProjects);setText(".hero-actions .btn.secondary",copy.contactMe);
   setText(".anime-viewer-head .eyebrow",copy.characterWindow);setText("#anime-viewer-title",copy.characterViewer);setAttr("#page-mute-toggle","aria-label",copy.muteToggle);setAttr(".anime-viewer-stage","aria-label",copy.viewerStage);setText(".anime-viewer-empty",copy.viewerEmpty);setAttr(".anime-viewer-settings","aria-label",copy.viewerSettings);
   setText("#bg-character-wrap .control-title",copy.character);setAttr("#bg-character-select","aria-label",copy.chooseCharacter);setText(".anime-viewer-settings .control-group:nth-of-type(2) .control-title",copy.playMode);setAttr("#bg-play-mode","aria-label",copy.playModeLabel);setText('#bg-play-mode option[value="single"]',copy.singleRole);setText('#bg-play-mode option[value="all"]',copy.allRoles);setText(".anime-viewer-settings .control-group:nth-of-type(3) .control-title",copy.music);setText(".check-row span",copy.enabled);setAttr("#music-toggle","aria-label",copy.music);setAttr("#music-volume","aria-label",copy.volumeLabel);setAttr("#music-volume","title",copy.volume);setAttr("#header-music-prev","aria-label",copy.prevSongLabel);setAttr("#header-music-prev","title",copy.prevSongLabel);setAttr("#music-library-play","aria-label",copy.playBtn);setAttr("#header-music-next","aria-label",copy.nextSongLabel);setAttr("#header-music-next","title",copy.nextSongLabel);setAttr("#header-image-prev","aria-label",copy.prevImage);setAttr("#header-image-prev","title",copy.prevImage);setAttr("#header-image-next","aria-label",copy.nextImageLabel);setAttr("#header-image-next","title",copy.nextImageLabel);setAttr("#music-library-mute","aria-label",copy.muteMusic);setAttr("#music-library-mute","title",copy.muteMusic);setAttr("#music-library-progress","aria-label",copy.musicProgress);setAttr("#music-library-volume","aria-label",copy.volume);setAttr("#music-library-volume","title",copy.volume);setAttr("#music-save-thumb-pos","aria-label",copy.saveThumbPos);setAttr("#music-save-thumb-pos","title",copy.saveThumbPos);
@@ -298,12 +306,12 @@ const applyLanguage=(mode)=>{
   setAttr('[data-live2d-size-step="-10"]',"aria-label",safe==="en"?"Smaller character":"缩小看板娘");
   setAttr('[data-live2d-size-step="10"]',"aria-label",safe==="en"?"Larger character":"放大看板娘");
   setText('.jump-btn[href="#page-top"]',copy.top);setAttr('.jump-btn[href="#page-top"]',"aria-label",copy.topAria);setText('.jump-btn[href="#page-bottom"]',copy.bottom);setAttr('.jump-btn[href="#page-bottom"]',"aria-label",copy.bottomAria);
-  setText(".design-style-switch > span",copy.style);setAttr(".design-style-switch","aria-label",copy.styleAria);setAttr(".design-style-options","aria-label",copy.styleGroup);setText(".view-mode-switch > span",copy.view);setAttr(".view-mode-switch","aria-label",copy.viewAria);setAttr(".view-mode-options","aria-label",copy.viewGroup);setText('.view-mode-btn[data-layout-mode="desktop"]',copy.desktop);setText('.view-mode-btn[data-layout-mode="mobile"]',copy.mobile);
+  setText(".design-style-switch > span",copy.style);setAttr(".design-style-switch","aria-label",copy.styleAria);setAttr(".design-style-options","aria-label",copy.styleGroup);
   setText(".particle-width-switch label",safe==="en"?"Particle width":"粒子粗细");setAttr("#particle-line-width","aria-label",safe==="en"?"Adjust particle thickness":"调节粒子粗细");
   setAttr(".social-xhs","aria-label",copy.xhs);setAttr(".social-xhs","title",copy.xhs);setAttr(".social-links-bottom .social-xhs","aria-label",copy.xhsHome);setAttr(".social-github","aria-label","GitHub");setAttr(".social-github","title","GitHub");setAttr(".social-links-bottom .social-github","aria-label",copy.githubHome);setAttr(".social-bilibili","aria-label","Bilibili");setAttr(".social-bilibili","title","Bilibili");setAttr(".social-links-bottom .social-bilibili","aria-label",copy.bilibiliHome);
   setText("#music-library h2",copy.musicLibraryTitle);setText(".footer-settings-title",copy.pageSettingsTitle);
   setText("#appearance-settings-label",safe==="en"?"Appearance":"外观");
-  setText("#animation-settings-label",safe==="en"?"Animation & interaction":"动画与互动");
+  setText("#animation-settings-label","语录");
   setText(".quote-category-switch > span",copy.quoteCategory);setAttr(".quote-category-switch","aria-label",copy.switchQuoteCategory);setAttr("#quote-category-select","aria-label",copy.chooseQuoteCategory);setAttr("#quote-order-toggle","aria-label",copy.switchQuoteOrder);setAttr("#quote-order-toggle","title",copy.toggleQuoteOrder);const _qot=document.getElementById("quote-order-toggle");if(_qot){let _forward=true;try{_forward=clickTextForward}catch(e){}_qot.textContent=_forward?copy.quoteOrder:copy.quoteReverse}
   localStorage.setItem("languageMode",safe);live2dReturnMessage=copy.live2dReturnMessage;playModeUI();updateMusicButtonState();syncLive2dToggleUI();renderMusicLibraryList();syncMusicLibraryMuteUI();updateMusicLibraryPlayState();
 };
@@ -314,6 +322,40 @@ const setSidebarCollapsed=(collapsed)=>{
   applyLanguage(currentLanguage);
 };
 let sidebarActiveLockId=null,sidebarActiveLockTimer=null;
+// One shared indicator: the leading edge reaches the next row before the tail.
+const sidebarMenu=$(".sidebar-menu");
+const sidebarIndicator=document.createElement("span");
+sidebarIndicator.className="sidebar-selection-indicator";
+sidebarIndicator.setAttribute("aria-hidden","true");
+sidebarMenu?.appendChild(sidebarIndicator);
+let sidebarIndicatorTarget="";
+const syncSidebarIndicator=(animate=true)=>{
+  const active=sidebarMenu?.querySelector(".sidebar-link.active");
+  if(!active)return;
+  const horizontal=document.body.classList.contains("layout-mobile");
+  const start=horizontal?active.offsetLeft+(active.offsetWidth-16)/2:active.offsetTop+(active.offsetHeight-16)/2;
+  const extent=horizontal?sidebarMenu.clientWidth:sidebarMenu.clientHeight;
+  const cross=horizontal?active.offsetTop+active.offsetHeight-4:0;
+  const target=`${horizontal}:${start}:${extent}:${cross}`;
+  if(target===sidebarIndicatorTarget)return;
+  const previous=Number(sidebarIndicator.dataset.start??start);
+  const ready=Boolean(sidebarIndicatorTarget)&&animate;
+  sidebarIndicator.classList.toggle("is-horizontal",horizontal);
+  sidebarIndicator.classList.toggle("is-forward",start>=previous);
+  sidebarIndicator.classList.toggle("is-animated",ready);
+  // Clear the other axis when the responsive navigation changes orientation.
+  sidebarIndicator.style.top=horizontal?`${cross}px`:`${start}px`;
+  sidebarIndicator.style.bottom=horizontal?"":`${extent-start-16}px`;
+  sidebarIndicator.style.left=horizontal?`${start}px`:"";
+  sidebarIndicator.style.right=horizontal?`${extent-start-16}px`:"";
+  sidebarIndicator.dataset.start=String(start);
+  sidebarIndicatorTarget=target;
+};
+if(sidebarMenu){
+  const observer=new ResizeObserver(()=>syncSidebarIndicator(false));
+  observer.observe(sidebarMenu);
+  sidebarLinks.forEach(link=>observer.observe(link));
+}
 const updateSidebarActive=(targetId=null)=>{
   const sections=["hero","about","projects","music-library","contact","page-bottom"].map(id=>document.getElementById(id)).filter(Boolean);
   const scrollMax=document.documentElement.scrollHeight-window.innerHeight;
@@ -321,14 +363,70 @@ const updateSidebarActive=(targetId=null)=>{
   const probeY=Math.min(window.innerHeight*0.38,360);
   const hashId=window.location.hash?decodeURIComponent(window.location.hash.slice(1)):"";
   const endTarget=targetId||sidebarActiveLockId||hashId;
-  const current=targetId||sidebarActiveLockId||(atPageEnd&&["contact","page-bottom"].includes(endTarget)?endTarget:sections.reduce((active,section)=>section.getBoundingClientRect().top<=probeY?section.id:active,"hero"));
+  const endSection=sections.find(section=>section.id===endTarget);
+  const endRect=endSection?.getBoundingClientRect();
+  // Short sections near the footer cannot reach the normal scroll probe.
+  const clampedAtEnd=atPageEnd&&endRect&&endRect.top<window.innerHeight&&endRect.bottom>0
+    &&endRect.top+window.scrollY-(parseFloat(getComputedStyle(endSection).scrollMarginTop)||0)>scrollMax;
+  const current=targetId||sidebarActiveLockId||(clampedAtEnd?endTarget:sections.reduce((active,section)=>section.getBoundingClientRect().top<=probeY?section.id:active,"hero"));
   const activeMap={hero:"home",about:"about",projects:"projects","music-library":"music",contact:"contact","page-bottom":"settings"};
-  sidebarLinks.forEach(link=>link.classList.toggle("active",link.dataset.navKey===activeMap[current]));
+  sidebarLinks.forEach(link=>{
+    const active=link.dataset.navKey===activeMap[current];
+    link.classList.toggle("active",active);
+    if(active)link.setAttribute("aria-current","location");
+    else link.removeAttribute("aria-current");
+  });
+  syncSidebarIndicator();
 };
-const scrollToSidebarTarget=(targetId)=>{
-  if(targetId!=="page-bottom")return;
-  const scrollBottom=()=>window.scrollTo({top:document.documentElement.scrollHeight,left:0,behavior:"smooth"});
-  requestAnimationFrame(()=>requestAnimationFrame(scrollBottom));
+let navigationFrame=0;
+const cancelContentNavigation=()=>{
+  cancelAnimationFrame(navigationFrame);
+  navigationFrame=0;
+  document.body.classList.remove("content-navigating");
+  clearTimeout(sidebarActiveLockTimer);
+  sidebarActiveLockId=null;
+  updateSidebarActive();
+};
+const scrollToSidebarTarget=(targetId,{updateHistory=true,animateScroll=!prefersReducedMotion()}={})=>{
+  const section=document.getElementById(targetId);
+  if(!section)return;
+  cancelContentNavigation();
+  // Reveal once before measuring: nested entrance transforms move the endpoint.
+  document.body.classList.add("content-navigating");
+  document.querySelectorAll("main .reveal-on-scroll,.site-footer.reveal-on-scroll").forEach(element=>element.classList.add("is-revealed"));
+  lockSidebarActive(targetId==="page-top"?"hero":targetId);
+  if("scrollRestoration" in history)history.scrollRestoration="manual";
+  if(updateHistory&&location.hash!==`#${targetId}`)history.pushState(null,"",`#${targetId}`);
+  const start=window.scrollY;
+  const destination=()=>{
+    const max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
+    if(targetId==="page-bottom")return max;
+    if(targetId==="page-top"||targetId==="hero")return 0;
+    return clamp(section.getBoundingClientRect().top+window.scrollY-(parseFloat(getComputedStyle(section).scrollMarginTop)||0),0,max);
+  };
+  const finish=()=>{
+    navigationFrame=0;
+    document.body.classList.remove("content-navigating");
+    clearTimeout(sidebarActiveLockTimer);
+    sidebarActiveLockTimer=setTimeout(()=>{sidebarActiveLockId=null;updateSidebarActive()},160);
+  };
+  const targetY=destination();
+  const distance=targetY-start;
+  if(!animateScroll||Math.abs(distance)<2){
+    window.scrollTo({top:targetY,behavior:"instant"});
+    finish();
+    return;
+  }
+  const started=performance.now();
+  const duration=clamp(Math.abs(distance)*.375,360,1100);
+  const tick=(now)=>{
+    const t=Math.min(1,(now-started)/duration);
+    const eased=t*t*(3-2*t);
+    window.scrollTo({top:start+distance*eased,behavior:"instant"});
+    if(t<1)navigationFrame=requestAnimationFrame(tick);
+    else finish();
+  };
+  navigationFrame=requestAnimationFrame(tick);
 };
 const lockSidebarActive=(targetId)=>{
   sidebarActiveLockId=targetId;
@@ -353,11 +451,20 @@ const getMusicFallbackTracks=()=>Object.entries(musicCount).flatMap(([role,count
   trackNumber:index+1
 })));
 let musicLocalTracks=[],musicLibraryTracks=[],musicLibraryIndex=0,musicLibrarySeekDragging=false,musicLibraryLoaded=false;
+const musicLibraryModeSelect=$("#music-library-mode");
+let musicLibraryMode=localStorage.getItem("musicLibraryMode")==="random"?"random":"sequential";
+if(musicLibraryModeSelect){
+  musicLibraryModeSelect.value=musicLibraryMode;
+  musicLibraryModeSelect.addEventListener("change",()=>{
+    musicLibraryMode=musicLibraryModeSelect.value==="random"?"random":"sequential";
+    localStorage.setItem("musicLibraryMode",musicLibraryMode);
+  });
+}
 const setMusicLibraryStatus=(text)=>{if(musicLibraryStatus)musicLibraryStatus.textContent=text};
 const getMusicTrackIndex=(track)=>musicLibraryTracks.findIndex(item=>item.id===track?.id);
 const syncMusicTrackGroups=()=>{
   const activeId=musicLibraryTracks[musicLibraryIndex]?.id;
-  musicLibraryTracks=[...musicLocalTracks];
+  musicLibraryTracks=[...musicLocalTracks].sort((a,b)=>bgRoleOrder.indexOf(a.role)-bgRoleOrder.indexOf(b.role)||a.trackNumber-b.trackNumber);
   const nextIndex=musicLibraryTracks.findIndex(track=>track.id===activeId);
   musicLibraryIndex=nextIndex>=0?nextIndex:Math.min(musicLibraryIndex,Math.max(0,musicLibraryTracks.length-1));
   if(musicLocalCount)musicLocalCount.textContent=String(musicLocalTracks.length);
@@ -366,6 +473,10 @@ const getAdjacentMusicIndex=(delta)=>{
   const visibleTracks=musicLibraryTracks.filter(track=>track.audioUrl);
   if(!visibleTracks.length)return -1;
   const currentId=musicLibraryTracks[musicLibraryIndex]?.id;
+  if(musicLibraryMode==="random"){
+    const candidates=visibleTracks.filter(track=>track.id!==currentId);
+    return getMusicTrackIndex(candidates.length?candidates[Math.floor(Math.random()*candidates.length)]:visibleTracks[0]);
+  }
   const currentVisibleIndex=Math.max(0,visibleTracks.findIndex(track=>track.id===currentId));
   const nextTrack=visibleTracks[(currentVisibleIndex+delta+visibleTracks.length)%visibleTracks.length];
   return getMusicTrackIndex(nextTrack);
@@ -547,24 +658,12 @@ const commitMusicLibrarySeek=()=>{
   }
 };
 const prevMusicLibraryTrack=()=>{
-  const role=currentRole;
-  const roleTracks=musicLibraryTracks.filter(t=>t.role===role&&t.audioUrl);
-  if(!roleTracks.length)return;
-  const currentId=musicLibraryTracks[musicLibraryIndex]?.id;
-  const currentIdx=roleTracks.findIndex(t=>t.id===currentId);
-  const prevTrack=roleTracks[(currentIdx-1+roleTracks.length)%roleTracks.length];
-  const index=musicLibraryTracks.findIndex(t=>t.id===prevTrack.id);
-  if(index>=0)setMusicLibraryTrack(index,{autoplay:true});
+  const index=getAdjacentMusicIndex(-1);
+  if(index>=0)setMusicLibraryTrack(index,{autoplay:true,syncImage:true});
 };
 const nextMusicLibraryTrack=()=>{
-  const role=currentRole;
-  const roleTracks=musicLibraryTracks.filter(t=>t.role===role&&t.audioUrl);
-  if(!roleTracks.length)return;
-  const currentId=musicLibraryTracks[musicLibraryIndex]?.id;
-  const currentIdx=roleTracks.findIndex(t=>t.id===currentId);
-  const nextTrack=roleTracks[(currentIdx+1)%roleTracks.length];
-  const index=musicLibraryTracks.findIndex(t=>t.id===nextTrack.id);
-  if(index>=0)setMusicLibraryTrack(index,{autoplay:true});
+  const index=getAdjacentMusicIndex(1);
+  if(index>=0)setMusicLibraryTrack(index,{autoplay:true,syncImage:true});
 };
 const syncMusicLibraryHeight=()=>{
   const details=document.querySelector(".music-library-details");
@@ -742,10 +841,15 @@ const musicSpectrum=(()=>{
   };
 })();
 if(musicLibraryAudio){
-  musicLibraryAudio.volume=0.7;
+  const savedVolume=localStorage.getItem("musicLibraryVolume");
+  musicLibraryAudio.volume=savedVolume!==null&&Number.isFinite(Number(savedVolume))?clamp(Number(savedVolume),0,1):.3;
+  if(musicLibraryVolume){
+    musicLibraryVolume.value=String(Math.round(musicLibraryAudio.volume*100));
+    musicLibraryVolume.style.setProperty("--library-vol",`${musicLibraryVolume.value}%`);
+  }
   musicLibraryAudio.addEventListener("play",()=>{player.pause();isPagePaused=true;controls();updateMusicLibraryPlayState();musicSpectrum.resume()});
   musicLibraryAudio.addEventListener("pause",updateMusicLibraryPlayState);
-  musicLibraryAudio.addEventListener("ended",()=>{const nextIndex=getAdjacentMusicIndex(1);if(nextIndex>=0)setMusicLibraryTrack(nextIndex,{autoplay:true})});
+  musicLibraryAudio.addEventListener("ended",nextMusicLibraryTrack);
   ["timeupdate","loadedmetadata","durationchange","canplay","seeked"].forEach(eventName=>musicLibraryAudio.addEventListener(eventName,drawMusicLibraryProgress));
   if(musicLibraryPlay)musicLibraryPlay.addEventListener("click",()=>{if(!musicLibraryTracks.length)return;musicSpectrum.resume();if(musicLibraryAudio.paused)musicLibraryAudio.play().catch(()=>{});else musicLibraryAudio.pause()});
   if(musicLibraryProgress){
@@ -759,6 +863,7 @@ if(musicLibraryAudio){
     musicLibraryVolume.addEventListener("input",()=>{
       const v=Math.min(100,Math.max(0,Number(musicLibraryVolume.value)||0));
       musicLibraryAudio.volume=v/100;
+      localStorage.setItem("musicLibraryVolume",String(musicLibraryAudio.volume));
       musicLibraryAudio.muted=false;
       syncMusicLibraryMuteUI();
       musicLibraryVolume.style.setProperty("--library-vol",`${v}%`);
@@ -786,7 +891,7 @@ if(musicLibraryAudio){
   player.addEventListener("play",()=>{if(!musicLibraryAudio.paused)musicLibraryAudio.pause()});
   if(_musicDetails?.open)loadMusicLibrary();
 }
-const projectAvatarUrl="assets/avatar.png";const loadProjectAvatar=()=>{const saved=localStorage.getItem("sidebarAvatar");const img=new Image();img.onload=()=>{localStorage.setItem("sidebarAvatarSource","project");applySidebarAvatar(projectAvatarUrl+"?v="+Date.now())};img.onerror=()=>{localStorage.removeItem("sidebarAvatarSource");if(saved&&saved.startsWith("data:"))applySidebarAvatar(saved)};img.src=projectAvatarUrl+"?v="+Date.now()};loadProjectAvatar();applyStyle(localStorage.getItem("stylePreset")||"apple");applyLayoutMode(detectLayoutMode());applyLanguage(currentLanguage);controls();playModeUI();updateSidebarActive();
+const projectAvatarUrl="assets/avatar.png";const loadProjectAvatar=()=>{const saved=localStorage.getItem("sidebarAvatar");const img=new Image();img.onload=()=>{localStorage.setItem("sidebarAvatarSource","project");applySidebarAvatar(projectAvatarUrl+"?v="+Date.now())};img.onerror=()=>{localStorage.removeItem("sidebarAvatarSource");if(saved&&saved.startsWith("data:"))applySidebarAvatar(saved)};img.src=projectAvatarUrl+"?v="+Date.now()};loadProjectAvatar();applyStyle(localStorage.getItem("stylePreset")||"apple");applyLayoutMode();applyLanguage(currentLanguage);controls();playModeUI();updateSidebarActive();
 	/* 合成器预热：页面首次加载后 GPU 管线是冷的，第一次切风格时会同时创建图层+过渡导致卡顿。
 	   在空闲时短暂启用过渡追踪，触发浏览器预先建立合成图层和过渡管线，用户真正切换时就丝滑了。 */
 	const _warmupCompositor=()=>{
@@ -801,15 +906,34 @@ const projectAvatarUrl="assets/avatar.png";const loadProjectAvatar=()=>{const sa
 	window.addEventListener("load",()=>setTimeout(_warmupCompositor,400),{once:true});
 const bgOn=true,bgRole=localStorage.getItem("bgCharacter")||"02";localStorage.setItem("bgEnabled","true");if(bgToggle)bgToggle.checked=bgOn;if(bgCharacterSelect)bgCharacterSelect.value=bgCount[bgRole]?bgRole:"02";if(bgPlayModeSelect)bgPlayModeSelect.value=bgPlayMode;if(_musicDetails?.open)applyBg(bgOn,bgRole);
 if(musicToggle)musicToggle.checked=musicEnabled;if(musicVolumeInput){musicVolumeInput.value=String(Math.round(player.volume*100));musicVolumeInput.style.setProperty("--vol",`${Math.round(player.volume*100)}%`)}[styleSelect,bgCharacterSelect,bgPlayModeSelect,live2dModelSelect].forEach(fit);applyLive2dVisibility();syncLive2dToggleUI();
-window.addEventListener("resize",()=>{applyLayoutMode(detectLayoutMode());updateSidebarActive();syncMusicLibraryHeight()},{passive:true});
+window.addEventListener("resize",()=>{applyLayoutMode();updateSidebarActive();syncMusicLibraryHeight()},{passive:true});
 designStyleButtons.forEach(button=>button.addEventListener("click",()=>applyStyleSmooth(button.dataset.designStyle)));
 if(styleSelect)styleSelect.addEventListener("change",e=>applyStyleSmooth(e.target.value,()=>fit(styleSelect)));
-if(languageToggle)languageToggle.addEventListener("click",()=>withViewportPreserved(()=>{applyLanguage(currentLanguage==="en"?"zh":"en");showToast(ui("languageUpdated"))},{frames:3,anchor:languageToggle}));
 const isLocalEnv=()=>window.location.protocol==="file:"||window.location.hostname==="127.0.0.1"||window.location.hostname==="localhost";
 if(sidebarAvatarButton&&sidebarAvatarInput){if(isLocalEnv()){sidebarAvatarButton.addEventListener("click",()=>sidebarAvatarInput.click())}else{sidebarAvatarButton.style.pointerEvents="none";sidebarAvatarButton.title=ui("avatarSetByOwner")}}
 if(sidebarAvatarInput)sidebarAvatarInput.addEventListener("change",()=>{if(!isLocalEnv())return;const file=sidebarAvatarInput.files?.[0];if(!file||!file.type.startsWith("image/"))return;const reader=new FileReader();reader.addEventListener("load",async()=>{const src=String(reader.result||"");if(!src)return;try{localStorage.setItem("sidebarAvatar",src);applySidebarAvatar(src);const saved=await fetch("/api/save-avatar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:src})}).then(r=>r.ok).catch(()=>false);showToast(saved?ui("avatarSaveProject"):ui("avatarSaveLocal"))}catch{showToast(ui("imageTooLarge"))}});reader.readAsDataURL(file);sidebarAvatarInput.value=""});
 if(sidebarToggle)sidebarToggle.addEventListener("click",()=>setSidebarCollapsed(!document.body.classList.contains("sidebar-collapsed")));
-sidebarLinks.forEach(link=>link.addEventListener("click",()=>{const href=link.getAttribute("href");if(href?.startsWith("#")){const targetId=href.slice(1);lockSidebarActive(targetId);scrollToSidebarTarget(targetId)}}));
+document.querySelectorAll('a[href^="#"]').forEach(link=>link.addEventListener("click",event=>{
+  if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  const targetId=link.getAttribute("href").slice(1);
+  if(!document.getElementById(targetId))return;
+  event.preventDefault();
+  // Sidebar scrolling is explicitly requested even when OS effects are reduced.
+  scrollToSidebarTarget(targetId,{animateScroll:link.classList.contains("sidebar-link")||!prefersReducedMotion()});
+}));
+for(const type of ["wheel","touchstart"])window.addEventListener(type,()=>{
+  if(navigationFrame)cancelContentNavigation();
+},{passive:true});
+window.addEventListener("keydown",event=>{
+  if(["ArrowUp","ArrowDown","PageUp","PageDown","Home","End"," "].includes(event.key)
+    &&!event.target.closest("input,textarea,select,[contenteditable=true]")
+    &&navigationFrame)cancelContentNavigation();
+});
+window.addEventListener("resize",()=>{if(navigationFrame)cancelContentNavigation()},{passive:true});
+window.addEventListener("hashchange",()=>{
+  const targetId=decodeURIComponent(location.hash.slice(1));
+  if(document.getElementById(targetId))scrollToSidebarTarget(targetId,{updateHistory:false});
+});
 window.addEventListener("scroll",()=>updateSidebarActive(),{passive:true});
 document.querySelectorAll(".btn, .social-links a, .jump-btn, .sidebar-link, .design-style-btn, .view-mode-btn, .language-switch, .live2d-settings-toggle, .card").forEach(el=>{
   let frame=0,point;
@@ -832,7 +956,6 @@ document.querySelectorAll(".btn, .social-links a, .jump-btn, .sidebar-link, .des
     ["--mx","--my","--tilt-x","--tilt-y"].forEach(name=>el.style.removeProperty(name));
   });
 });
-layoutModeButtons.forEach(button=>button.addEventListener("click",()=>withViewportPreserved(()=>{const mode=button.dataset.layoutMode==="mobile"?"mobile":"desktop";applyLayoutMode(mode);if(mode==="desktop")requestAnimationFrame(()=>requestAnimationFrame(()=>{if(typeof applyLive2dSettings==="function")applyLive2dSettings()}));showToast(mode==="mobile"?ui("mobileLayout"):ui("desktopLayout"))},{frames:4})));
 if(bgCharacterSelect)bgCharacterSelect.addEventListener("change",e=>withViewportPreserved(()=>{if(_suppressSelectChange){_suppressSelectChange=false;return}localStorage.setItem("bgCharacter",e.target.value);applyBg(true,e.target.value);showToast(ui("bgRoleChanged"))}));
 if(bgPlayModeSelect)bgPlayModeSelect.addEventListener("change",e=>withViewportPreserved(()=>{bgPlayMode=e.target.value==="all"?"all":"single";localStorage.setItem("bgPlayMode",bgPlayMode);playModeUI();showToast(ui("playModeUpdated"))}));
 if(musicToggle)musicToggle.addEventListener("change",()=>withViewportPreserved(()=>{musicEnabled=musicToggle.checked;localStorage.setItem("musicEnabled",String(musicEnabled));if(musicEnabled){isPagePaused=false;localStorage.setItem("pagePaused","false");clearInterval(bgTimer);if(isViewerEnabled())showScene(currentRole,{withMusic:true})}else{player.pause();scheduleBgOnly()}controls();showToast(musicEnabled?ui("musicOn"):ui("musicOff"))}));
@@ -841,7 +964,7 @@ if(live2dModelSelect)live2dModelSelect.addEventListener("change",()=>withViewpor
 if(live2dToggleButton)live2dToggleButton.addEventListener("click",()=>withViewportPreserved(()=>{setLive2dEnabled(!live2dEnabled)},{frames:2,anchor:live2dToggleButton}));
 let live2dSizeInputFrame=0;
 if(live2dSizeInput)live2dSizeInput.addEventListener("input",()=>{if(live2dSizeInputFrame)cancelAnimationFrame(live2dSizeInputFrame);live2dSizeInputFrame=requestAnimationFrame(()=>{live2dSizeInputFrame=0;setLive2dSizePercent(live2dSizeInput.value,{freezePanel:true})})});
-if(headerMusicPrevButton)headerMusicPrevButton.addEventListener("click",()=>withViewportPreserved(()=>{prevMusicLibraryTrack();showToast(ui("songChanged"))}));if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextMusicLibraryTrack();showToast(ui("songChanged"))}));if(headerImagePrevButton)headerImagePrevButton.addEventListener("click",()=>withViewportPreserved(()=>{prevImageOnly();showToast(ui("imageChanged"))}));if(headerImageNextButton)headerImageNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextImageOnly();showToast(ui("imageChanged"))}));
+if(headerMusicPrevButton)headerMusicPrevButton.addEventListener("click",()=>withViewportPreserved(()=>{prevMusicLibraryTrack()}));if(headerMusicNextButton)headerMusicNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextMusicLibraryTrack()}));if(headerImagePrevButton)headerImagePrevButton.addEventListener("click",()=>withViewportPreserved(()=>{prevImageOnly();showToast(ui("imageChanged"))}));if(headerImageNextButton)headerImageNextButton.addEventListener("click",()=>withViewportPreserved(()=>{nextImageOnly();showToast(ui("imageChanged"))}));
 if(pageMuteToggleButton)pageMuteToggleButton.addEventListener("click",()=>withViewportPreserved(()=>{isPagePaused=!isPagePaused;localStorage.setItem("pagePaused",String(isPagePaused));if(isPagePaused){player.pause()}else if(musicEnabled){if(player.src)player.play().then(startMusicProgressLoop).catch(()=>{});else showScene(currentRole,{withMusic:true})}controls();showToast(isPagePaused?ui("musicPausedToast"):ui("musicResumedToast"))}));
 if(yearSpan)yearSpan.textContent=String(new Date().getFullYear());
 if(launcherMode)requestAnimationFrame(()=>requestAnimationFrame(forceLauncherInitialView));
@@ -1612,12 +1735,6 @@ document.addEventListener("visibilitychange",startLive2d);
 window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change",syncLive2dRuntime);
 
 document.addEventListener("visibilitychange",()=>{if(document.hidden){siteWasHidden=true;return}if(siteWasHidden){siteWasHidden=false;setTimeout(()=>showLive2dDialog(live2dReturnMessage),260)}});
-let lastHashClickAt=0;
-const flashSection=(sec,delay=0)=>{if(!sec)return;window.setTimeout(()=>{const isHero=sec.classList.contains("hero");const ringParent=isHero?(sec.querySelector(".hero-inner")||sec):sec;sec.classList.remove("flash-highlight");if(isHero&&ringParent!==sec)ringParent.classList.remove("flash-highlight");ringParent.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());sec.querySelectorAll(".section-glow-ring").forEach(ring=>ring.remove());void sec.offsetWidth;const ring=document.createElement("span");ring.className="section-glow-ring";ring.setAttribute("aria-hidden","true");ringParent.appendChild(ring);sec.classList.add("flash-highlight");if(isHero&&ringParent!==sec)ringParent.classList.add("flash-highlight");window.clearTimeout(sec._flashHighlightTimer);sec._flashHighlightTimer=window.setTimeout(()=>{sec.classList.remove("flash-highlight");if(isHero&&ringParent!==sec)ringParent.classList.remove("flash-highlight");ring.remove()},3200)},delay)};
-const getHashSection=()=>{const id=window.location.hash?decodeURIComponent(window.location.hash.slice(1)):"";return id?document.getElementById(id):null};
-hashActionLinks.forEach(a=>a.addEventListener("click",()=>{const id=a.getAttribute("href"),sec=id&&id.startsWith("#")?document.getElementById(id.slice(1)):null;if(!sec)return;lastHashClickAt=Date.now();flashSection(sec,240)}));
-window.addEventListener("hashchange",()=>{if(Date.now()-lastHashClickAt<800)return;flashSection(getHashSection(),240)});
-if(document.readyState==="complete")flashSection(getHashSection(),320);else window.addEventListener("load",()=>flashSection(getHashSection(),320));
 document.addEventListener("click",e=>{if(e.target?.closest?.("a,button,input,select,label,summary,.quick-jump,.live2d-widget,.card,.anime-viewer,.music-library-player,.side-nav"))return;showClickText(e.clientX,e.clientY)});
 
 document.querySelectorAll("[data-char-slide]").forEach(el=>{const text=el.textContent||"";el.textContent="";[...text].forEach((char,i)=>{const span=document.createElement("span");span.className="char-slide";span.style.animationDelay=i*0.028+"s";span.textContent=char===" "?" ":char;el.appendChild(span)})});
@@ -1832,7 +1949,6 @@ document.querySelectorAll("[data-char-slide]").forEach(el=>{const text=el.textCo
   window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", function(event) {
     if(event.matches){motionEnabled=false;syncMotionUI();syncParticleRuntime()}
   });
-  languageToggle?.addEventListener('click', syncMotionUI);
   motionToggle?.addEventListener('click', function() {
     motionEnabled = !motionEnabled;
     syncParticleRuntime();

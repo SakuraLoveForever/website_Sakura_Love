@@ -1,16 +1,15 @@
 const { test, expect } = require('@playwright/test');
 
-test('分类只显示匹配的项目，语言切换保留筛选，全部恢复十二个项目', async ({ page }) => {
+test('分类显示中文筛选结果，全部恢复十二个项目', async ({ page }) => {
   await page.goto('/');
   const cards = page.locator('#projects .card:visible');
   await expect(cards).toHaveCount(12);
   await page.locator('[data-project-filter="browser"]').click();
   await expect(cards).toHaveCount(2);
   await expect(cards.first()).toContainText('tab-sync');
-  await page.locator('#language-toggle').click();
   await expect(page.locator('[data-project-filter="browser"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(cards).toHaveCount(2);
-  await expect(page.locator('#project-result-count')).toContainText('2');
+  await expect(page.locator('#project-result-count')).toHaveText('2 个作品');
   await page.locator('[data-project-filter="all"]').click();
   await expect(cards).toHaveCount(12);
   await expect(page.locator('#projects .card-cover img')).toHaveCount(11);

@@ -8,15 +8,20 @@ test.describe('首页', () => {
     await expect(page.locator('[data-design-style="apple"]')).toHaveAttribute('aria-pressed', 'true');
     await page.locator('.hero-actions .btn.primary').focus();
     await expect(page.locator('.hero-actions .btn.primary')).toHaveCSS('outline-style', 'solid');
-    await page.locator('[data-design-style="shadcn"]').click();
-    await expect(page.locator('body')).toHaveClass(/design-shadcn/);
+    await page.locator('[data-design-style="fuwari"]').click();
+    await expect(page.locator('body')).toHaveClass(/design-fuwari/);
     await page.locator('[data-design-style="apple"]').click();
     await expect(page.locator('body')).toHaveClass(/design-apple/);
   });
 
-  test('标题正确', async ({ page }) => {
+  test('旧英文设置自动恢复中文，语言切换按钮已移除', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('languageMode', 'en'));
     await page.goto('/');
-    await expect(page).toHaveTitle(/Sakura_Love/);
+    await expect(page).toHaveTitle('Sakura_Love | 个人主页');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
+    await expect(page.locator('#language-toggle')).toHaveCount(0);
+    await expect(page.locator('.sidebar-label').first()).toHaveText('首页');
+    expect(await page.evaluate(() => localStorage.getItem('languageMode'))).toBe('zh');
   });
 
   test('导航栏存在', async ({ page }) => {
@@ -74,7 +79,7 @@ test.describe('页面导航', () => {
   test('所有风格的阅读区隐藏粒子且不遮挡内容', async ({ page }) => {
     await page.goto('/');
     const heading = page.locator('#projects h2');
-    for (const style of ['apple', 'shadcn', 'tailwind']) {
+    for (const style of ['apple', 'fuwari', 'astropaper']) {
       await page.locator(`[data-design-style="${style}"]`).evaluate(button => button.click());
       await expect(page.locator('body')).toHaveClass(new RegExp(`design-${style}`));
       await heading.evaluate(el => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
@@ -86,7 +91,7 @@ test.describe('页面导航', () => {
     }
   });
 
-  test('首屏粒子默认运动并可暂停和恢复', async ({ page }) => {
+  test('首屏粒子正常运动，粒子和看板娘开关已移除', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#particle-canvas canvas')).toHaveCount(1);
     const changedPixels = () => page.evaluate(async () => {
@@ -100,34 +105,17 @@ test.describe('页面导航', () => {
       return changed;
     });
     expect(await changedPixels()).toBeGreaterThan(20);
-    await page.locator('#particle-motion-toggle').click();
-    await page.waitForTimeout(100);
-    expect(await changedPixels()).toBe(0);
-    await page.reload();
-    await expect(page.locator('#particle-motion-toggle')).toHaveAttribute('aria-pressed', 'false');
-    expect(await changedPixels()).toBe(0);
-    await page.locator('#particle-motion-toggle').click();
-    await page.locator('#hero').evaluate(el => el.scrollIntoView({ behavior: 'instant' }));
-    await expect(page.locator('#particle-canvas')).toHaveCSS('visibility', 'visible');
-    expect(await changedPixels()).toBeGreaterThan(20);
+    await expect(page.locator('#particle-motion-toggle, #particle-line-width, #live2d-toggle')).toHaveCount(0);
   });
 
-  test('粒子粗细可以调节并在刷新后保留', async ({ page }) => {
+  test('移除滑块后仍保留已保存的粒子粗细', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('particleLineWidth', '2.4'));
     await page.goto('/');
-    const slider = page.locator('#particle-line-width');
-    await expect(slider).toHaveValue('1.6');
-    await slider.focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(slider).toHaveValue('1.8');
-    await slider.evaluate(el => { el.value = '2.4'; el.dispatchEvent(new Event('input', { bubbles: true })); el.blur(); });
-    await page.locator('#hero').evaluate(el => el.scrollIntoView({ behavior: 'instant' }));
     await expect(page.locator('#particle-canvas')).toHaveCSS('visibility', 'visible');
     await expect.poll(() => page.evaluate(() => Math.round(document.querySelector('#particle-canvas canvas').getContext('2d').lineWidth * 10) / 10)).toBe(2.4);
-    await expect(page.locator('#particle-line-width-value')).toHaveText('2.4px');
     await page.reload();
-    await expect(page.locator('#particle-line-width')).toHaveValue('2.4');
-    await page.locator('#language-toggle').click();
-    await expect(page.locator('.particle-width-switch label')).toHaveText('Particle width');
+    await expect.poll(() => page.evaluate(() => window.__particleNetwork?.network.options.lineWidth)).toBe(2.4);
+    await expect(page.locator('.particle-width-switch')).toHaveCount(0);
   });
 
   test('关于面板连续点击后可以顺畅收起', async ({ page }) => {

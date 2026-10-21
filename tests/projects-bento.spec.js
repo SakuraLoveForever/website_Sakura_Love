@@ -86,7 +86,8 @@ test('减少动画时项目卡片不再带 8px 模糊（CSS 特异性回归）',
   expect(r.opacity).toBe('1');
 });
 
-test('中英切换后 12 张卡的标题与描述按索引正确对应', async ({ page }) => {
+test('旧英文设置和刷新后 12 张卡的中文标题与描述正确对应', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('languageMode', 'en'));
   await page.goto('/');
   const titles = () => page.locator('#projects .project-title-btn').allTextContents();
   await expect.poll(titles).toEqual(TITLES_ZH);
@@ -95,16 +96,7 @@ test('中英切换后 12 张卡的标题与描述按索引正确对应', async (
   const firstDesc = await page.locator('#projects .project-grid .card p').first().textContent();
   expect(firstDesc).toContain('键鼠宏录制');
 
-  await page.locator('#language-toggle').click();
-  await expect.poll(titles).toEqual([
-    'MacroFlowStudio', 'Mountains in Pages, Moonlight in Mind', 'Soul Quotes Archive', 'Kindle Notes Exporter',
-    'PC Guardian', 'FileGo', 'tab-sync', 'AppCounter',
-    'YouTube Unlike Helper', 'auto_clean', 'AI Anime Tracker', 'GitHub Profile',
-  ]);
-  const enFirst = await page.locator('#projects .project-grid .card p').first().textContent();
-  expect(enFirst).toContain('macro studio');
-
-  // 切回中文，确认没有单向损坏
-  await page.locator('#language-toggle').click();
+  await page.reload();
   await expect.poll(titles).toEqual(TITLES_ZH);
+  await expect(page.locator('#projects .project-grid .card p').first()).toContainText('键鼠宏录制');
 });

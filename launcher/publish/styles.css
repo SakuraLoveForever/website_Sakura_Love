@@ -2093,7 +2093,7 @@ body.theme-dark .section p {
   border: 0;
   padding: 0;
   accent-color: var(--primary);
-  --library-vol: 70%;
+  --library-vol: 30%;
   cursor: pointer;
 }
 
@@ -2148,69 +2148,6 @@ body.theme-dark .section p {
 
 /* -- 移除旧顶栏 -- */
 .music-library-topbar { display: none; }
-
-.hero.flash-highlight .hero-inner {
-  position: relative;
-}
-.section.flash-highlight,
-.site-footer.flash-highlight {
-  position: relative;
-  isolation: isolate;
-}
-
-.section-glow-ring {
-  position: absolute;
-  inset: 10px;
-  z-index: 1;
-  border: 2px solid var(--primary);
-  border-radius: var(--panel-radius);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 26px rgba(41, 151, 255, 0.32);
-  pointer-events: none;
-  opacity: 0;
-  animation: sectionGlowRing 3s cubic-bezier(0.22, 1, 0.36, 1) 1;
-}
-
-@keyframes sectionGlowRing {
-  0% {
-    opacity: 0;
-    transform: scale(0.996);
-  }
-
-  10% {
-    opacity: 0.55;
-    transform: scale(1);
-  }
-
-  20% {
-    opacity: 0.06;
-    transform: scale(1.002);
-  }
-
-  30% {
-    opacity: 0.55;
-    transform: scale(1);
-  }
-
-  40% {
-    opacity: 0.06;
-    transform: scale(1.002);
-  }
-
-  50% {
-    opacity: 0.55;
-    transform: scale(1);
-  }
-
-  60% {
-    opacity: 0.06;
-    transform: scale(1.002);
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(0.996);
-  }
-}
 
 .about-panel,
 .about-sub-panel {
@@ -4699,7 +4636,7 @@ body .site-footer.site-footer .container {
 .site-footer :is(.design-style-btn,.view-mode-btn,.page-toggle-btn) { min-height: 32px; padding: 6px 9px; border-radius: 6px; font-size: 12px; font-weight: 500; box-shadow: none; }
 .site-footer :is(.design-style-btn,.view-mode-btn,.page-toggle-btn).active { box-shadow: none; }
 .site-footer .quote-category-select { min-height: 32px; border-radius: 6px; }
-.site-footer .social-links-bottom { grid-column: 2; grid-row: 3; justify-self: end; gap: 8px; }
+.site-footer .social-links-bottom { grid-column: 2; grid-row: 3; justify-self: end; gap: 8px; margin-inline-end: 72px; }
 .site-footer p { grid-column: 1; grid-row: 3; align-self: center; text-align: left; white-space: normal; }
 #projects .project-grid { gap: 18px; }
 #projects .card-body { padding: 18px; gap: 10px; }

@@ -5,7 +5,7 @@ const { chromium } = require('playwright');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('http://127.0.0.1:8080');
   await page.evaluate(() => { live2dWidget.style.visibility = 'hidden'; });
-  for (const theme of ['apple', 'shadcn', 'tailwind']) {
+  for (const theme of ['apple', 'fuwari', 'astropaper']) {
     await page.evaluate(theme => applyStyle(theme), theme);
     for (const section of ['hero', 'projects', 'page-bottom']) {
       await page.locator(`#${section}`).evaluate(el => el.scrollIntoView({ behavior: 'instant', block: 'start' }));
@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const theme of ['shadcn', 'tailwind']) {
+  for (const theme of ['fuwari', 'astropaper']) {
     await page.evaluate(theme => applyStyle(theme), theme);
     await page.locator('#page-bottom').evaluate(el => el.scrollIntoView({ behavior: 'instant' }));
     await page.screenshot({ path: `artifacts/refinement/${theme}-mobile.png` });

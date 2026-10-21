@@ -2,7 +2,15 @@
 
 ## Style switching (theme/design) — do not regress
 
-The site supports 3 design styles (apple/shadcn/tailwind) switchable at runtime. Apple is the default; retired or invalid saved styles fall back to Apple. New theme overrides are in `themes.css`, inspired by shadcn-ui/ui and timlrx/tailwind-nextjs-starter-blog. Switching must be smooth — no frame drops, no stutter.
+The site supports 3 dark design styles (apple/fuwari/astropaper) switchable at runtime. Apple is the default; retired or invalid saved styles (including shadcn/tailwind) fall back to Apple. New dark-only overrides are in `themes.css`, inspired by saicaca/fuwari and satnaing/astro-paper. All three use `color-scheme: dark` and `theme-dark`, including first paint. Switching must be smooth — no frame drops, no stutter.
+
+The interface is Chinese-only. Do not restore the language toggle. `currentLanguage` is fixed to `zh`, and `applyLanguage()` normalizes old `languageMode=en` storage to Chinese. Keep project/brand names as proper names.
+
+Layout is automatic, based on the same 833px breakpoint as the CSS (including the launcher). Do not restore desktop/mobile buttons or persist manual `layoutMode`; old values are removed. Emit `site-layout-change` only when crossing the breakpoint, so mascot initialization is not retriggered on every resize.
+
+Footer settings expose appearance and quotes only. Particle width/motion controls and the global mascot on/off button have been removed; particle rendering, saved preferences and the mascot's own model/size panel remain functional.
+
+Apple uses one fixed body backdrop shared by the transparent hero and translucent header/sidebar in `themes.css`. Avoid restoring a separate hero crop or an opaque black header; both create visible seams around the first screen. Other themes keep their own dark surface palettes.
 
 ### Two-path architecture
 
@@ -135,6 +143,7 @@ to 0, runs one real model frame, and expects 1 — with the assertion that the t
 - 眼神跟随必须在 `coreModel.update()` 绘制前应用，避免被模型动画覆盖；停帧时指针事件通过 rAF 合并一次实际更新与重绘。`tests/refinement.spec.js` 验证眼球参数在绘制时的左右/上下方向，包含减少动画模式。
 - 调整尺寸时 `renderer.resize()` 会清空画布；`layout()` 必须在更新模型缩放和位置后立即重绘，不能依赖动画 ticker。`tests/live2d-resize.spec.js` 逐帧读取画布，验证滑块和大小按钮在正常/减少动画模式下均不产生空白帧。
 - 桌面侧栏 216px，页脚采用两列轻量分组，手机为一列；移动端控件保留 44px 点击高度。
+- 内容锚点统一走 `scrollToSidebarTarget`：按距离 360–1100ms 的可中断滚动；测量前固定内容坐标，导航时不叠加整块入场动画；不要恢复默认锚点与页脚二次滚动并行处理，也不要恢复光圈。834–1100px 无手动偏好时默认紧凑侧栏，手动偏好优先。
 - Upscayl 使用蓝灰背景 `#3c5369`，面板 `#425b72`，强调色 `#bedff2`，去除独立黑色 UI 色块。修改配色时同时维护 index.html 的首帧 bgMap 与 script.js 的 rootThemeTokens，避免加载或切换时闪黑。
 
 ### 看板娘尺寸 — 点击一次到面板 + 可拖拽手柄（2026-10-06）

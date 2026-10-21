@@ -147,13 +147,12 @@ test('缩放手柄支持键盘方向键，且尺寸被限制在合法区间', as
   expect(floored.cssVar).toBeGreaterThanOrEqual(0.6);
 });
 
-test('缩放手柄有可访问名称，并在中英文间切换', async ({ page }) => {
+test('缩放手柄有中文可访问名称', async ({ page }) => {
   await page.goto('/');
   await waitForLive2d(page);
   const handle = page.locator('#live2d-resize-handle');
   await expect(handle).toHaveAttribute('aria-label', '调节看板娘大小');
-  await page.locator('#language-toggle').click();
-  await expect(handle).toHaveAttribute('aria-label', 'Adjust Live2D size');
+  await expect(handle).toHaveAttribute('title', '调节看板娘大小');
 });
 
 test('滑块、持久化值、实际尺寸三者始终一致（step 必须是 1）', async ({ page }) => {

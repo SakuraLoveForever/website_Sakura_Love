@@ -54,11 +54,11 @@ test('看板娘关闭再开启后头部仍完整显示', async ({ page }) => {
   });
   await expect(page.locator('#live2d-widget')).not.toHaveClass(/dragging/);
   for (let attempt = 0; attempt < 2; attempt++) {
-    await page.locator('#live2d-toggle').click();
+    await page.evaluate(() => setLive2dEnabled(false));
     await expect(page.locator('#live2d-widget')).toHaveClass(/live2d-hidden/);
     expect(await page.evaluate(() => live2dApp.ticker.started)).toBe(false);
     expect(await page.evaluate(() => live2dActiveModel.autoUpdate)).toBe(false);
-    await page.locator('#live2d-toggle').click();
+    await page.evaluate(() => setLive2dEnabled(true));
     await expect(page.locator('#live2d-widget')).not.toHaveClass(/live2d-hidden/);
     await expect.poll(headPixels, { timeout: 10000 }).toBeGreaterThan(.02);
     expect(await page.evaluate(() => live2dApp.ticker.started)).toBe(true);

@@ -44,15 +44,11 @@ test('粒子网络开启了光标连线，且鼠标锚点跟手、不被运动�
   });
   expect(movingCount).toBeGreaterThan(10);
 
-  // 暂停→恢复后，锚点必须仍然是静止的（velocity 归零），否则连线会飘离光标。
-  // 点击页脚开关会把首屏滚出视口，IntersectionObserver 会合法地冻结粒子，
-  // 所以这里只断言锚点自身速度，不再断言其他粒子。
-  // 用页面内 .click() 而不是 locator.click()：该按钮自带过渡动画，
-  // 连续两次 locator.click() 会卡在 actionability 稳定性检查上。
+  // 渲染器暂停→恢复后，锚点必须仍保持静止。
   await page.evaluate(() => {
-    const toggle = document.querySelector('#particle-motion-toggle');
-    toggle.click();
-    toggle.click();
+    const network = window.__particleNetwork.network;
+    network.stop();
+    network.start();
   });
   const anchorVelocity = await page.evaluate(() => {
     const a = window.__particleNetwork.mouseAnchor;
@@ -232,9 +228,6 @@ test('页面结构与内联脚本完整（防止 HTML 编码/结构损坏）', a
   // 内联 <script> 一旦被编码损坏，浏览器会报 Invalid or unexpected token，
   // 其后的标记会被当作脚本文本吞掉 —— 页脚控件会整体消失。这条测试守住它。
   for (const selector of [
-    '#particle-motion-toggle',
-    '#particle-line-width',
-    '#live2d-toggle',
     '#quote-category-select',
     '#music-library',
     '#toast-root',
@@ -258,7 +251,7 @@ test('粒子运动默认开启（系统减少动画与历史暂停记录都不�
   });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await expect(page.locator('#particle-motion-toggle')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#particle-motion-toggle')).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem('particleMotionEnabled'))).toBe('true');
 
   const changed = await page.evaluate(async () => {
@@ -299,7 +292,7 @@ test('看板娘面板任意位置都能拖动（含角色轮廓之外的空白�
   await expect(page.locator('body')).toBeVisible();
 });
 
-test('技能模块已彻底删除（区块 / 导航项 / 中英文文案 / 数据源）', async ({ page }) => {
+test('技能模块已彻底删除且刷新后保持中文导航', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#skills')).toHaveCount(0);
   await expect(page.locator('.sidebar-link[data-nav-key="skills"]')).toHaveCount(0);
@@ -315,15 +308,12 @@ test('技能模块已彻底删除（区块 / 导航项 / 中英文文案 / 数�
   await page.locator('.sidebar-link[href="#about"]').click();
   await expect(page).toHaveURL(/#about$/);
 
-  // 切到英文也不应再出现 Skills 文案，且切换本身不报错
+  // 刷新后不应再出现 Skills 或语言切换按钮。
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.locator('#language-toggle').click();
-  await page.waitForTimeout(600);
+  await page.reload();
   await expect(page.locator('.sidebar-link', { hasText: 'Skills' })).toHaveCount(0);
-  await expect(page.locator('.sidebar-label').nth(2)).toHaveText('Projects');
-  await page.locator('#language-toggle').click();
-  await page.waitForTimeout(600);
+  await expect(page.locator('#language-toggle')).toHaveCount(0);
   await expect(page.locator('.sidebar-label').nth(2)).toHaveText('项目');
   expect(errors).toEqual([]);
 });
