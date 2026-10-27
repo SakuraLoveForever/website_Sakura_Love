@@ -5,7 +5,6 @@ They are decorative thumbnails; the project name and link are provided in the ca
 
 | File | Source |
 | --- | --- |
-| macroflow.jpg | https://github.com/SakuraLoveForever/MacroFlowStudio/blob/master/docs/screenshots/macroflow-studio-preview.png |
 | filego.jpg | https://github.com/SakuraLoveForever/FileGo/blob/main/screenshots/main-window.png |
 | appcounter.jpg | https://github.com/SakuraLoveForever/AppCounter/blob/master/screenshots/app-screenshot.png |
 | anime.jpg | https://github.com/SakuraLoveForever/Anime (README screenshot) |
