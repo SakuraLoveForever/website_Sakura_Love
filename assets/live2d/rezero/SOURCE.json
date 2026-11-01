@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/HaiKonofanDesu/konofan-live2d",
+  "revision": "4b2780d63fb26a5a657e712994b8291bd02b959e",
+  "retrieved": "2026-10-27",
+  "directories": {
+    "rem": "150 - Rem/4 star rem",
+    "ram": "206 - Ram/4 star ram",
+    "emilia": "147 - Emilia/4 star emilia"
+  },
+  "license": "No explicit redistribution license provided by upstream; game assets retain their original rights.",
+  "changes": [
+    "Split the unnamed motion group into Idle, TapBody, Expressions and Actions; default Idle uses 00_Wait_01. All original motion files are preserved."
+  ],
+  "inactiveDirectories": {
+    "echidna": "208 - Echidna/4 star echidna"
+  },
+  "inactiveNote": "Echidna was removed from the website character roster on 2026-10-27. Local asset-directory cleanup was blocked by automatic command policy; inactive files retain this provenance."
+}

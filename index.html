@@ -2,23 +2,25 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sakura_Love | 个人主页</title>
     <meta
       name="description"
-      content="一个简洁、响应式的个人网页模板，展示个人介绍、项目与联系方式。"
+      content="Sakura_Love 的个人主页，展示个人介绍、项目、音乐与联系方式。"
     />
     <script>
       (function () {
         var styleMap = {
           apple: "design-apple",
           fuwari: "design-fuwari",
-          astropaper: "design-astropaper"
+          astropaper: "design-astropaper",
+          rem: "design-rem"
         };
         var bgMap = {
           apple: "#1d1d1f",
           fuwari: "#141821",
-          astropaper: "#212737"
+          astropaper: "#212737",
+          rem: "#0d1622"
         };
         var saved = localStorage.getItem("stylePreset") || "apple";
         var safe = styleMap[saved] ? saved : "apple";
@@ -26,7 +28,7 @@
         root.dataset.initialStyle = safe;
         root.classList.add("style-boot-pending");
         root.style.setProperty("--canvas", bgMap[safe] || bgMap.apple);
-        root.style.setProperty("--text", safe === "fuwari" ? "#e5e9f0" : safe === "astropaper" ? "#eaedf3" : "#f5f5f7");
+        root.style.setProperty("--text", safe === "fuwari" ? "#e5e9f0" : safe === "astropaper" ? "#eaedf3" : safe === "rem" ? "#e9f3fc" : "#f5f5f7");
         root.style.backgroundColor = bgMap[safe] || bgMap.apple;
         root.style.colorScheme = "dark";
       })();
@@ -36,8 +38,8 @@
         visibility: hidden;
       }
     </style>
-    <link rel="stylesheet" href="styles.css?v=20261020-12" />
-    <link rel="stylesheet" href="themes.css?v=20261020-12" />
+    <link rel="stylesheet" href="styles.css?v=20261027-live2d-panel-fast" />
+    <link rel="stylesheet" href="themes.css?v=20261026-rem-theme" />
   </head>
   <body>
     <div id="particle-canvas"></div>
@@ -46,7 +48,8 @@
         var styleMap = {
           apple: "design-apple",
           fuwari: "design-fuwari",
-          astropaper: "design-astropaper"
+          astropaper: "design-astropaper",
+          rem: "design-rem"
         };
         var safe = document.documentElement.dataset.initialStyle || "apple";
         var nextClass = styleMap[safe] || styleMap.apple;
@@ -132,7 +135,13 @@
               <a class="btn secondary" href="#contact">联系我</a>
             </div>
           </div>
-
+          <figure class="rem-character">
+            <img src="assets/character/rem/rem-portrait.jpg" alt="雷姆，Re:Zero 从零开始的异世界生活里的女仆角色" width="720" height="900" loading="lazy" decoding="async" />
+            <figcaption>
+              <strong>雷姆</strong>
+              <span>Re:Zero · 从零开始的异世界生活</span>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
@@ -219,6 +228,7 @@
                     <a class="project-title-btn" href="https://sakuraloveforever.github.io/Life-Insights/" target="_blank" rel="noreferrer" aria-label="查看卷里山河，心头月色">卷里山河，心头月色</a>
                   </h3>
                   <p>记录阅读与长夜随记，支持目录导航和夜间模式。</p>
+                  <a class="btn secondary" href="https://sakuraloveforever.github.io/Life-Insights/" target="_blank" rel="noopener noreferrer" aria-label="在线访问 Life Insights（新窗口打开）">在线访问 ↗</a>
                 </div>
               </article>
               <article class="card" data-project-category="web">
@@ -231,6 +241,7 @@
                     <a class="project-title-btn" href="https://sakuraloveforever.github.io/soul_quotes_archive/" target="_blank" rel="noreferrer" aria-label="查看心灵鸡汤 - 互动语录">心灵鸡汤 - 互动语录</a>
                   </h3>
                   <p>收藏语录与灵感，按分类浏览和快速跳转。</p>
+                  <a class="btn secondary" href="https://sakuraloveforever.github.io/soul_quotes_archive/" target="_blank" rel="noopener noreferrer" aria-label="在线访问 Soul Quotes Archive（新窗口打开）">在线访问 ↗</a>
                 </div>
               </article>
               <article class="card" data-project-category="web">
@@ -243,6 +254,7 @@
                     <a class="project-title-btn" href="https://github.com/SakuraLoveForever/kindle_notes_exporter" target="_blank" rel="noreferrer" aria-label="查看Kindle笔记导出工具">Kindle笔记导出工具</a>
                   </h3>
                   <p>本地解析 Kindle 阅读笔记，便捷导出并保护隐私。</p>
+                  <a class="btn secondary" href="https://sakuraloveforever.github.io/kindle_notes_exporter/" target="_blank" rel="noopener noreferrer" aria-label="在线访问 Kindle笔记导出工具（新窗口打开）">在线访问 ↗</a>
                 </div>
               </article>
               <article class="card" data-project-category="tools">
@@ -303,6 +315,7 @@
                     <a class="project-title-btn" href="https://greasyfork.org/zh-CN/scripts/574715-youtube-%E6%89%B9%E9%87%8F%E5%8F%96%E6%B6%88%E7%82%B9%E8%B5%9E%E5%8A%A9%E6%89%8B-%E7%B2%BE%E5%87%86%E7%89%88" target="_blank" rel="noreferrer" aria-label="查看YouTube取消点赞脚本">YouTube取消点赞脚本</a>
                   </h3>
                   <p>批量取消 YouTube 点赞，简化重复点击。</p>
+                  <a class="btn secondary" href="https://update.greasyfork.org/scripts/574715/YouTube%20%E6%89%B9%E9%87%8F%E5%8F%96%E6%B6%88%E7%82%B9%E8%B5%9E%E5%8A%A9%E6%89%8B%20%28%E7%B2%BE%E5%87%86%E7%89%88%29.user.js" target="_blank" rel="noopener noreferrer" aria-label="安装 YouTube取消点赞脚本（新窗口打开）">安装脚本 ↗</a>
                 </div>
               </article>
               <article class="card" data-project-category="tools">
@@ -327,6 +340,7 @@
                     <a class="project-title-btn" href="https://github.com/SakuraLoveForever/Anime" target="_blank" rel="noreferrer" aria-label="查看AI追番助手">AI 追番助手</a>
                   </h3>
                   <p>多源番剧搜索与追剧管理，支持 DeepSeek 智能填充。</p>
+                  <a class="btn secondary" href="https://anime-tracker-0ptb.onrender.com/" target="_blank" rel="noopener noreferrer" aria-label="在线访问 AI 追番助手（新窗口打开）">在线访问 ↗</a>
                 </div>
               </article>
               <article class="card" data-project-category="web">
@@ -367,6 +381,22 @@
                     </div>
                   </div>
                 </div>
+
+                <section class="music-lyrics-panel" aria-label="正在播放与歌词">
+                  <div class="music-now-heading">
+                    <div class="music-now-info">
+                      <h3 id="music-library-title">选择一首音乐</h3>
+                      <p id="music-library-track-artist"></p>
+                    </div>
+                    <div class="music-source-info">
+                      <p id="music-library-source" class="music-track-source" aria-live="polite"></p>
+                      <a id="music-library-origin" target="_blank" rel="noopener noreferrer" hidden>网易云 ↗</a>
+                    </div>
+                  </div>
+                  <div id="music-library-lyrics" class="music-lyrics" role="region" aria-label="歌曲歌词，点击歌词跳转" tabindex="0">
+                    <p class="music-lyrics-empty">播放时，歌词会跟随音乐滚动</p>
+                  </div>
+                </section>
 
                 <div class="music-player-bar">
                   <div class="player-bar-left">
@@ -414,8 +444,7 @@
                   </div>
                 </div>
 
-                <p id="music-library-source" class="music-track-source"></p>
-                <audio id="music-library-audio" preload="metadata"></audio>
+                <audio id="music-library-audio" preload="metadata" crossorigin="anonymous"></audio>
               </div>
               </div>
             </details>
@@ -450,7 +479,9 @@
             <option value="designGenius">设计天才·白</option>
             <option value="mao">Mao</option>
             <option value="hiyori">Hiyori</option>
-            <option value="haru">Haru</option>
+            <option value="rem">雷姆</option>
+            <option value="ram">拉姆</option>
+            <option value="emilia">艾米利亚</option>
           </select>
           <button id="live2d-next-model" type="button">切换看板娘 →</button>
         </div>
@@ -490,10 +521,11 @@
           <legend id="appearance-settings-label">外观</legend>
         <div class="design-style-switch" aria-label="切换网页风格">
           <span>风格</span>
-          <div class="design-style-options" role="group" aria-label="选择 Apple、Fuwari Dark 或 AstroPaper Dark 风格">
+          <div class="design-style-options" role="group" aria-label="选择 Apple、Fuwari Dark、AstroPaper Dark 或 Rem Dark 风格">
             <button class="design-style-btn active" type="button" data-design-style="apple" aria-pressed="true">Apple</button>
             <button class="design-style-btn" type="button" data-design-style="fuwari" aria-pressed="false">Fuwari Dark</button>
             <button class="design-style-btn" type="button" data-design-style="astropaper" aria-pressed="false">AstroPaper Dark</button>
+            <button class="design-style-btn" type="button" data-design-style="rem" aria-pressed="false">Rem Dark</button>
           </div>
         </div>
         </fieldset>
@@ -823,7 +855,9 @@ window.quotesData=quotesData;
 
     <script src="particle-network.min.js?v=20261006-6"></script>
     <script src="assets/vendor/motion-14.0.0.js"></script>
-    <script src="script.js?v=20261020-12"></script>
+    <script src="assets/vendor/lrc-file-parser-2.4.0.min.js"></script>
+    <script src="assets/live2d/character-quotes.js?v=20261027-character-quotes"></script>
+    <script src="script.js?v=20261027-live2d-visible-drag-bounds"></script>
 
     <script>
 (function(){

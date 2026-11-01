@@ -34,10 +34,10 @@ test('连续缩放的每个画面都保留角色，暂停动画时也不会清�
 });
 
 /**
- * 看板娘「点击后调整大小」（2026-10-06）
+ * 看板娘「右键后调整大小」（2026-10-27）
  *
  * 原交互要两次点击：点本体 → 弹出小把手（3.6s 后自动消失）→ 再点把手才开面板。
- * 现在点本体直接打开设置面板（一次点击到尺寸滑块），并额外提供拖拽/键盘缩放手柄。
+ * 现在左键本体显示语录，右键本体打开设置面板，并保留拖拽/键盘缩放手柄。
  */
 
 const waitForLive2d = (page) => page.waitForFunction(
@@ -46,11 +46,24 @@ const waitForLive2d = (page) => page.waitForFunction(
   { timeout: 90000 }
 );
 
-/** 模型包围盒中心偏下 = 身体，必定命中不透明像素，能真正触发"点击本体" */
+/** 从实际画布选择带余量的不透明躯干像素，避开模型矩形内的空隙 */
 const bodyPoint = (page) => page.evaluate(() => {
-  const b = live2dActiveModel.getBounds();
-  const r = document.querySelector('#live2d-canvas').getBoundingClientRect();
-  return { x: r.left + b.x + b.width / 2, y: r.top + b.y + b.height * 0.7 };
+  const r = live2dCanvas.getBoundingClientRect();
+  const sample = document.createElement('canvas');
+  sample.width = live2dCanvas.width; sample.height = live2dCanvas.height;
+  const context = sample.getContext('2d'); context.drawImage(live2dCanvas, 0, 0);
+  const pixels = context.getImageData(0, 0, sample.width, sample.height).data;
+  const alpha = (x, y) => pixels[(Math.floor(y / r.height * sample.height) * sample.width + Math.floor(x / r.width * sample.width)) * 4 + 3];
+  // The former bounds-center point fell between Tutu's legs. Sample the real
+  // visible torso, with a margin for the animated pose, rather than empty space.
+  for (let y = r.height * .4; y < r.height * .65; y += 4) {
+    for (let x = r.width * .35; x < r.width * .65; x += 4) {
+      if ([[-4,-4], [4,-4], [0,0], [-4,4], [4,4]].every(([dx,dy]) => alpha(x+dx,y+dy)>200)) {
+        return { x: r.left + x, y: r.top + y };
+      }
+    }
+  }
+  throw new Error('No opaque torso point found');
 });
 
 const sizeState = (page) => page.evaluate(() => ({
@@ -60,16 +73,16 @@ const sizeState = (page) => page.evaluate(() => ({
   label: document.querySelector('#live2d-size-value').textContent,
 }));
 
-test('点击看板娘本体直接打开设置面板，一次点击即可调整大小', async ({ page }) => {
+test('右键看板娘本体直接打开设置面板，一次右键即可调整大小', async ({ page }) => {
   await page.goto('/');
   await waitForLive2d(page);
   const widget = page.locator('#live2d-widget');
   await expect(widget).not.toHaveClass(/live2d-settings-open/);
 
   const p = await bodyPoint(page);
-  await page.mouse.click(p.x, p.y);
+  await page.mouse.click(p.x, p.y, { button: 'right' });
 
-  // 一次点击就必须开面板 —— 这是本次需求的核心
+  // 一次右键就必须开面板
   await expect(widget).toHaveClass(/live2d-settings-open/);
   await expect(page.locator('#live2d-settings-toggle')).toHaveAttribute('aria-expanded', 'true');
   // 尺寸滑块可见可用
@@ -85,7 +98,7 @@ test('拖拽缩放手柄改变尺寸，且不会被当成拖拽移动看板娘',
   await page.evaluate(() => localStorage.removeItem('live2dCustomPosition'));
 
   const p = await bodyPoint(page);
-  await page.mouse.click(p.x, p.y);
+  await page.mouse.click(p.x, p.y, { button: 'right' });
   await expect(page.locator('#live2d-widget')).toHaveClass(/live2d-settings-open/);
 
   const before = await sizeState(page);
@@ -122,7 +135,7 @@ test('缩放手柄支持键盘方向键，且尺寸被限制在合法区间', as
   await page.goto('/');
   await waitForLive2d(page);
   const p = await bodyPoint(page);
-  await page.mouse.click(p.x, p.y);
+  await page.mouse.click(p.x, p.y, { button: 'right' });
   await expect(page.locator('#live2d-widget')).toHaveClass(/live2d-settings-open/);
 
   await page.locator('#live2d-resize-handle').focus();

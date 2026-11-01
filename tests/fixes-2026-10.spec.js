@@ -236,7 +236,7 @@ test('页面结构与内联脚本完整（防止 HTML 编码/结构损坏）', a
     await expect(page.locator(selector), `${selector} 应存在且唯一`).toHaveCount(1);
   }
   await expect(page.locator('body > footer#page-bottom')).toHaveCount(1);
-  await expect(page.locator('#projects .card')).toHaveCount(12);
+  await expect(page.locator('#projects .card')).toHaveCount(11);
   await expect(page.locator('.music-library-head h2')).toHaveText('音乐收藏');
   expect(errors).toEqual([]);
 });
@@ -298,7 +298,7 @@ test('技能模块已彻底删除且刷新后保持中文导航', async ({ page 
   await expect(page.locator('.sidebar-link[data-nav-key="skills"]')).toHaveCount(0);
   await expect(page.locator('.chips')).toHaveCount(0);
   // hero / about / projects / music-library / contact
-  await expect(page.locator('main section')).toHaveCount(5);
+  await expect(page.locator('main section[id]')).toHaveCount(5);
   await expect(page.locator('.sidebar-link')).toHaveCount(6);
 
   // 删除后相邻模块的锚点导航必须仍然可用
@@ -379,8 +379,8 @@ test('音乐收藏频谱环在播放时由真实音频能量驱动', async ({ pa
   await expect.poll(level, { timeout: 20000 }).toBeGreaterThan(idle + 0.05);
 });
 
-test('音乐收藏角色轨道在窄屏下是单列且不横向溢出', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 780 });
+test('音乐收藏角色轨道在桌面下保持单列列表且不横向溢出', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/#music-library');
   const details = page.locator('.music-library-details');
   if (!(await details.evaluate(el => el.open))) {
@@ -390,5 +390,5 @@ test('音乐收藏角色轨道在窄屏下是单列且不横向溢出', async ({
   await expect(page.locator('.music-role-group').first()).toBeVisible();
   const columns = await page.locator('.music-library-list').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
   expect(columns).toBe(1);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1280);
 });

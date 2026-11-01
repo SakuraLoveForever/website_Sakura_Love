@@ -1,6 +1,6 @@
 /* Dark-only visual references: saicaca/fuwari and satnaing/astro-paper (MIT).
    Adapted to the site's existing HTML components; see .agents/oss-research/dark-themes-2026-10-20.md. */
-body:is(.design-fuwari, .design-astropaper) {
+body:is(.design-fuwari, .design-astropaper, .design-rem) {
   --content: 1080px;
   --content-wide: 1180px;
   --primary: #a4c2ff;
@@ -52,62 +52,149 @@ body.design-astropaper {
   --control-radius: 8px;
   line-height: 1.75;
 }
-body:is(.design-fuwari, .design-astropaper) :is(.site-header, .side-nav, .about-panel, .about-sub-panel, .card, .music-library-shell, .live2d-settings-panel) {
+body:is(.design-fuwari, .design-astropaper, .design-rem) :is(.site-header, .side-nav, .about-panel, .about-sub-panel, .card, .music-library-shell, .live2d-settings-panel) {
   background: var(--surface-pearl);
   color: var(--text);
   border-color: var(--hairline);
   box-shadow: none;
 }
-body:is(.design-fuwari, .design-astropaper) .side-nav { border-radius: var(--panel-radius); }
-body:is(.design-fuwari, .design-astropaper) :is(.sidebar-logo-text, .logo, .sidebar-toggle) { color: var(--text); }
-body:is(.design-fuwari, .design-astropaper) .sidebar-link { color: var(--muted); border-radius: var(--control-radius); }
-body:is(.design-fuwari, .design-astropaper) .sidebar-link:is(:hover, :focus-visible, .active) {
+body:is(.design-fuwari, .design-astropaper, .design-rem) .side-nav { border-radius: var(--panel-radius); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) :is(.sidebar-logo-text, .logo, .sidebar-toggle) { color: var(--text); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .sidebar-link { color: var(--muted); border-radius: var(--control-radius); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .sidebar-link:is(:hover, :focus-visible, .active) {
   color: var(--text); background: var(--surface-dark-2); border-color: var(--hairline); box-shadow: none; transform: none;
 }
-body:is(.design-fuwari, .design-astropaper) .sidebar-link.active::before { background: var(--primary); box-shadow: none; width: 2px; }
-body:is(.design-fuwari, .design-astropaper) .sidebar-link .sidebar-icon { filter: none; }
-body:is(.design-fuwari, .design-astropaper) .hero { background: var(--canvas); min-height: min(720px, calc(100vh - var(--nav-height))); padding: 96px 0; }
-body:is(.design-fuwari, .design-astropaper) .hero h1 { font-family: inherit; font-size: clamp(40px, 5vw, 64px); letter-spacing: -.045em; line-height: 1.1; }
-body:is(.design-fuwari, .design-astropaper) .intro { color: var(--muted); font-size: clamp(18px, 2.2vw, 23px); line-height: 1.65; overflow-wrap: normal; text-wrap: balance; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .sidebar-link.active::before { background: var(--primary); box-shadow: none; width: 2px; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .sidebar-link .sidebar-icon { filter: none; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .hero { background: var(--canvas); min-height: min(720px, calc(100vh - var(--nav-height))); padding: 96px 0; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .hero h1 { font-family: inherit; font-size: clamp(40px, 5vw, 64px); letter-spacing: -.045em; line-height: 1.1; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .intro { color: var(--muted); font-size: clamp(18px, 2.2vw, 23px); line-height: 1.65; overflow-wrap: normal; text-wrap: balance; }
 body.design-fuwari .hero-inner { align-items: flex-start; text-align: left; max-width: 1080px; }
 body.design-fuwari .intro { margin: 24px 0 32px; }
 body.design-fuwari .hero-actions { justify-content: flex-start; }
 body.design-astropaper .hero { background: var(--canvas); }
 body.design-astropaper :is(.hero h1, .eyebrow, .project-category) { font-family: "Cascadia Code", Consolas, "Microsoft YaHei", monospace; }
 body.design-astropaper .eyebrow { color: var(--primary); }
-body:is(.design-fuwari, .design-astropaper) .section > h2 { font-size: clamp(26px, 3vw, 34px); letter-spacing: -.025em; }
-body:is(.design-fuwari, .design-astropaper) :is(.section p, .about-value, .card p) { color: var(--muted); }
-body:is(.design-fuwari, .design-astropaper) .section :is(h2, h3, .about-key) { color: var(--text); }
-body:is(.design-fuwari, .design-astropaper) #projects .project-grid .card { border-radius: var(--panel-radius); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .section > h2 { font-size: clamp(26px, 3vw, 34px); letter-spacing: -.025em; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) :is(.section p, .about-value, .card p) { color: var(--muted); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .section :is(h2, h3, .about-key) { color: var(--text); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) #projects .project-grid .card { border-radius: var(--panel-radius); }
 body.design-astropaper #projects .card-body { padding: 22px; gap: 12px; }
-body:is(.design-fuwari, .design-astropaper) :is(.btn, .jump-btn, .language-switch, .page-toggle-btn, .quote-category-select, .anime-viewer-settings, select) {
+body:is(.design-fuwari, .design-astropaper, .design-rem) :is(.btn, .jump-btn, .language-switch, .page-toggle-btn, .quote-category-select, .anime-viewer-settings, select) {
   background: var(--surface-pearl); color: var(--text); border-color: var(--hairline); border-radius: var(--control-radius); box-shadow: none;
 }
-body:is(.design-fuwari, .design-astropaper) :is(.btn.primary, .design-style-btn.active, .view-mode-btn.active, .page-toggle-btn.active, .project-filter.active) {
+body:is(.design-fuwari, .design-astropaper, .design-rem) :is(.btn.primary, .design-style-btn.active, .view-mode-btn.active, .page-toggle-btn.active, .project-filter.active) {
   background: var(--primary); border-color: var(--primary); color: var(--on-primary);
 }
-body:is(.design-fuwari, .design-astropaper) .btn.primary:hover { background: var(--primary-strong); box-shadow: none; animation: none; }
-body:is(.design-fuwari, .design-astropaper) :is(.design-style-options, .view-mode-options, .project-filter, .project-tag) {
+body:is(.design-fuwari, .design-astropaper, .design-rem) .btn.primary:hover { background: var(--primary-strong); box-shadow: none; animation: none; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) :is(.design-style-options, .view-mode-options, .project-filter, .project-tag) {
   background: var(--surface-dark-2); border-color: var(--hairline); color: var(--muted);
 }
-body:is(.design-fuwari, .design-astropaper) .project-filter[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
-body:is(.design-fuwari, .design-astropaper) .project-feature-label { background: var(--surface-dark-2); color: var(--primary); border-color: var(--hairline); }
-body:is(.design-fuwari, .design-astropaper) .card-cover--symbol { background: var(--surface-dark-2); color: var(--text); }
-body:is(.design-fuwari, .design-astropaper) .card-cover--symbol :is(.card-cover-mark, .card-cover-kind) { color: var(--primary); }
-body:is(.design-fuwari, .design-astropaper) .social-links a.social-github { background: var(--surface-dark-2); color: var(--text); border-color: var(--hairline); }
-body:is(.design-fuwari, .design-astropaper) .social-links-bottom a { color: var(--muted); }
-body:is(.design-fuwari, .design-astropaper) .site-footer { background: var(--canvas); border-color: var(--hairline); }
-body:is(.design-fuwari, .design-astropaper) .music-library {
+body:is(.design-fuwari, .design-astropaper, .design-rem) .project-filter[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .project-feature-label { background: var(--surface-dark-2); color: var(--primary); border-color: var(--hairline); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .card-cover--symbol { background: var(--surface-dark-2); color: var(--text); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .card-cover--symbol :is(.card-cover-mark, .card-cover-kind) { color: var(--primary); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .social-links a.social-github { background: var(--surface-dark-2); color: var(--text); border-color: var(--hairline); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .social-links-bottom a { color: var(--muted); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .site-footer { background: var(--canvas); border-color: var(--hairline); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .music-library {
   --music-panel: var(--surface-pearl); --music-panel-strong: var(--surface-dark-2);
   --music-line: var(--hairline); --music-text: var(--text); --music-muted: var(--muted);
   --music-accent: var(--primary); --music-accent-2: var(--primary-strong);
 }
-body:is(.design-fuwari, .design-astropaper) :is(button, a, summary, select, input):focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
-body:is(.design-fuwari, .design-astropaper) .click-pop-text { background: color-mix(in srgb, var(--canvas) 80%, transparent); }
-body:is(.design-fuwari, .design-astropaper) #particle-canvas > canvas { opacity: .12; }
-@media (max-width: 833px) {
-  body:is(.design-fuwari, .design-astropaper) .hero { min-height: 560px; padding: 64px 0; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) :is(button, a, summary, select, input):focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+body:is(.design-fuwari, .design-astropaper, .design-rem) .click-pop-text { background: color-mix(in srgb, var(--canvas) 80%, transparent); }
+body:is(.design-fuwari, .design-astropaper, .design-rem) #particle-canvas > canvas { opacity: .12; }
+
+
+/* Rem Dark — 雷姆主题。冰蓝主色取自雷姆发色实测值（#a0c0f8 / #98c0f8），
+   发带粉 #f2a7bd 做强调；蓝色二次元色板参考 jerryc127/hexo-theme-butterfly 的 --blue(#49b1f5) 一族。
+   调研、素材与取舍见 .agents/oss-research/rem-2026-10-26.md。 */
+body.design-rem {
+  --primary: #8fd0f4;
+  --primary-strong: #b6e4fb;
+  --primary-on-dark: #a0c0f8;
+  --on-primary: #08131f;
+  --ink: #e9f3fc;
+  --text: #e9f3fc;
+  --text-on-dark: #e9f3fc;
+  --muted: #a6b8cf;
+  --muted-on-dark: #a6b8cf;
+  --canvas: #0d1622;
+  --canvas-parchment: #111c2b;
+  --surface-pearl: #172335;
+  --surface-dark: #172335;
+  --surface-dark-2: #1f2e44;
+  --surface-dark-3: #283a55;
+  --surface-black: #0d1622;
+  --hairline: #2c3e58;
+  --divider-soft: #1f2e44;
+  --panel-radius: 18px;
+  --control-radius: 8px;
+  --rem-ribbon: #f2a7bd;
+  --rem-hair: #a0c0f8;
 }
+html:has(body.design-rem) { scrollbar-color: #37557c transparent; scrollbar-width: thin; }
+
+/* Hero: 冰蓝双径向光 + 右侧雷姆角色卡。其它风格下 .rem-character 不占位、图片也不加载。 */
+body.design-rem .hero {
+  background:
+    radial-gradient(820px 480px at 76% 32%, rgb(143 208 244 / .20), transparent 66%),
+    radial-gradient(680px 420px at 10% 92%, rgb(88 112 200 / .16), transparent 70%),
+    linear-gradient(180deg, #0e1a29, #0d1622 64%);
+}
+/* 角色卡放在左列：右下角常驻看板娘，卡片放右侧会被挡住名牌。 */
+body.design-rem .hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+  max-width: 1000px;
+  text-align: left;
+}
+body.design-rem .rem-character { grid-column: 1; grid-row: 1; }
+body.design-rem .hero-copy { grid-column: 2; grid-row: 1; max-width: 560px; }
+body.design-rem .hero-actions { justify-content: flex-start; }
+body.design-rem .intro { margin: 24px 0 32px; }
+body.design-rem .eyebrow { color: var(--rem-ribbon); }
+body.design-rem .btn.primary { box-shadow: 0 12px 30px -14px rgb(143 208 244 / .9); }
+body.design-rem .btn.primary:hover { box-shadow: 0 12px 34px -12px rgb(182 228 251 / .95); }
+
+.rem-character { display: none; }
+body.design-rem .rem-character {
+  display: block;
+  position: relative;
+  width: 100%;
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  border-radius: calc(var(--panel-radius) + 4px);
+  background: var(--surface-pearl);
+  box-shadow: 0 28px 60px -30px rgb(143 208 244 / .55), inset 0 0 0 1px rgb(160 192 248 / .07);
+}
+body.design-rem .rem-character img { display: block; width: 100%; height: 100%; object-fit: cover; }
+body.design-rem .rem-character figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 44px 18px 16px;
+  background: linear-gradient(to top, rgb(8 15 25 / .94), rgb(8 15 25 / .55) 58%, transparent);
+}
+body.design-rem .rem-character strong { color: var(--text); font-size: 19px; font-weight: 700; letter-spacing: .12em; }
+body.design-rem .rem-character span { color: var(--rem-hair); font-size: 11px; letter-spacing: .06em; line-height: 1.35; }
+
+@media (max-width: 900px) {
+  body.design-rem .hero-inner { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  body.design-rem .hero-copy { grid-column: 1; grid-row: 1; }
+  /* 手机上右下角同时有看板娘和快捷按钮，卡片靠左并只留名字，避免名牌被压住 */
+  body.design-rem .rem-character { grid-column: 1; grid-row: 2; max-width: 220px; justify-self: start; }
+  body.design-rem .rem-character figcaption { padding: 32px 12px 12px; }
+  body.design-rem .rem-character span { display: none; }
+}
+
 
 /* Apple: one continuous backdrop behind the hero, header and sidebar margins. */
 body.design-apple {
@@ -159,27 +246,6 @@ body[class*="design-"] .sidebar-menu .sidebar-icon { filter: none; }
   pointer-events: none;
   z-index: 1;
 }
-.sidebar-selection-indicator.is-horizontal {
-  top: auto;
-  bottom: 1px;
-  width: auto;
-  height: 3px;
-}
-.sidebar-selection-indicator.is-animated {
-  transition: top 192ms cubic-bezier(.215,.61,.355,1), bottom 208ms cubic-bezier(.645,.045,.355,1) 112ms;
-}
-.sidebar-selection-indicator.is-animated.is-forward {
-  transition: bottom 192ms cubic-bezier(.215,.61,.355,1), top 208ms cubic-bezier(.645,.045,.355,1) 112ms;
-}
-.sidebar-selection-indicator.is-animated.is-horizontal {
-  transition: left 192ms cubic-bezier(.215,.61,.355,1), right 208ms cubic-bezier(.645,.045,.355,1) 112ms;
-}
-.sidebar-selection-indicator.is-animated.is-horizontal.is-forward {
-  transition: right 192ms cubic-bezier(.215,.61,.355,1), left 208ms cubic-bezier(.645,.045,.355,1) 112ms;
-}
-@media (prefers-reduced-motion: reduce) {
-  .sidebar-selection-indicator.is-animated { transition: none; }
-}
 
 /* Keep the pane, content inset and clipped labels on one layout rhythm. */
 body { transition: padding-left 250ms cubic-bezier(.2,0,0,1); }
@@ -212,7 +278,7 @@ body.theme-dark .music-playback-mode {
 }
 .music-playback-mode:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .player-bar-center { flex-wrap: wrap; }
-body.layout-mobile .music-playback-mode { min-height: 44px; }
+
 
 body.content-navigating { overflow-anchor: none; }
 body.content-navigating main .reveal-on-scroll,

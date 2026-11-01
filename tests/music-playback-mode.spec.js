@@ -45,7 +45,8 @@ test('随机播放自动和手动切歌均不重复当前曲目，并记住模�
   await expect(page.getByLabel('音乐收藏播放模式')).toHaveValue('random');
   await page.setViewportSize({ width: 354, height: 800 });
   await expect(page.getByLabel('音乐收藏播放模式')).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(354);
+  await expect(page.locator('body')).not.toHaveClass(/layout-mobile/);
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(354);
 });
 
 test('默认音量为30%，调节后的音量刷新仍保留，包括静音数值', async ({ page }) => {

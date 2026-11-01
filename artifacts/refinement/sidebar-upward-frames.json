@@ -1,0 +1,54 @@
+{
+  "build": "20261023-sidebar-connect-then-retract",
+  "direction": "up",
+  "frames": [
+    {
+      "time": 0,
+      "top": 302,
+      "height": 16,
+      "bottom": 318
+    },
+    {
+      "time": 180,
+      "top": 118.21875,
+      "height": 199.765625,
+      "bottom": 317.984375
+    },
+    {
+      "time": 360,
+      "top": 92,
+      "height": 226,
+      "bottom": 318
+    },
+    {
+      "time": 390,
+      "top": 92,
+      "height": 226,
+      "bottom": 318
+    },
+    {
+      "time": 420,
+      "top": 92,
+      "height": 226,
+      "bottom": 318
+    },
+    {
+      "time": 480,
+      "top": 92,
+      "height": 190.359375,
+      "bottom": 282.359375
+    },
+    {
+      "time": 540,
+      "top": 92,
+      "height": 46.375,
+      "bottom": 138.375
+    },
+    {
+      "time": 600,
+      "top": 92,
+      "height": 16,
+      "bottom": 108
+    }
+  ]
+}

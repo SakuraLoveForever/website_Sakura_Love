@@ -22,12 +22,15 @@ const rootThemeTokens={
 const legacyStyleClasses=["style-warm","style-tech","style-minimal","style-melancholy"];
 let activeDesignStyleKey=localStorage.getItem("stylePreset")||"apple";
 let activeDesignStyleClass=styleMap[activeDesignStyleKey]||styleMap.apple;
+const rezeroFocusParams={angleX:"PARAM_ANGLE_X",angleY:"PARAM_ANGLE_Y",angleZ:"PARAM_ANGLE_Z",bodyAngleX:"PARAM_BODY_ANGLE_X",bodyAngleY:"PARAM_BODY_ANGLE_Y",bodyAngleZ:"PARAM_BODY_ANGLE_Z",eyeBallX:"PARAM_EYE_BALL_X",eyeBallY:"PARAM_EYE_BALL_Y"};
 const live2dModels={
   tutu:{name:"草莓兔兔",path:"assets/live2d/tutu/草莓兔兔  试用.model3.json",scale:0.92,watermarkParam:"Param261"},
   designGenius:{name:"设计天才·白",path:"live2d-widget-v3-main/Resources/model/DesignGenius/Design_genius(1).model3.json",scale:0.92},
   mao:{name:"Mao",path:"live2d-widget-v3-main/Resources/model/Mao/Mao.model3.json",scale:0.92},
   hiyori:{name:"Hiyori",path:"live2d-widget-v3-main/Resources/model/Hiyori/Hiyori.model3.json",scale:0.92},
-  haru:{name:"Haru",path:"live2d-widget-v3-main/Resources/model/Haru/Haru.model3.json",scale:0.92}
+  rem:{name:"雷姆",path:"assets/live2d/rezero/rem/Character.model3.json",scale:0.92,focusParams:rezeroFocusParams},
+  ram:{name:"拉姆",path:"assets/live2d/rezero/ram/Character.model3.json",scale:0.92,focusParams:rezeroFocusParams},
+  emilia:{name:"艾米利亚",path:"assets/live2d/rezero/emilia/Character.model3.json",scale:0.92,focusParams:rezeroFocusParams}
 };
 const live2dCdnBase="https://cdn.jsdelivr.net/gh/SakuraLoveForever/website_Sakura_Love@main/";
 const live2dFileMode=window.location.protocol==="file:";
@@ -35,13 +38,39 @@ const live2dDefaultModel=live2dFileMode?"hiyori":"tutu";
 const getLive2dModelKey=(key)=>live2dModels[key]?key:live2dDefaultModel;
 const live2dCdnUrl=(path)=>live2dCdnBase+path.split("/").map(encodeURIComponent).join("/");
 const live2dModelSources=(config)=>[config.path,live2dCdnUrl(config.path)];
-const loadLive2dModel=async(config)=>{
-  let lastError=null;
-  for(const source of live2dModelSources(config)){
-    try{return await PIXI.live2d.Live2DModel.from(source,{autoUpdate:false})}
-    catch(error){lastError=error;console.warn("Live2D model source failed:",source,error)}
+// Keep at most three loaded models; detached models never tick.
+// Reuse decoding/GPU resources and share in-flight loads instead of rebuilding on every click.
+const live2dModelCache=new Map(),live2dCachedModels=new Map(),live2dModelSizes=new WeakMap();
+const pruneLive2dModelCache=()=>{
+  for(const [config,loaded] of live2dCachedModels){
+    if(live2dCachedModels.size<=3)break;
+    if(loaded.parent||loaded===live2dActiveModel)continue;
+    live2dCachedModels.delete(config);
+    live2dModelCache.delete(config);
+    loaded.destroy({children:true,texture:true,baseTexture:true});
   }
-  throw lastError;
+};
+const loadLive2dModel=(config)=>{
+  if(live2dModelCache.has(config)){
+    const cached=live2dModelCache.get(config),loaded=live2dCachedModels.get(config);
+    if(loaded){live2dCachedModels.delete(config);live2dCachedModels.set(config,loaded)}
+    return cached;
+  }
+  const pending=(async()=>{
+    let lastError=null;
+    for(const source of live2dModelSources(config)){
+      try{
+        const loaded=await PIXI.live2d.Live2DModel.from(source,{autoUpdate:false});
+        live2dModelSizes.set(loaded,{width:loaded.width,height:loaded.height});
+        live2dCachedModels.set(config,loaded);
+        return loaded;
+      }catch(error){lastError=error;console.warn("Live2D model source failed:",source,error)}
+    }
+    throw lastError;
+  })();
+  live2dModelCache.set(config,pending);
+  pending.catch(()=>{live2dModelCache.delete(config)});
+  return pending;
 };
 const live2dFocusParams={angleX:"ParamAngleX",angleY:"ParamAngleY",angleZ:"ParamAngleZ",bodyAngleX:"ParamBodyAngleX",bodyAngleY:"ParamBodyAngleY",bodyAngleZ:"ParamBodyAngleZ",eyeBallX:"ParamEyeBallX",eyeBallY:"ParamEyeBallY",mouseX:"Param83",mouseY:"Param84"};
 const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
@@ -150,8 +179,8 @@ let styleTransitionTimer=0;
 const beginStyleTransition=()=>{clearTimeout(styleTransitionTimer);document.body.classList.add("style-transitioning","theme-swap-active")};
 const endStyleTransition=()=>{clearTimeout(styleTransitionTimer);styleTransitionTimer=setTimeout(()=>document.body.classList.remove("style-transitioning","theme-swap-active"),styleTransitionMs+120)};
 const prefersReducedMotion=()=>Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
-let live2dApp=null,live2dActiveModel=null,finishLive2dTransition=null;
-const isLive2dVisible=()=>live2dEnabled&&!document.body.classList.contains("layout-mobile")&&window.innerWidth>833&&!document.hidden;
+let live2dApp=null,live2dActiveModel=null,live2dActiveModelKey=null,finishLive2dTransition=null;
+const isLive2dVisible=()=>live2dEnabled&&!document.hidden;
 const syncLive2dRuntime=()=>{
   if(!live2dApp)return;
   const running=isLive2dVisible()&&!prefersReducedMotion();
@@ -294,7 +323,7 @@ const applyLanguage=()=>{
   syncProjectPortfolio(safe);
   // ⚠️ 顺序契约：下面三个数组按 **DOM 索引** 依次写回 index.html `#projects .card` 里的
   // 标题 / aria-label / 描述。改动项目卡的顺序或增删卡片时，必须同步改这里，
-  // 否则文案会整体错位（而且是静默的，不报错）。当前 11 张卡与数组一一对应。
+  // 否则文案会整体错位（而且是静默的，不报错）。当前 12 张卡与数组一一对应。
   const projectTitles=document.querySelectorAll(".project-title-btn"),projectTitleCopy=[copy.projectLifeTitle,copy.projectQuotesTitle,copy.projectKindleTitle,copy.projectPcGuardTitle,copy.projectFilegoTitle,copy.projectTabsyncTitle,copy.projectAppcounterTitle,copy.projectYoutubeTitle,copy.projectAutocleanTitle,copy.projectAnimeTitle,copy.projectGithubTitle],projectAriaCopy=[copy.projectLifeAria,copy.projectQuotesAria,copy.projectKindleAria,copy.projectPcGuardAria,copy.projectFilegoAria,copy.projectTabsyncAria,copy.projectAppcounterAria,copy.projectYoutubeAria,copy.projectAutocleanAria,copy.projectAnimeAria,copy.projectGithubAria];projectTitles.forEach((el,index)=>{if(projectTitleCopy[index]){el.textContent=projectTitleCopy[index];el.setAttribute("aria-label",projectAriaCopy[index])}});
   const projectDescriptions=document.querySelectorAll(".project-grid .card p");[copy.projectLifeDesc,copy.projectQuotesDesc,copy.projectKindleDesc,copy.projectPcGuardDesc,copy.projectFilegoDesc,copy.projectTabsyncDesc,copy.projectAppcounterDesc,copy.projectYoutubeDesc,copy.projectAutocleanDesc,copy.projectAnimeDesc,copy.projectGithubDesc].forEach((text,index)=>{if(projectDescriptions[index])projectDescriptions[index].textContent=text});
   setText("#contact > h2",copy.contactTitle);setHtml("#contact > p",copy.contactHtml);
@@ -978,15 +1007,31 @@ if("IntersectionObserver" in window){
 let live2dSettingsTimer=null,live2dControlsActive=false,live2dLayoutFrame=0;
 const queueLive2dFrame=window.requestAnimationFrame?.bind(window)||((callback)=>setTimeout(callback,16));
 const LIVE2D_EDGE_MARGIN=12;
+let live2dContentBounds=null;
 const getLive2dBaseSize=()=>{const w=Math.min(280,window.innerWidth*0.48),h=Math.min(560,window.innerHeight*0.82);return {width:w,height:h}};
 const getLive2dMaxScale=()=>{const {width,height}=getLive2dBaseSize();const maxW=(window.innerWidth-LIVE2D_EDGE_MARGIN*2)/Math.max(1,width),maxH=(window.innerHeight-LIVE2D_EDGE_MARGIN*2)/Math.max(1,height);return Math.max(0.6,Math.min(1.6,maxW,maxH))};
 const normalizeLive2dSizePercent=(value)=>{const requested=Math.min(160,Math.max(60,Number(value)||100));return Math.round(Math.min(requested,getLive2dMaxScale()*100))};
 const getLive2dScale=()=>Math.min(getLive2dMaxScale(),Math.max(0.6,Number(live2dWidget?.style.getPropertyValue("--live2d-size"))||normalizeLive2dSizePercent(localStorage.getItem("live2dSize"))/100));
 const getLive2dMetrics=(scale=getLive2dScale(),custom=live2dWidget?.classList.contains("live2d-custom-position"))=>{const {width,height}=getLive2dBaseSize();const visualWidth=width*scale,visualHeight=height*scale;return {scale,width,height,visualWidth,visualHeight,offsetX:0,offsetY:custom?0:height-visualHeight}};
-const clampLive2dVisualLeftTop=(x,y,scale=getLive2dScale())=>{const {visualWidth,visualHeight}=getLive2dMetrics(scale,true);const maxX=window.innerWidth-LIVE2D_EDGE_MARGIN-visualWidth,maxY=window.innerHeight-LIVE2D_EDGE_MARGIN-visualHeight;return {x:clamp(x,LIVE2D_EDGE_MARGIN,Math.max(LIVE2D_EDGE_MARGIN,maxX)),y:clamp(y,LIVE2D_EDGE_MARGIN,Math.max(LIVE2D_EDGE_MARGIN,maxY))}};
+const clampLive2dVisualLeftTop=(x,y,scale=getLive2dScale())=>{
+  const {visualWidth,visualHeight}=getLive2dMetrics(scale,true);
+  const bounds=live2dContentBounds?.model===live2dActiveModel?live2dContentBounds:{left:0,top:0,right:1,bottom:1};
+  const minX=LIVE2D_EDGE_MARGIN-bounds.left*visualWidth,minY=LIVE2D_EDGE_MARGIN-bounds.top*visualHeight;
+  const maxX=window.innerWidth-LIVE2D_EDGE_MARGIN-bounds.right*visualWidth;
+  const maxY=window.innerHeight-LIVE2D_EDGE_MARGIN-bounds.bottom*visualHeight;
+  return {x:clamp(x,minX,Math.max(minX,maxX)),y:clamp(y,minY,Math.max(minY,maxY))};
+};
 const positionLive2dChrome=({freezePanel=false}={})=>{
   if(!live2dWidget)return;
   const rect=live2dWidget.getBoundingClientRect();
+  // Transparent canvas padding may sit outside the viewport; keep the resize
+  // handle reachable independently of the canvas rectangle.
+  const handle=live2dWidget.querySelector(".live2d-resize-handle");
+  if(handle){
+    handle.style.left=clamp(rect.right-40,8,window.innerWidth-48)-rect.left+"px";
+    handle.style.top=clamp(rect.bottom-48,8,window.innerHeight-48)-rect.top+"px";
+    handle.style.right="auto";handle.style.bottom="auto";
+  }
   const rightSpace=window.innerWidth-rect.right;
   const leftSpace=rect.left;
   const panelWidth=live2dSettingsPanel?.offsetWidth||264;
@@ -1072,9 +1117,6 @@ const setLive2dSettingsOpen=(open)=>{
   if(live2dSettingsPanel)live2dSettingsPanel.inert=!open;
   if(live2dSettingsToggle)live2dSettingsToggle.setAttribute("aria-expanded",String(open));
   positionLive2dChrome();
-  if(open&&!prefersReducedMotion()&&window.Motion&&live2dSettingsPanel){
-    Motion.animate(live2dSettingsPanel,{opacity:[0,1]},{duration:.18,ease:[.22,1,.36,1]});
-  }
   showLive2dSettingsButton({keep:open});
   if(!open){unmarkLive2dControlsActive();live2dSettingsTimer=setTimeout(hideLive2dSettingsButton,3000)}
 };
@@ -1176,9 +1218,26 @@ document.addEventListener("pointerdown",e=>{
   if(live2dSettingsToggle)live2dSettingsToggle.setAttribute("aria-expanded","false");
 },true);
 const live2dMessages=["好久不见，日子过得好快呢……","大坏蛋！你都多久没理人家了呀，嘤嘤嘤～","嗨～快来逗我玩吧！","拿小拳拳锤你胸口！","记得把小家加入收藏夹哦！","今天也要元气满满。","别戳啦，我在认真看家。","要不要听一首歌放松一下？","角色窗口和音乐现在会一起换啦。","欢迎来到 Sakura_Love 的小窝。","偷偷告诉你，点击页面也有惊喜。","哼，你刚刚是不是又在偷看我？","要摸头的话……只能一下下哦。","今天也要陪我玩一会儿嘛。"];
-const getCurrentLive2dName=()=>{
-  const selected=getLive2dModelKey(live2dModelSelect&&live2dModels[live2dModelSelect.value]?live2dModelSelect.value:localStorage.getItem("live2dModel"));
-  return live2dModels[selected]?.name||ui("live2dDefaultName");
+const getCurrentLive2dKey=()=>live2dActiveModelKey||getLive2dModelKey(localStorage.getItem("live2dModel"));
+const getCurrentLive2dName=()=>live2dModels[getCurrentLive2dKey()]?.name||ui("live2dDefaultName");
+const live2dQuoteQueues=new Map();
+const nextLive2dQuote=()=>{
+  const key=getCurrentLive2dKey(),bank=window.live2dCharacterQuotes?.characters[key];
+  if(!bank?.quotes.length)return null;
+  const state=live2dQuoteQueues.get(key)||{remaining:[],last:null};
+  if(!state.remaining.length){
+    state.remaining=[...bank.quotes];
+    for(let i=state.remaining.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [state.remaining[i],state.remaining[j]]=[state.remaining[j],state.remaining[i]];
+    }
+    const last=state.remaining.length-1;
+    if(last>0&&state.remaining[last]===state.last){
+      [state.remaining[0],state.remaining[last]]=[state.remaining[last],state.remaining[0]];
+    }
+  }
+  const quote=state.remaining.pop();state.last=quote;live2dQuoteQueues.set(key,state);
+  return {...quote,key,name:bank.name,source:window.live2dCharacterQuotes.sources[quote.source]};
 };
 const live2dHoverMessages=["干嘛呢你，快把手拿开～～","鼠…鼠标放错地方了！","你要干嘛呀？","喵喵喵？","怕怕(ノ≧∇≦)ノ","非礼呀！救命！","这样的话，只能使用武力了！","我要生气了哦","不要动手动脚的！","真…真的是不知羞耻！",()=>`${getCurrentLive2dName()}！`,"拿小拳拳锤你胸口！","嗨~快来逗我玩吧！","真……真的是不知羞耻！","再摸的话我可要报警了！","不要摸我了，我要叫我老婆来打你了！","是…是不小心碰到了吧…","干嘛碰我呀，小心我咬你！","哼，再靠近一点试试看？","你、你不要突然凑这么近啦！"];
 let clickTexts=["樱花落下的速度，是每秒五厘米。","愿你所到之处，遍地温柔。","今天也辛苦啦。","把热爱写进每一天。","风会带来新的故事。","愿所有长夜都有星光。","保持可爱，也保持锋芒。","世界很大，慢慢相遇。","念念不忘，必有回响。","人终会被年少不可得之物困其一生。","璞玉有缺便是王。","已知乾坤大，犹怜草木青。","追风赶月莫停留，平芜尽处是春山。","光而不耀，静水流深。","日拱一卒，功不唐捐。","沉舟侧畔千帆过，病树前头万木春。","放弃不难，但坚持一定很酷。","向前看，别烂在过去和梦里。","但行好事，莫问前程。","三里清风三里路，步步清风，再无你。"];
@@ -1189,8 +1248,25 @@ const sanitizeWaifuText=(text)=>{
   return /<script|<iframe|javascript:/i.test(clean)?"":clean;
 };
 const pick=(arr)=>arr[Math.floor(Math.random()*arr.length)];
-const showLive2dDialog=(text=pick(live2dMessages))=>{if(!live2dDialog||!live2dEnabled)return;const clean=sanitizeWaifuText(text)||pick(live2dMessages);clearTimeout(dialogTimer);live2dDialog.textContent=clean;live2dDialog.classList.add("visible");dialogTimer=setTimeout(()=>live2dDialog.classList.remove("visible"),2600)};
-const showNextLive2dHoverDialog=(force=false)=>{if(!live2dEnabled)return;const now=Date.now();if(!force&&now-lastLive2dHoverAt<350)return;lastLive2dHoverAt=now;const message=live2dHoverMessages[live2dHoverIndex++%live2dHoverMessages.length];showLive2dDialog(typeof message==="function"?message():message)};
+const showLive2dDialog=(text)=>{
+  if(!live2dDialog||!live2dEnabled)return;
+  const quote=text===undefined?nextLive2dQuote():null;
+  const clean=sanitizeWaifuText(quote?.text??text??pick(live2dMessages))||pick(live2dMessages);
+  clearTimeout(dialogTimer);
+  live2dDialog.textContent=clean;
+  if(quote){
+    live2dDialog.dataset.quoteCharacter=quote.key;
+    live2dDialog.dataset.quoteSource=quote.source;
+    live2dDialog.title=window.live2dCharacterQuotes.work+" · "+quote.name+" · TV总第"+quote.episode+"话（中文自译短摘）";
+  }else{
+    delete live2dDialog.dataset.quoteCharacter;
+    delete live2dDialog.dataset.quoteSource;
+    live2dDialog.removeAttribute("title");
+  }
+  live2dDialog.classList.add("visible");
+  dialogTimer=setTimeout(()=>live2dDialog.classList.remove("visible"),2600);
+};
+const showNextLive2dHoverDialog=(force=false)=>{if(!live2dEnabled)return;const now=Date.now();if(!force&&now-lastLive2dHoverAt<350)return;lastLive2dHoverAt=now;if(window.live2dCharacterQuotes?.characters[getCurrentLive2dKey()]?.quotes.length){showLive2dDialog();return}const message=live2dHoverMessages[live2dHoverIndex++%live2dHoverMessages.length];showLive2dDialog(typeof message==="function"?message():message)};
 let clickTextSeq=0,clickTextForward=true;
 const quoteOrderToggle=document.getElementById("quote-order-toggle");
 if(quoteOrderToggle){
@@ -1233,6 +1309,7 @@ const isAroundLive2dWidget=(event,{wide=false}={})=>{
 const applyLive2dSettings=()=>{
   if(!live2dWidget)return;
   const modelKey=getLive2dModelKey(localStorage.getItem("live2dModel"));
+  localStorage.setItem("live2dModel",modelKey);
   const size=normalizeLive2dSizePercent(localStorage.getItem("live2dSize"));
   const rawX=localStorage.getItem("live2dX"),rawY=localStorage.getItem("live2dY");
   const savedX=Number(rawX),savedY=Number(rawY);
@@ -1240,7 +1317,7 @@ const applyLive2dSettings=()=>{
   live2dWidget.classList.toggle("live2d-custom-position",hasCustomPosition);
   live2dWidget.style.setProperty("--live2d-size",String(size/100));
   if(hasCustomPosition){
-    const next=clampLive2dVisualLeftTop(savedX,savedY,size/100);
+    const next=live2dActiveModel?clampLive2dVisualLeftTop(savedX,savedY,size/100):{x:savedX,y:savedY};
     const nextX=`${next.x}px`;
     const nextY=`${next.y}px`;
     live2dWidget.style.setProperty("--live2d-x",nextX);
@@ -1301,6 +1378,7 @@ const initLive2d=async()=>{
     if(!live2dWidget.clientWidth||!live2dWidget.clientHeight)await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     const app=new PIXI.Application({view:live2dCanvas,autoStart:false,transparent:true,backgroundAlpha:0,width:live2dWidget.clientWidth,height:live2dWidget.clientHeight,antialias:true,resolution:Math.min(2,window.devicePixelRatio||1),autoDensity:true,preserveDrawingBuffer:true});
     live2dApp=app;
+    let preloadTimer=0;
     let model=null,modelConfig=null,naturalWidth=0,naturalHeight=0,loadToken=0,manualFocusFrame=0,manualFocusPoint={nx:0,ny:0},manualFocusTarget={nx:0,ny:0};
     const setModelParameter=(id,value,coreModel=model?.internalModel?.coreModel)=>{
       if(!id||!coreModel)return;
@@ -1477,6 +1555,32 @@ const initLive2d=async()=>{
       live2dWidget.style.setProperty("--live2d-dialog-shift","-50%");
       positionLive2dChrome({freezePanel:live2dControlsActive});
     };
+    const measureContentBounds=()=>{
+      const w=live2dWidget.clientWidth,h=live2dWidget.clientHeight;
+      if(model.alpha<1||app.stage.children.length!==1)return;
+      if(live2dContentBounds?.model===model&&live2dContentBounds.width===w&&live2dContentBounds.height===h)return;
+      const sample=document.createElement("canvas");
+      sample.width=Math.min(140,live2dCanvas.width);
+      sample.height=Math.max(1,Math.round(live2dCanvas.height*sample.width/live2dCanvas.width));
+      const context=sample.getContext("2d",{willReadFrequently:true});
+      context.drawImage(live2dCanvas,0,0,sample.width,sample.height);
+      const pixels=context.getImageData(0,0,sample.width,sample.height).data;
+      let left=sample.width,top=sample.height,right=-1,bottom=-1;
+      for(let y=0;y<sample.height;y++)for(let x=0;x<sample.width;x++){
+        if(pixels[(y*sample.width+x)*4+3]<=24)continue;
+        left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);
+      }
+      if(right<left)return;
+      // Two sample pixels leave a small safety margin around antialiased edges.
+      live2dContentBounds={model,width:w,height:h,left:Math.max(0,left-2)/sample.width,top:Math.max(0,top-2)/sample.height,right:Math.min(sample.width,right+3)/sample.width,bottom:Math.min(sample.height,bottom+3)/sample.height};
+      if(live2dWidget.classList.contains("live2d-custom-position")){
+        const rect=live2dWidget.getBoundingClientRect(),next=clampLive2dVisualLeftTop(rect.left,rect.top);
+        live2dWidget.style.left=next.x+"px";live2dWidget.style.top=next.y+"px";
+        live2dWidget.style.setProperty("--live2d-x",next.x+"px");live2dWidget.style.setProperty("--live2d-y",next.y+"px");
+        localStorage.setItem("live2dX",String(next.x));localStorage.setItem("live2dY",String(next.y));
+      }
+      positionLive2dChrome();
+    };
     const layout=()=>{
       const w=live2dWidget.clientWidth,h=live2dWidget.clientHeight;
       if(!model||!w||!h||!naturalWidth||!naturalHeight)return;
@@ -1489,26 +1593,29 @@ const initLive2d=async()=>{
       updateLive2dDialogAnchor();
       // Resizing clears the canvas; redraw before this frame can be displayed,
       // even when the animation ticker is paused.
-      if(isLive2dVisible())app.renderer.render(app.stage);
+      if(isLive2dVisible()){app.renderer.render(app.stage);measureContentBounds()}
     };
     live2dRelayout=layout;
     switchLive2dModel=async(modelKey)=>{
       const safeKey=getLive2dModelKey(modelKey);
+      ++loadToken;
       if(modelConfig===live2dModels[safeKey]&&model)return;
       const nextConfig=live2dModels[safeKey];
-      const token=++loadToken;
+      const token=loadToken;
       live2dWidget.classList.remove("live2d-hidden");
       try{
         const nextModel=await loadLive2dModel(nextConfig);
-        if(token!==loadToken){nextModel.destroy?.();return}
+        if(token!==loadToken){pruneLive2dModelCache();return}
         finishLive2dTransition?.();
         const prevModel=model;
         if(prevModel)prevModel.autoUpdate=false;
         model=nextModel;
         live2dActiveModel=model;
+        live2dActiveModelKey=safeKey;
+        if(live2dDialog?.dataset.quoteCharacter&&live2dDialog.dataset.quoteCharacter!==safeKey){clearTimeout(dialogTimer);live2dDialog.classList.remove("visible")}
         modelConfig=nextConfig;
-        naturalWidth=model.width;
-        naturalHeight=model.height;
+        naturalWidth=live2dModelSizes.get(model).width;
+        naturalHeight=live2dModelSizes.get(model).height;
         hideConfiguredModelMarks();
         installModelMarkGuard(model,nextConfig);
         // Initialize pose/physics before the first draw, including paused mode.
@@ -1533,9 +1640,11 @@ const initLive2d=async()=>{
           const finish=()=>{
             app.ticker.remove(_fadeTick);
             if(_fadeOut.parent)app.stage.removeChild(_fadeOut);
-            _fadeOut.destroy?.();
+
             _fadeIn.alpha=1;
             finishLive2dTransition=null;
+            layout();
+            pruneLive2dModelCache();
           };
           const _fadeTick=()=>{
             _elapsed+=app.ticker.deltaMS;
@@ -1547,13 +1656,21 @@ const initLive2d=async()=>{
           finishLive2dTransition=finish;
           app.ticker.add(_fadeTick);
         }else{
-          if(prevModel){app.stage.removeChild(prevModel);prevModel.destroy?.()}
+          if(prevModel){app.stage.removeChild(prevModel)}
           app.stage.addChild(model);
         }
         layout();
         applyLive2dVisibility();
         syncLive2dRuntime();
         if(live2dModelSelect)live2dModelSelect.value=safeKey;
+        pruneLive2dModelCache();
+        clearTimeout(preloadTimer);
+        preloadTimer=setTimeout(()=>{
+          if(!isLive2dVisible())return;
+          const keys=Object.keys(live2dModels),nextKey=keys[(keys.indexOf(safeKey)+1)%keys.length];
+          loadLive2dModel(live2dModels[nextKey]).then(pruneLive2dModelCache).catch(()=>{});
+        },250);
+
       }catch(err){
         if(token===loadToken&&!model)live2dWidget.classList.add("live2d-hidden");
         console.warn("Live2D model load failed:",err);
@@ -1583,43 +1700,21 @@ const initLive2d=async()=>{
         live2dHovering=false;
       }
     },{passive:true});
-    /*
-     * 像素命中测试（2026-10-06 修复）
-     * 旧实现：`app.renderer.extract.pixels(app.stage)` 直接按画布尺寸索引。
-     * 但 extract.pixels(target) 在没有 frame 时只截取 **target 的包围盒**——
-     * 实测返回 258×451（模型包围盒），而画布是 280×560，于是 (y*280+x) 的索引
-     * 整体错位，命中判定变成随机值：看板娘既拖不动、点击也没反应。
-     * 现在显式传入整块画布的 frame，并按返回缓冲的真实尺寸换算分辨率。
-     */
+    // Opaque pixels open settings; transparent pixels preserve underlying clicks.
+    const hitPixel=new Uint8Array(4);
     const hitLive2dPixel=(event)=>{
       const rect=live2dCanvas.getBoundingClientRect();
       if(!rect.width||!rect.height)return false;
-      const localX=event.clientX-rect.left;
-      const localY=event.clientY-rect.top;
-      // 便宜的矩形预判：绝大多数页面点击压根不在看板娘盒子里，不必去抽像素
+      const localX=event.clientX-rect.left,localY=event.clientY-rect.top;
       if(localX<0||localY<0||localX>=rect.width||localY>=rect.height)return false;
-      try{
-        const pixels=app.renderer.extract.pixels(app.stage,new PIXI.Rectangle(0,0,rect.width,rect.height));
-        const total=pixels.length/4;
-        if(!total)return false;
-        const scale=Math.sqrt(total/(rect.width*rect.height));
-        if(!Number.isFinite(scale)||scale<=0)return false;
-        const bufferWidth=Math.round(rect.width*scale);
-        const bufferHeight=Math.round(rect.height*scale);
-        if(bufferWidth<1||bufferHeight<1)return false;
-        const x=Math.min(bufferWidth-1,Math.max(0,Math.floor(localX*scale)));
-        const y=Math.min(bufferHeight-1,Math.max(0,Math.floor(localY*scale)));
-        return pixels[(y*bufferWidth+x)*4+3]>24;
-      }catch{
-        // 退化方案：抽像素失败时用模型包围盒做矩形命中，至少保证拖得动
-        try{
-          const bounds=model?.getBounds?.();
-          if(!bounds)return false;
-          return localX>=bounds.x&&localX<=bounds.x+bounds.width&&localY>=bounds.y&&localY<=bounds.y+bounds.height;
-        }catch{
-          return false;
-        }
-      }
+      // Read the preserved drawing buffer instead of re-rendering/extracting the stage.
+      // WebGL pixels start at the bottom-left; DOM CSS coordinates at the top-left.
+      const gl=app.renderer.gl;
+      if(gl.isContextLost()||!gl.drawingBufferWidth||!gl.drawingBufferHeight)return false;
+      const x=Math.min(gl.drawingBufferWidth-1,Math.floor(localX/rect.width*gl.drawingBufferWidth));
+      const y=gl.drawingBufferHeight-1-Math.min(gl.drawingBufferHeight-1,Math.floor(localY/rect.height*gl.drawingBufferHeight));
+      gl.readPixels(x,y,1,1,gl.RGBA,gl.UNSIGNED_BYTE,hitPixel);
+      return hitPixel[3]>24;
     };
     let live2dDragged=false,draggingLive2d=false,suppressLive2dClick=false,dragOffsetX=0,dragOffsetY=0,dragStartX=0,dragStartY=0,dragStartTarget=null;
     const moveLive2dTo=(x,y,{save=false}={})=>{
@@ -1709,17 +1804,22 @@ const initLive2d=async()=>{
     document.addEventListener("click",e=>{
       if(!isLive2dVisible())return;
       if(isLive2dSettingsTarget(e.target))return;
+      if(e.button!==0)return;
       if(suppressLive2dClick){suppressLive2dClick=false;live2dDragged=false;return}
       if(!hitLive2dPixel(e))return;
       // Canvas is transparent to pointer events. Capture opaque character hits
       // before the sidebar/link underneath receives the click.
       e.preventDefault();
       e.stopImmediatePropagation();
-      // 点本体 → 直接打开设置面板（一次点击就能调到尺寸滑块）。
-      // 原来只 showLive2dSettingsButton()，还得再点一次那个 3.6s 后会消失的小把手。
-      setLive2dSettingsOpen(true);
+      // Left click speaks; settings are opened by the context menu handler.
       showLive2dDialog();
       if(model?.motion)model.motion("TapBody").catch(()=>{});
+    },true);
+    document.addEventListener("contextmenu",e=>{
+      if(!isLive2dVisible()||isLive2dSettingsTarget(e.target)||!hitLive2dPixel(e))return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      setLive2dSettingsOpen(true);
     },true);
     await switchLive2dModel(getLive2dModelKey(localStorage.getItem("live2dModel")));
   }catch(err){

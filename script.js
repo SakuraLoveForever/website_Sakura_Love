@@ -3,8 +3,8 @@ document.documentElement.classList.add("js");
  * 构建标记：用来确认浏览器实际加载的是哪一份 script.js。
  * 排查「改了没生效」时，在控制台执行 document.documentElement.dataset.build 即可。
  */
-document.documentElement.dataset.build = "20261020-12";
-console.info("[Sakura_Love] build 20261020-12 · 紧凑排版 + Motion 交互");
+document.documentElement.dataset.build = "20261026-rem-theme";
+console.info("[Sakura_Love] build 20261026-rem-theme · 新增 Rem Dark 风格与雷姆角色卡");
 const launcherMode=new URLSearchParams(window.location.search).has("launcher");
 if(launcherMode)document.documentElement.classList.add("launcher-desktop-view");
 if(launcherMode&&"scrollRestoration"in history)history.scrollRestoration="manual";
@@ -13,21 +13,25 @@ if(launcherMode)window.addEventListener("load",()=>requestAnimationFrame(()=>req
 const $=(s)=>document.querySelector(s);
 const yearSpan=$("#year"),styleSelect=$("#style-select"),sidebarToggle=$("#sidebar-toggle"),sidebarAvatarButton=$("#sidebar-avatar-button"),sidebarAvatarInput=$("#sidebar-avatar-input"),sidebarLogoMark=$(".sidebar-logo-mark"),sidebarLinks=document.querySelectorAll(".sidebar-link"),designStyleButtons=document.querySelectorAll(".design-style-btn"),bgToggle=$("#bg-toggle"),bgCharacterSelect=$("#bg-character-select"),bgPlayModeSelect=$("#bg-play-mode"),musicToggle=$("#music-toggle"),musicVolumeInput=$("#music-volume"),musicSeekInput=$("#music-seek"),musicTimeDisplay=$("#music-time-display"),headerMusicPrevButton=$("#header-music-prev"),headerMusicNextButton=$("#header-music-next"),headerImagePrevButton=$("#header-image-prev"),headerImageNextButton=$("#header-image-next"),pageMuteToggleButton=$("#page-mute-toggle"),muteProgressArc=$("#mute-progress-arc"),animeViewer=$(".anime-viewer"),bgLayerA=$("#bg-layer-a"),bgLayerB=$("#bg-layer-b"),live2dCanvas=$("#live2d-canvas"),live2dWidget=$("#live2d-widget"),live2dDialog=$("#live2d-dialog"),live2dModelSelect=$("#live2d-model"),live2dSizeInput=$("#live2d-size"),live2dSizeValue=$("#live2d-size-value"),live2dSettingsToggle=$("#live2d-settings-toggle"),live2dSettingsPanel=$("#live2d-settings-panel"),live2dToggleButton=$("#live2d-toggle"),toastRoot=$("#toast-root");
 const musicLibraryAudio=$("#music-library-audio"),musicLibraryArtist=$("#music-library-artist"),musicLibraryTitle=$("#music-library-title"),musicLibraryStatus=$("#music-api-status"),musicLocalList=$("#music-local-list"),musicLocalCount=$("#music-local-count"),musicLibraryPlay=$("#music-library-play"),musicLibraryProgress=$("#music-library-progress"),musicLibraryVolume=$("#music-library-volume"),musicLibraryMute=$("#music-library-mute"),musicLibraryTime=$("#music-library-time"),musicLibrarySource=$("#music-library-source");
-const styleMap={apple:"design-apple",fuwari:"design-fuwari",astropaper:"design-astropaper"};
+const styleMap={apple:"design-apple",fuwari:"design-fuwari",astropaper:"design-astropaper",rem:"design-rem"};
 const rootThemeTokens={
   apple:{canvas:"#1d1d1f",text:"#f5f5f7",scheme:"dark"},
   fuwari:{canvas:"#141821",text:"#e5e9f0",scheme:"dark"},
-  astropaper:{canvas:"#212737",text:"#eaedf3",scheme:"dark"}
+  astropaper:{canvas:"#212737",text:"#eaedf3",scheme:"dark"},
+  rem:{canvas:"#0d1622",text:"#e9f3fc",scheme:"dark"}
 };
 const legacyStyleClasses=["style-warm","style-tech","style-minimal","style-melancholy"];
 let activeDesignStyleKey=localStorage.getItem("stylePreset")||"apple";
 let activeDesignStyleClass=styleMap[activeDesignStyleKey]||styleMap.apple;
+const rezeroFocusParams={angleX:"PARAM_ANGLE_X",angleY:"PARAM_ANGLE_Y",angleZ:"PARAM_ANGLE_Z",bodyAngleX:"PARAM_BODY_ANGLE_X",bodyAngleY:"PARAM_BODY_ANGLE_Y",bodyAngleZ:"PARAM_BODY_ANGLE_Z",eyeBallX:"PARAM_EYE_BALL_X",eyeBallY:"PARAM_EYE_BALL_Y"};
 const live2dModels={
   tutu:{name:"草莓兔兔",path:"assets/live2d/tutu/草莓兔兔  试用.model3.json",scale:0.92,watermarkParam:"Param261"},
   designGenius:{name:"设计天才·白",path:"live2d-widget-v3-main/Resources/model/DesignGenius/Design_genius(1).model3.json",scale:0.92},
   mao:{name:"Mao",path:"live2d-widget-v3-main/Resources/model/Mao/Mao.model3.json",scale:0.92},
   hiyori:{name:"Hiyori",path:"live2d-widget-v3-main/Resources/model/Hiyori/Hiyori.model3.json",scale:0.92},
-  haru:{name:"Haru",path:"live2d-widget-v3-main/Resources/model/Haru/Haru.model3.json",scale:0.92}
+  rem:{name:"雷姆",path:"assets/live2d/rezero/rem/Character.model3.json",scale:0.92,focusParams:rezeroFocusParams},
+  ram:{name:"拉姆",path:"assets/live2d/rezero/ram/Character.model3.json",scale:0.92,focusParams:rezeroFocusParams},
+  emilia:{name:"艾米利亚",path:"assets/live2d/rezero/emilia/Character.model3.json",scale:0.92,focusParams:rezeroFocusParams}
 };
 const live2dCdnBase="https://cdn.jsdelivr.net/gh/SakuraLoveForever/website_Sakura_Love@main/";
 const live2dFileMode=window.location.protocol==="file:";
@@ -35,17 +39,43 @@ const live2dDefaultModel=live2dFileMode?"hiyori":"tutu";
 const getLive2dModelKey=(key)=>live2dModels[key]?key:live2dDefaultModel;
 const live2dCdnUrl=(path)=>live2dCdnBase+path.split("/").map(encodeURIComponent).join("/");
 const live2dModelSources=(config)=>[config.path,live2dCdnUrl(config.path)];
-const loadLive2dModel=async(config)=>{
-  let lastError=null;
-  for(const source of live2dModelSources(config)){
-    try{return await PIXI.live2d.Live2DModel.from(source,{autoUpdate:false})}
-    catch(error){lastError=error;console.warn("Live2D model source failed:",source,error)}
+// Keep at most three loaded models; detached models never tick.
+// Reuse decoding/GPU resources and share in-flight loads instead of rebuilding on every click.
+const live2dModelCache=new Map(),live2dCachedModels=new Map(),live2dModelSizes=new WeakMap();
+const pruneLive2dModelCache=()=>{
+  for(const [config,loaded] of live2dCachedModels){
+    if(live2dCachedModels.size<=3)break;
+    if(loaded.parent||loaded===live2dActiveModel)continue;
+    live2dCachedModels.delete(config);
+    live2dModelCache.delete(config);
+    loaded.destroy({children:true,texture:true,baseTexture:true});
   }
-  throw lastError;
+};
+const loadLive2dModel=(config)=>{
+  if(live2dModelCache.has(config)){
+    const cached=live2dModelCache.get(config),loaded=live2dCachedModels.get(config);
+    if(loaded){live2dCachedModels.delete(config);live2dCachedModels.set(config,loaded)}
+    return cached;
+  }
+  const pending=(async()=>{
+    let lastError=null;
+    for(const source of live2dModelSources(config)){
+      try{
+        const loaded=await PIXI.live2d.Live2DModel.from(source,{autoUpdate:false});
+        live2dModelSizes.set(loaded,{width:loaded.width,height:loaded.height});
+        live2dCachedModels.set(config,loaded);
+        return loaded;
+      }catch(error){lastError=error;console.warn("Live2D model source failed:",source,error)}
+    }
+    throw lastError;
+  })();
+  live2dModelCache.set(config,pending);
+  pending.catch(()=>{live2dModelCache.delete(config)});
+  return pending;
 };
 const live2dFocusParams={angleX:"ParamAngleX",angleY:"ParamAngleY",angleZ:"ParamAngleZ",bodyAngleX:"ParamBodyAngleX",bodyAngleY:"ParamBodyAngleY",bodyAngleZ:"ParamBodyAngleZ",eyeBallX:"ParamEyeBallX",eyeBallY:"ParamEyeBallY",mouseX:"Param83",mouseY:"Param84"};
 const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
-const names={"02":"02",chitanda:"千反田爱瑠",kaguya:"辉夜姬",yachiyo:"八千代",iroha:"彩叶",eriyi:"绘梨衣",elaina:"伊雷娜",chtholly:"珂朵莉",sora:"春日野穹",akame:"赤瞳",mine:"玛茵",esdeath:"艾斯德斯",krul:"克鲁鲁",shinoa:"柊筱娅",violet:"薇尔莉特",toki:"蝶祈"};
+const names={"02":"02",chitanda:"千反田爱瑠",kaguya:"辉夜姬",yachiyo:"八千代",iroha:"彩叶",eriyi:"绘梨衣",elaina:"伊雷娜",chtholly:"珂朵莉",sora:"春日野穹",akame:"赤瞳",mine:"玛茵",esdeath:"艾斯德斯",krul:"克鲁鲁",shinoa:"柊筱娅",violet:"薇尔莉特",toki:"蝶祈",emilia:"艾米利亚",rem:"雷姆"};
 const bgFiles={
   "02":["1.jpg","2.jpg"],
   chitanda:["1.jpg","2.jpg","3.jpg"],
@@ -66,7 +96,7 @@ const bgFiles={
 };
 const bgRoleOrder=["02","akame","chitanda","chtholly","elaina","eriyi","esdeath","iroha","kaguya","krul","mine","shinoa","sora","toki","violet","yachiyo"].filter(role=>bgFiles[role]?.length);
 const bgCount=Object.fromEntries(Object.entries(bgFiles).map(([role,files])=>[role,files.length]));
-const musicCount={"02":4,chitanda:2,kaguya:1,yachiyo:1,iroha:1,eriyi:2,elaina:1,chtholly:1,sora:3,akame:4,mine:4,esdeath:4,krul:1,shinoa:1,violet:4,toki:4};
+const musicCount={"02":4,chitanda:2,kaguya:1,yachiyo:1,iroha:1,eriyi:2,elaina:1,chtholly:1,sora:3,akame:4,mine:4,esdeath:4,krul:1,shinoa:1,violet:4,toki:4,emilia:2,rem:5};
 let bgPlayMode=localStorage.getItem("bgPlayMode")||"single",activeBgLayer=bgLayerA,bgTimer=null,currentRole=localStorage.getItem("bgCharacter")||"02",isPagePaused=true,musicEnabled=localStorage.getItem("musicEnabled")!=="false",live2dEnabled=localStorage.getItem("live2dEnabled")!=="false",_suppressSelectChange=false;
 const bgSeq={},musicSeq={},player=new Audio();
 player.loop=false;player.preload="auto";player.volume=Math.min(1,Math.max(0,Number(localStorage.getItem("musicVolume")??0.3)||0));player.muted=false;localStorage.removeItem("pageMuted");
@@ -104,7 +134,6 @@ const withViewportPreserved=(action,{frames=2,anchor=null}={})=>{
   };
   requestAnimationFrame(tick);
 };
-const detectLayoutMode=()=>window.innerWidth<=833?"mobile":"desktop";
 let stylePersistTimer=0;
 const persistStylePreset=(safe)=>{
   clearTimeout(stylePersistTimer);
@@ -150,8 +179,8 @@ let styleTransitionTimer=0;
 const beginStyleTransition=()=>{clearTimeout(styleTransitionTimer);document.body.classList.add("style-transitioning","theme-swap-active")};
 const endStyleTransition=()=>{clearTimeout(styleTransitionTimer);styleTransitionTimer=setTimeout(()=>document.body.classList.remove("style-transitioning","theme-swap-active"),styleTransitionMs+120)};
 const prefersReducedMotion=()=>Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
-let live2dApp=null,live2dActiveModel=null,finishLive2dTransition=null;
-const isLive2dVisible=()=>live2dEnabled&&!document.body.classList.contains("layout-mobile")&&window.innerWidth>833&&!document.hidden;
+let live2dApp=null,live2dActiveModel=null,live2dActiveModelKey=null,finishLive2dTransition=null;
+const isLive2dVisible=()=>live2dEnabled&&!document.hidden;
 const syncLive2dRuntime=()=>{
   if(!live2dApp)return;
   const running=isLive2dVisible()&&!prefersReducedMotion();
@@ -182,19 +211,6 @@ const applyStyleSmooth=(style,afterApply=()=>{})=>{
       finish()
     })
   }
-};
-const applyLayoutMode=()=>{
-  const mobile=detectLayoutMode()==="mobile";
-  const changed=document.body.classList.contains("layout-mobile")!==mobile;
-  document.body.classList.toggle("layout-mobile",mobile);
-  if(localStorage.getItem("sidebarCollapsed")===null){
-    const collapsed=!mobile&&window.innerWidth<=1100;
-    document.body.classList.toggle("sidebar-collapsed",collapsed);
-    sidebarToggle?.setAttribute("aria-pressed",String(collapsed));
-    sidebarToggle?.setAttribute("aria-label",collapsed?"展开侧栏":"收起侧栏");
-  }
-  localStorage.removeItem("layoutMode");
-  if(changed){syncLive2dRuntime();window.dispatchEvent(new Event("site-layout-change"))}
 };
 const setBg=(role)=>{if(!bgLayerA||!bgLayerB)return;if(Date.now()-(setBg._ts||0)<250)return;setBg._ts=Date.now();const r=bgFiles[role]?.length?role:"02",files=bgFiles[r],idx=(bgSeq[r]||0)%files.length;bgSeq[r]=(bgSeq[r]||0)+1;currentRole=r;_suppressSelectChange=true;if(bgCharacterSelect)bgCharacterSelect.value=r;localStorage.setItem("bgCharacter",r);const prev=activeBgLayer,next=activeBgLayer===bgLayerA?bgLayerB:bgLayerA;next.classList.remove("visible");const show=()=>{next.classList.add("visible");if(prev)prev.classList.remove("visible");activeBgLayer=next;_applyStageClip(next);requestAnimationFrame(()=>syncMusicLibraryHeight())};next.src=`assets/backgrounds/${r}/${files[idx]}`;next.onload=show;next.onerror=show;if(next.complete)show()};
 const _applyStageClip=(img)=>{if(!img||!img.naturalWidth||!img.naturalHeight)return;const s=img.closest(".music-library-stage");if(!s)return;const sw=s.clientWidth,sh=s.clientHeight;if(!sw||!sh)return;const ir=img.naturalWidth/img.naturalHeight,sr=sw/sh;let dw,dh;ir>sr?(dw=sw,dh=sw/ir):(dh=sh,dw=sh*ir);const ox=(sw-dw)/2,oy=(sh-dh)/2;img.style.clipPath=`inset(${Math.round(oy)}px ${Math.round(ox)}px ${Math.round(oy)}px ${Math.round(ox)}px round 14px)`};bgLayerA?.addEventListener("load",function(){_applyStageClip(this)});bgLayerB?.addEventListener("load",function(){_applyStageClip(this)});window.addEventListener("resize",()=>{[bgLayerA,bgLayerB].forEach(_applyStageClip)},{passive:true});
@@ -242,7 +258,7 @@ const setLive2dEnabled=(enabled,{persist=true,initialize=true}={})=>{
 const currentLanguage="zh";
 const languageCopy={
   zh:{
-    pageTitle:"Sakura_Love | 个人主页",pageDescription:"一个简洁、响应式的个人网页模板，展示个人介绍、项目与联系方式。",languageLabel:"切换语言",personalGallery:"个人画廊",intro:"把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。",viewProjects:"查看项目",contactMe:"联系我",characterWindow:"角色窗口",characterViewer:"角色欣赏",muteToggle:"角色音乐静音开关",viewerStage:"角色图片展示窗口",viewerEmpty:"打开欣赏窗口后，这里会展示角色图片。",viewerSettings:"角色欣赏设置",character:"角色",chooseCharacter:"选择背景角色",playMode:"播放模式",playModeLabel:"背景播放模式",singleRole:"单角色",allRoles:"全角色",music:"音乐",enabled:"开启",volume:"音量",volumeLabel:"调节角色音乐音量",prevSongLabel:"上一首",nextSong:"切歌",nextSongLabel:"下一首",playBtn:"播放",pauseBtn:"暂停",prevImage:"上一张",nextImageLabel:"下一张",nextImageChanged:"换图",nextRole:"切角色",imageChanged:"图片已切换",muteMusic:"禁音",unmuteMusic:"取消禁音",musicProgress:"音乐播放进度",saveThumbPos:"保存缩略图位置",songCountTemplate:"{n}首",imageCountTemplate:"{n}张",noPlayableTemplate:"{title} 暂无可播放",musicCountTemplate:"{n} 首",aboutNav:"关于",projectsNav:"项目",contactNav:"联系",aboutTitle:"关于我",education:"学习经历",awards:"获奖经历",machinery:"机械类",mathematics:"数学类",programming:"计算机程序设计类",primary:"小学",junior:"初中",senior:"高中",bachelor:"本科",master:"硕士",primaryValue:"泉州市安溪县实验小学",juniorValue:"福州市金山中学",seniorValue:"福建省福州第一中学",bachelorValue:"福州大学（机械工程及自动化）",masterValue:"厦门大学（计算机科学与技术）",awardKey:"奖项",mechAward:"第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类、设计验证类）全国二等奖。",mathAward:"2024年全国大学生数学竞赛非数学A类福建省一等奖。",icpc2024:"第49届 ICPC 国际大学生程序设计竞赛区域赛上海站铜牌。",ccpc2025:"2025年中国大学生程序设计竞赛 CCPC 福建省邀请赛银奖。",gplt:"2024、2025 年团体程序设计天梯赛 GPLT 全国个人三等奖。",baiduStar:"2025年百度之星程序设计大赛省赛银奖。",lanqiao:"2025年蓝桥杯 C++ A 组福建省一等奖，全国个人三等奖。",projectsTitle:"项目",contactTitle:"联系我",contactHtml:'邮箱：<a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',projectLifeTitle:"卷里山河，心头月色",projectLifeAria:"查看卷里山河，心头月色",projectLifeDesc:"记录阅读与长夜随记，支持目录导航和夜间模式。",projectQuotesTitle:"心灵鸡汤 - 互动语录",projectQuotesAria:"查看心灵鸡汤 - 互动语录",projectQuotesDesc:"收藏语录与灵感，按分类浏览和快速跳转。",projectKindleTitle:"Kindle笔记导出工具",projectKindleAria:"查看 Kindle 笔记导出工具",projectKindleDesc:"本地解析 Kindle 阅读笔记，便捷导出并保护隐私。",projectYoutubeTitle:"YouTube取消点赞脚本",projectYoutubeAria:"查看 YouTube 取消点赞脚本",projectYoutubeDesc:"批量取消 YouTube 点赞，简化重复点击。",projectGithubTitle:"GitHub个人首页",projectGithubAria:"查看GitHub个人首页",projectGithubDesc:"技术栈、开发成果与个人介绍的 GitHub 入口。",projectPcGuardTitle:"电脑守护精灵",projectPcGuardAria:"查看电脑守护精灵",projectPcGuardDesc:"管理 Windows 启动项与定时电源计划。",projectAnimeTitle:"AI 追番助手",projectAnimeAria:"查看AI 追番助手",projectAnimeDesc:"多源番剧搜索与追剧管理，支持 DeepSeek 智能填充。",projectFilegoTitle:"FileGo",projectFilegoDesc:"文件传输与定时任务，让重复操作自动完成。",projectFilegoAria:"查看 FileGo",projectTabsyncTitle:"tab-sync",projectTabsyncDesc:"在 Chrome、Edge 和 Firefox 之间迁移标签页。",projectTabsyncAria:"查看 tab-sync",projectAppcounterTitle:"AppCounter",projectAppcounterDesc:"统计 Windows 应用使用时间，了解自己的数字习惯。",projectAppcounterAria:"查看 AppCounter",projectAutocleanTitle:"auto_clean",projectAutocleanDesc:"自动清理文件，减少手动整理的时间。",projectAutocleanAria:"查看 auto_clean",live2dOpen:"展开看板娘设置",live2dSettings:"看板娘设置",live2dToggle:"看板娘",live2dSwitch:"看板娘",live2dOn:"开启",live2dOff:"关闭",live2dModel:"看板娘角色",chooseLive2dModel:"选择看板娘角色",live2dSize:"看板娘大小",adjustLive2dSize:"调节看板娘大小",top:"顶部",topAria:"回到顶部",bottom:"底部",bottomAria:"跳到底部",style:"风格",styleAria:"切换网页风格",styleGroup:"选择 Apple、Fuwari Dark 或 AstroPaper Dark 风格",view:"视图",viewAria:"切换网页布局",viewGroup:"选择网页端或移动端布局",desktop:"网页端",mobile:"移动端",xhs:"小红书",xhsHome:"小红书主页",githubHome:"GitHub主页",bilibiliHome:"Bilibili主页",quoteCategory:"语录",quoteAllRandom:"全部随机",quoteOrder:"正序",quoteReverse:"倒序",switchQuoteCategory:"切换语录分类",chooseQuoteCategory:"选择语录分类",switchQuoteOrder:"切换语录顺序",toggleQuoteOrder:"切换正序/倒序",scrollSpeed:"滚动速度",adjustScrollSpeed:"调节滚动速度",adjustProjectScrollSpeed:"调节项目卡片滚动速度",musicLibraryTitle:"音乐收藏",pageSettingsTitle:"页面设置",thumbPosNoData:"⚠️ 没有可保存的缩略图",thumbPosSaved:"✓ 已保存 {n} 个缩略图位置",thumbPosPartial:"⚠️ 仅保存 {s}/{t} 个（{f} 个失败）",musicPausedToast:"音乐已暂停",musicResumedToast:"音乐继续播放",avatarSaveProject:"头像已保存到项目中",avatarSaveLocal:"头像已更新 — 请将下载的 avatar.png 放入 assets/ 文件夹",imageTooLarge:"图片太大了",avatarSetByOwner:"头像由站长设置",live2dToggleAria:"开关看板娘",live2dDefaultName:"看板娘",live2dReturnMessage:"哇，你终于回来了~",resumeCharMusic:"继续播放",pauseCharMusic:"暂停播放",languageUpdated:"语言已切换",darkOn:"夜间模式已开启",darkOff:"夜间模式已关闭",mobileLayout:"已切换移动端布局",desktopLayout:"已切换网页端布局",bgRoleChanged:"欣赏角色已切换",playModeUpdated:"播放模式已更新",musicOn:"音乐已开启",musicOff:"音乐已关闭",live2dModelChanged:"看板娘角色已切换",roleChanged:"角色已切换",muted:"已静音",unmuted:"已取消静音",mute:"静音",unmute:"取消静音"
+    pageTitle:"Sakura_Love | 个人主页",pageDescription:"Sakura_Love 的个人主页，展示个人介绍、项目、音乐与联系方式。",languageLabel:"切换语言",personalGallery:"个人画廊",intro:"把竞赛、工程、阅读与一点点二次元热爱，收束成一个安静的个人主页。",viewProjects:"查看项目",contactMe:"联系我",characterWindow:"角色窗口",characterViewer:"角色欣赏",muteToggle:"角色音乐静音开关",viewerStage:"角色图片展示窗口",viewerEmpty:"打开欣赏窗口后，这里会展示角色图片。",viewerSettings:"角色欣赏设置",character:"角色",chooseCharacter:"选择背景角色",playMode:"播放模式",playModeLabel:"背景播放模式",singleRole:"单角色",allRoles:"全角色",music:"音乐",enabled:"开启",volume:"音量",volumeLabel:"调节角色音乐音量",prevSongLabel:"上一首",nextSong:"切歌",nextSongLabel:"下一首",playBtn:"播放",pauseBtn:"暂停",prevImage:"上一张",nextImageLabel:"下一张",nextImageChanged:"换图",nextRole:"切角色",imageChanged:"图片已切换",muteMusic:"禁音",unmuteMusic:"取消禁音",musicProgress:"音乐播放进度",saveThumbPos:"保存缩略图位置",songCountTemplate:"{n}首",imageCountTemplate:"{n}张",noPlayableTemplate:"{title} 暂无可播放",musicCountTemplate:"{n} 首",aboutNav:"关于",projectsNav:"项目",contactNav:"联系",aboutTitle:"关于我",education:"学习经历",awards:"获奖经历",machinery:"机械类",mathematics:"数学类",programming:"计算机程序设计类",primary:"小学",junior:"初中",senior:"高中",bachelor:"本科",master:"硕士",primaryValue:"泉州市安溪县实验小学",juniorValue:"福州市金山中学",seniorValue:"福建省福州第一中学",bachelorValue:"福州大学（机械工程及自动化）",masterValue:"厦门大学（计算机科学与技术）",awardKey:"奖项",mechAward:"第一届普通高等学校本科生机械设计基础类课程实践作品竞赛（整机机构类、设计验证类）全国二等奖。",mathAward:"2024年全国大学生数学竞赛非数学A类福建省一等奖。",icpc2024:"第49届 ICPC 国际大学生程序设计竞赛区域赛上海站铜牌。",ccpc2025:"2025年中国大学生程序设计竞赛 CCPC 福建省邀请赛银奖。",gplt:"2024、2025 年团体程序设计天梯赛 GPLT 全国个人三等奖。",baiduStar:"2025年百度之星程序设计大赛省赛银奖。",lanqiao:"2025年蓝桥杯 C++ A 组福建省一等奖，全国个人三等奖。",projectsTitle:"项目",contactTitle:"联系我",contactHtml:'邮箱：<a href="mailto:jackjack1272@163.com">jackjack1272@163.com</a> | GitHub：<a href="https://github.com/SakuraLoveForever" target="_blank" rel="noreferrer">SakuraLoveForever</a>',projectLifeTitle:"卷里山河，心头月色",projectLifeAria:"查看卷里山河，心头月色",projectLifeDesc:"记录阅读与长夜随记，支持目录导航和夜间模式。",projectQuotesTitle:"心灵鸡汤 - 互动语录",projectQuotesAria:"查看心灵鸡汤 - 互动语录",projectQuotesDesc:"收藏语录与灵感，按分类浏览和快速跳转。",projectKindleTitle:"Kindle笔记导出工具",projectKindleAria:"查看 Kindle 笔记导出工具",projectKindleDesc:"本地解析 Kindle 阅读笔记，便捷导出并保护隐私。",projectYoutubeTitle:"YouTube取消点赞脚本",projectYoutubeAria:"查看 YouTube 取消点赞脚本",projectYoutubeDesc:"批量取消 YouTube 点赞，简化重复点击。",projectGithubTitle:"GitHub个人首页",projectGithubAria:"查看GitHub个人首页",projectGithubDesc:"技术栈、开发成果与个人介绍的 GitHub 入口。",projectPcGuardTitle:"电脑守护精灵",projectPcGuardAria:"查看电脑守护精灵",projectPcGuardDesc:"管理 Windows 启动项与定时电源计划。",projectAnimeTitle:"AI 追番助手",projectAnimeAria:"查看AI 追番助手",projectAnimeDesc:"多源番剧搜索与追剧管理，支持 DeepSeek 智能填充。",projectFilegoTitle:"FileGo",projectFilegoDesc:"文件传输与定时任务，让重复操作自动完成。",projectFilegoAria:"查看 FileGo",projectTabsyncTitle:"tab-sync",projectTabsyncDesc:"在 Chrome、Edge 和 Firefox 之间迁移标签页。",projectTabsyncAria:"查看 tab-sync",projectAppcounterTitle:"AppCounter",projectAppcounterDesc:"统计 Windows 应用使用时间，了解自己的数字习惯。",projectAppcounterAria:"查看 AppCounter",projectAutocleanTitle:"auto_clean",projectAutocleanDesc:"自动清理文件，减少手动整理的时间。",projectAutocleanAria:"查看 auto_clean",live2dOpen:"展开看板娘设置",live2dSettings:"看板娘设置",live2dToggle:"看板娘",live2dSwitch:"看板娘",live2dOn:"开启",live2dOff:"关闭",live2dModel:"看板娘角色",chooseLive2dModel:"选择看板娘角色",live2dSize:"看板娘大小",adjustLive2dSize:"调节看板娘大小",top:"顶部",topAria:"回到顶部",bottom:"底部",bottomAria:"跳到底部",style:"风格",styleAria:"切换网页风格",styleGroup:"选择 Apple、Fuwari Dark 或 AstroPaper Dark 风格",xhs:"小红书",xhsHome:"小红书主页",githubHome:"GitHub主页",bilibiliHome:"Bilibili主页",quoteCategory:"语录",quoteAllRandom:"全部随机",quoteOrder:"正序",quoteReverse:"倒序",switchQuoteCategory:"切换语录分类",chooseQuoteCategory:"选择语录分类",switchQuoteOrder:"切换语录顺序",toggleQuoteOrder:"切换正序/倒序",scrollSpeed:"滚动速度",adjustScrollSpeed:"调节滚动速度",adjustProjectScrollSpeed:"调节项目卡片滚动速度",musicLibraryTitle:"音乐收藏",pageSettingsTitle:"页面设置",thumbPosNoData:"⚠️ 没有可保存的缩略图",thumbPosSaved:"✓ 已保存 {n} 个缩略图位置",thumbPosPartial:"⚠️ 仅保存 {s}/{t} 个（{f} 个失败）",musicPausedToast:"音乐已暂停",musicResumedToast:"音乐继续播放",avatarSaveProject:"头像已保存到项目中",avatarSaveLocal:"头像已更新 — 请将下载的 avatar.png 放入 assets/ 文件夹",imageTooLarge:"图片太大了",avatarSetByOwner:"头像由站长设置",live2dToggleAria:"开关看板娘",live2dDefaultName:"看板娘",live2dReturnMessage:"哇，你终于回来了~",resumeCharMusic:"继续播放",pauseCharMusic:"暂停播放",languageUpdated:"语言已切换",darkOn:"夜间模式已开启",darkOff:"夜间模式已关闭",bgRoleChanged:"欣赏角色已切换",playModeUpdated:"播放模式已更新",musicOn:"音乐已开启",musicOff:"音乐已关闭",live2dModelChanged:"看板娘角色已切换",roleChanged:"角色已切换",muted:"已静音",unmuted:"已取消静音",mute:"静音",unmute:"取消静音"
   },
 };
 const ui=(key)=>languageCopy.zh[key]||key;
@@ -321,6 +337,13 @@ const setSidebarCollapsed=(collapsed)=>{
   localStorage.setItem("sidebarCollapsed",String(collapsed));
   applyLanguage(currentLanguage);
 };
+const syncAdaptiveSidebar=()=>{
+  if(localStorage.getItem("sidebarCollapsed")!==null)return;
+  const collapsed=window.innerWidth<=1100;
+  document.body.classList.toggle("sidebar-collapsed",collapsed);
+  sidebarToggle?.setAttribute("aria-pressed",String(collapsed));
+  sidebarToggle?.setAttribute("aria-label",currentLanguage==="en"?(collapsed?"Expand sidebar":"Collapse sidebar"):(collapsed?"展开侧边栏":"收缩侧边栏"));
+};
 let sidebarActiveLockId=null,sidebarActiveLockTimer=null;
 // One shared indicator: the leading edge reaches the next row before the tail.
 const sidebarMenu=$(".sidebar-menu");
@@ -328,28 +351,39 @@ const sidebarIndicator=document.createElement("span");
 sidebarIndicator.className="sidebar-selection-indicator";
 sidebarIndicator.setAttribute("aria-hidden","true");
 sidebarMenu?.appendChild(sidebarIndicator);
-let sidebarIndicatorTarget="";
+let sidebarIndicatorTarget="",sidebarIndicatorAnimation=null;
 const syncSidebarIndicator=(animate=true)=>{
   const active=sidebarMenu?.querySelector(".sidebar-link.active");
   if(!active)return;
-  const horizontal=document.body.classList.contains("layout-mobile");
-  const start=horizontal?active.offsetLeft+(active.offsetWidth-16)/2:active.offsetTop+(active.offsetHeight-16)/2;
-  const extent=horizontal?sidebarMenu.clientWidth:sidebarMenu.clientHeight;
-  const cross=horizontal?active.offsetTop+active.offsetHeight-4:0;
-  const target=`${horizontal}:${start}:${extent}:${cross}`;
+  const start=active.offsetTop+(active.offsetHeight-16)/2;
+  const extent=sidebarMenu.clientHeight;
+  const target=`${start}:${extent}`;
   if(target===sidebarIndicatorTarget)return;
-  const previous=Number(sidebarIndicator.dataset.start??start);
-  const ready=Boolean(sidebarIndicatorTarget)&&animate;
-  sidebarIndicator.classList.toggle("is-horizontal",horizontal);
-  sidebarIndicator.classList.toggle("is-forward",start>=previous);
-  sidebarIndicator.classList.toggle("is-animated",ready);
-  // Clear the other axis when the responsive navigation changes orientation.
-  sidebarIndicator.style.top=horizontal?`${cross}px`:`${start}px`;
-  sidebarIndicator.style.bottom=horizontal?"":`${extent-start-16}px`;
-  sidebarIndicator.style.left=horizontal?`${start}px`:"";
-  sidebarIndicator.style.right=horizontal?`${extent-start-16}px`:"";
-  sidebarIndicator.dataset.start=String(start);
+  const visible=getComputedStyle(sidebarIndicator);
+  const fromTop=parseFloat(visible.top)||0;
+  const fromBottom=fromTop+sidebarIndicator.getBoundingClientRect().height;
+  sidebarIndicatorAnimation?.cancel();
+  sidebarIndicatorAnimation=null;
+  const ready=Boolean(sidebarIndicatorTarget)&&animate&&!prefersReducedMotion();
   sidebarIndicatorTarget=target;
+  const place=(top,bottom)=>{
+    sidebarIndicator.style.top=`${top}px`;
+    sidebarIndicator.style.height=`${Math.max(16,bottom-top)}px`;
+  };
+  if(!ready){place(start,start+16);return}
+  // Flutter's actual cubic-bezier curves, evaluated by the browser. Unlike
+  // FlClash's overlapping phases, fully connect before retracting, as requested.
+  // On interruption, extend from the currently visible bar rather than jumping.
+  const bridgeTop=Math.min(fromTop,start),bridgeBottom=Math.max(fromBottom,start+16);
+  place(start,start+16);
+  const animation=sidebarIndicator.animate([
+    {top:`${fromTop}px`,height:`${fromBottom-fromTop}px`,offset:0,easing:"cubic-bezier(.215,.61,.355,1)"},
+    {top:`${bridgeTop}px`,height:`${bridgeBottom-bridgeTop}px`,offset:.6},
+    {top:`${bridgeTop}px`,height:`${bridgeBottom-bridgeTop}px`,offset:.7,easing:"cubic-bezier(.645,.045,.355,1)"},
+    {top:`${start}px`,height:"16px",offset:1},
+  ],{duration:600,easing:"linear"});
+  sidebarIndicatorAnimation=animation;
+  animation.onfinish=()=>{if(sidebarIndicatorAnimation===animation)sidebarIndicatorAnimation=null};
 };
 if(sidebarMenu){
   const observer=new ResizeObserver(()=>syncSidebarIndicator(false));
@@ -435,6 +469,7 @@ const lockSidebarActive=(targetId)=>{
   sidebarActiveLockTimer=window.setTimeout(()=>{sidebarActiveLockId=null;updateSidebarActive()},1800);
 };
 if(localStorage.getItem("sidebarCollapsed")==="true")document.body.classList.add("sidebar-collapsed");
+sidebarToggle?.setAttribute("aria-pressed",String(document.body.classList.contains("sidebar-collapsed")));
 player.addEventListener("timeupdate",progress);player.addEventListener("loadedmetadata",progress);player.addEventListener("durationchange",progress);player.addEventListener("canplay",progress);player.addEventListener("seeked",progress);player.addEventListener("playing",startMusicProgressLoop);player.addEventListener("play",startMusicProgressLoop);player.addEventListener("pause",stopMusicProgressLoop);player.addEventListener("ended",()=>{stopMusicProgressLoop();if(!isPagePaused)playNext()});if(musicSeekInput){musicSeekInput.addEventListener("input",()=>{_musicSeekDragging=true;const v=Number(musicSeekInput.value),max=Number(musicSeekInput.max);if(max>0)musicSeekInput.style.setProperty("--seek",(v/max*100)+"%")});musicSeekInput.addEventListener("change",()=>{const v=Number(musicSeekInput.value);_musicSeekDragging=false;if(Number.isFinite(player.duration)&&player.duration>0)player.currentTime=v})}
 /* ==== 音乐收藏模块 ==== */
 const getMusicFallbackTracks=()=>Object.entries(musicCount).flatMap(([role,count])=>Array.from({length:count},(_,index)=>({
@@ -451,6 +486,97 @@ const getMusicFallbackTracks=()=>Object.entries(musicCount).flatMap(([role,count
   trackNumber:index+1
 })));
 let musicLocalTracks=[],musicLibraryTracks=[],musicLibraryIndex=0,musicLibrarySeekDragging=false,musicLibraryLoaded=false;
+const musicLyricsEl=$("#music-library-lyrics"),musicTrackArtist=$("#music-library-track-artist"),musicOriginLink=$("#music-library-origin");
+let musicTrackVersion=0,musicTrackRequest=null,musicUsesOnline=false,musicWantsPlayback=false,musicLyricLines=[],musicLyricIndex=-1;
+const musicLyricsText=(zh,en)=>currentLanguage==="en"?en:zh;
+const setMusicSource=(online,reason="")=>{
+  musicUsesOnline=online;
+  if(musicLibrarySource){
+    musicLibrarySource.textContent=online?musicLyricsText("在线 · 网易云音乐","Online · NetEase Music"):musicLyricsText("本地音频","Local audio")+(reason?` · ${reason}`:"");
+    musicLibrarySource.dataset.source=online?"online":"local";
+  }
+};
+const syncMusicLyrics=(force=false)=>{
+  if(!musicLyricsEl||!musicLyricLines.length)return;
+  if(force){
+    // Give the first and last lines enough room to reach the centre of the fade.
+    const first=musicLyricsEl.firstElementChild,last=musicLyricsEl.lastElementChild;
+    musicLyricsEl.style.paddingTop=`${Math.max(0,(musicLyricsEl.clientHeight-first.offsetHeight)/2)}px`;
+    musicLyricsEl.style.paddingBottom=`${Math.max(0,(musicLyricsEl.clientHeight-last.offsetHeight)/2)}px`;
+  }
+  const time=musicLibraryAudio.currentTime*1000;
+  let index=-1;
+  for(let i=0;i<musicLyricLines.length&&musicLyricLines[i].time<=time;i++)index=i;
+  if(index===musicLyricIndex&&!force)return;
+  musicLyricsEl.querySelector('[aria-current="true"]')?.removeAttribute("aria-current");
+  musicLyricIndex=index;
+  const line=musicLyricsEl.children[index];
+  if(!line){musicLyricsEl.scrollTop=0;return}
+  line.setAttribute("aria-current","true");
+  // Scroll only the lyric region; following a song must never move the page.
+  musicLyricsEl.scrollTo({top:line.offsetTop-(musicLyricsEl.clientHeight-line.offsetHeight)/2,behavior:prefersReducedMotion()||force?"instant":"smooth"});
+};
+const renderMusicLyrics=(lyric="",translation="",instrumental=false)=>{
+  musicLyricIndex=-1;musicLyricLines=[];
+  if(!musicLyricsEl)return;
+  musicLyricsEl.replaceChildren();musicLyricsEl.scrollTop=0;
+  if(window.Lyric&&lyric&&!instrumental){
+    // Some NetEase LRC files use mm:ss:ff instead of mm:ss.ff.
+    const normalize=text=>String(text||"").replace(/\[(\d{2,}):(\d{2}):(\d{2,3})\]/g,"[$1:$2.$3]");
+    const parsed=new Lyric({lyric:normalize(lyric),extendedLyrics:translation?[normalize(translation)]:[],offset:0});
+    musicLyricLines=parsed.lines.map(line=>({...line,time:Math.max(0,line.time-parsed.tags.offset)}));
+  }
+  if(!musicLyricLines.length){
+    const empty=document.createElement("p");empty.className="music-lyrics-empty";
+    empty.textContent=instrumental?musicLyricsText("纯音乐，请欣赏","Instrumental · enjoy the music"):musicLyricsText("暂无同步歌词，继续享受音乐","No synced lyrics available · enjoy the music");
+    musicLyricsEl.appendChild(empty);return;
+  }
+  musicLyricLines.forEach(line=>{
+    const button=document.createElement("button");button.type="button";button.className="music-lyric-line";
+    const original=document.createElement("span");original.textContent=line.text;button.appendChild(original);
+    line.extendedLyrics.forEach(text=>{if(text&&text!==line.text){const translated=document.createElement("span");translated.className="music-lyric-translation";translated.textContent=text;button.appendChild(translated)}});
+    button.addEventListener("click",()=>{
+      if(!Number.isFinite(musicLibraryAudio.duration))return;
+      musicLibraryAudio.currentTime=Math.min(musicLibraryAudio.duration,line.time/1000);
+      drawMusicLibraryProgress();syncMusicLyrics(true);
+    });
+    musicLyricsEl.appendChild(button);
+  });
+  syncMusicLyrics(true);
+};
+if(musicLyricsEl)new ResizeObserver(()=>syncMusicLyrics(true)).observe(musicLyricsEl,{box:"border-box"});
+const replaceMusicAudioSource=(src,time=0,resume=false)=>{
+  const version=musicTrackVersion;
+  musicLibraryAudio.pause();
+  musicLibraryAudio.src=src;musicLibraryAudio.load();
+  if(time>0)musicLibraryAudio.addEventListener("loadedmetadata",()=>{
+    if(version===musicTrackVersion&&Number.isFinite(musicLibraryAudio.duration))musicLibraryAudio.currentTime=Math.min(time,musicLibraryAudio.duration);
+  },{once:true});
+  if(resume)musicLibraryAudio.play().catch(()=>{});
+};
+const loadOnlineMusicTrack=async(track,version)=>{
+  if(!track.neteaseId)return;
+  musicTrackRequest=new AbortController();
+  const request=musicTrackRequest;
+  const timer=setTimeout(()=>request.abort(),9000);
+  try{
+    const response=await fetch(`api/music/track?id=${encodeURIComponent(track.neteaseId)}`,{signal:request.signal});
+    if(!response.ok)throw new Error("Music API unavailable");
+    const data=await response.json();
+    if(version!==musicTrackVersion)return;
+    // The API validates URLs; repeat the protocol check at the browser boundary.
+    const online=typeof data.url==="string"&&data.url.startsWith("https://");
+    if(online){
+      const time=musicLibraryAudio.currentTime,playing=musicWantsPlayback||!musicLibraryAudio.paused;
+      setMusicSource(true);
+      replaceMusicAudioSource(data.url,time,playing);
+    }else setMusicSource(false,musicLyricsText("在线源暂不可用","Online source unavailable"));
+    const sameVersion=online||Math.abs(track.duration-track.onlineDuration)<=3;
+    renderMusicLyrics(sameVersion?data.lyric:"",sameVersion?data.translation:"",data.instrumental);
+  }catch{
+    if(version===musicTrackVersion)setMusicSource(false,musicLyricsText("在线源暂不可用","Online source unavailable"));
+  }finally{clearTimeout(timer)}
+};
 const musicLibraryModeSelect=$("#music-library-mode");
 let musicLibraryMode=localStorage.getItem("musicLibraryMode")==="random"?"random":"sequential";
 if(musicLibraryModeSelect){
@@ -464,7 +590,14 @@ const setMusicLibraryStatus=(text)=>{if(musicLibraryStatus)musicLibraryStatus.te
 const getMusicTrackIndex=(track)=>musicLibraryTracks.findIndex(item=>item.id===track?.id);
 const syncMusicTrackGroups=()=>{
   const activeId=musicLibraryTracks[musicLibraryIndex]?.id;
-  musicLibraryTracks=[...musicLocalTracks].sort((a,b)=>bgRoleOrder.indexOf(a.role)-bgRoleOrder.indexOf(b.role)||a.trackNumber-b.trackNumber);
+  // Group order must be a total order: bgRoleOrder does not contain every role,
+  // and indexOf returns -1 for the rest, which interleaved newly added characters
+  // between the existing groups. Unknown roles fall back to the end, in list order.
+  const roleRank=new Map();
+  bgRoleOrder.forEach((role,index)=>roleRank.set(role,index));
+  musicLocalTracks.forEach(track=>{if(!roleRank.has(track.role))roleRank.set(track.role,roleRank.size)});
+  const rankOf=(role)=>{const rank=roleRank.get(role);return rank===undefined?roleRank.size:rank};
+  musicLibraryTracks=[...musicLocalTracks].sort((a,b)=>rankOf(a.role)-rankOf(b.role)||a.trackNumber-b.trackNumber);
   const nextIndex=musicLibraryTracks.findIndex(track=>track.id===activeId);
   musicLibraryIndex=nextIndex>=0?nextIndex:Math.min(musicLibraryIndex,Math.max(0,musicLibraryTracks.length-1));
   if(musicLocalCount)musicLocalCount.textContent=String(musicLocalTracks.length);
@@ -607,22 +740,28 @@ const setMusicLibraryTrack=(index,{autoplay=false,syncImage=false}={})=>{
     syncMusicLibraryActive();
     return;
   }
-  musicLibraryAudio.src=track.audioUrl;
-  musicLibraryAudio.load();
+  const version=++musicTrackVersion;
+  musicWantsPlayback=autoplay;
+  musicTrackRequest?.abort();
+  setMusicSource(false,track.neteaseId?musicLyricsText("正在连接在线音源…","Connecting…"):musicLyricsText("保留原曲版本","Original version"));
+  renderMusicLyrics();
+  replaceMusicAudioSource(track.audioUrl);
   if(musicLibraryTitle)musicLibraryTitle.textContent=track.title;
   if(musicLibraryTitle)musicLibraryTitle.title=track.title;
   if(musicLibraryArtist)musicLibraryArtist.textContent=track.roleName||"";
   if(musicLibraryArtist)musicLibraryArtist.title=track.roleName||"";
-  if(musicLibrarySource)musicLibrarySource.textContent="";
-  if(musicLibrarySource)musicLibrarySource.title="";
+  if(musicTrackArtist)musicTrackArtist.textContent=track.artist||track.roleName||"";
+  if(musicOriginLink){musicOriginLink.hidden=!track.neteaseId;if(track.neteaseId)musicOriginLink.href=`https://music.163.com/#/song?id=${track.neteaseId}`}
   syncMusicLibraryActive();
   drawMusicLibraryProgress();
   if(syncImage&&track.role)setBg(track.role);
   if(autoplay){isPagePaused=true;player.pause();musicLibraryAudio.play().catch(()=>{})}
+  loadOnlineMusicTrack(track,version);
 };
 const drawMusicLibraryProgress=()=>{
   if(!musicLibraryAudio)return;
   const d=musicLibraryAudio.duration,t=musicLibraryAudio.currentTime;
+  syncMusicLyrics();
   if(musicLibraryTime)musicLibraryTime.textContent=`${fmtTime(t)} / ${Number.isFinite(d)&&d>0?fmtTime(d):"00:00"}`;
   if(!musicLibraryProgress||musicLibrarySeekDragging)return;
   if(Number.isFinite(d)&&d>0){
@@ -670,18 +809,21 @@ const syncMusicLibraryHeight=()=>{
   if(!details||!details.open)return;
   const left=document.querySelector(".music-library-left");
   const stage=document.querySelector(".music-library-stage");
-  // 窄屏/移动端是单列堆叠，左栏不应被压成舞台高度（否则轨道图会被拦腰截断）
-  if(document.body.classList.contains("layout-mobile")||window.innerWidth<=1068){
-    left?.style.removeProperty("min-height");
-    left?.style.removeProperty("max-height");
-    return;
-  }
+  if(window.innerWidth<=700){left?.style.removeProperty("min-height");left?.style.removeProperty("max-height");return}
   if(left&&stage){const h=stage.offsetHeight;left.style.minHeight=h+"px";left.style.maxHeight=h+"px"}
 };
 const loadMusicLibrary=async()=>{
   if(!musicLibraryAudio||musicLibraryLoaded)return;
   musicLibraryLoaded=true;
   musicLocalTracks=getMusicFallbackTracks();
+  try{
+    const response=await fetch("assets/music/catalog.json");
+    if(response.ok){
+      const catalog=await response.json();
+      const metadata=new Map(catalog.tracks.map(track=>[`${track.role}/${track.trackNumber}`,track]));
+      musicLocalTracks=musicLocalTracks.map(track=>({...track,...metadata.get(`${track.role}/${track.trackNumber}`)}));
+    }
+  }catch{}
   syncMusicTrackGroups();
   setMusicLibraryStatus(ui("musicCountTemplate").replace("{n}",String(musicLocalTracks.length)));
   renderMusicLibraryList();
@@ -847,11 +989,20 @@ if(musicLibraryAudio){
     musicLibraryVolume.value=String(Math.round(musicLibraryAudio.volume*100));
     musicLibraryVolume.style.setProperty("--library-vol",`${musicLibraryVolume.value}%`);
   }
-  musicLibraryAudio.addEventListener("play",()=>{player.pause();isPagePaused=true;controls();updateMusicLibraryPlayState();musicSpectrum.resume()});
+  musicLibraryAudio.addEventListener("play",()=>{musicWantsPlayback=true;player.pause();isPagePaused=true;controls();updateMusicLibraryPlayState();musicSpectrum.resume()});
   musicLibraryAudio.addEventListener("pause",updateMusicLibraryPlayState);
+  musicLibraryAudio.addEventListener("error",()=>{
+    const track=musicLibraryTracks[musicLibraryIndex];
+    if(musicUsesOnline&&track?.audioUrl){
+      const time=musicLibraryAudio.currentTime,playing=musicWantsPlayback||!musicLibraryAudio.paused;
+      setMusicSource(false,musicLyricsText("在线源暂不可用","Online source unavailable"));
+      if(Math.abs(track.duration-track.onlineDuration)>3)renderMusicLyrics();
+      replaceMusicAudioSource(track.audioUrl,time,playing);
+    }else setMusicSource(false,musicLyricsText("音频加载失败，请切换歌曲","Audio unavailable · try another track"));
+  });
   musicLibraryAudio.addEventListener("ended",nextMusicLibraryTrack);
   ["timeupdate","loadedmetadata","durationchange","canplay","seeked"].forEach(eventName=>musicLibraryAudio.addEventListener(eventName,drawMusicLibraryProgress));
-  if(musicLibraryPlay)musicLibraryPlay.addEventListener("click",()=>{if(!musicLibraryTracks.length)return;musicSpectrum.resume();if(musicLibraryAudio.paused)musicLibraryAudio.play().catch(()=>{});else musicLibraryAudio.pause()});
+  if(musicLibraryPlay)musicLibraryPlay.addEventListener("click",()=>{if(!musicLibraryTracks.length)return;musicSpectrum.resume();musicWantsPlayback=musicLibraryAudio.paused;if(musicWantsPlayback)musicLibraryAudio.play().catch(()=>{});else musicLibraryAudio.pause()});
   if(musicLibraryProgress){
     musicLibraryProgress.addEventListener("input",()=>{musicLibrarySeekDragging=true;const v=Number(musicLibraryProgress.value),max=Number(musicLibraryProgress.max);if(max>0)musicLibraryProgress.style.setProperty("--library-seek",(v/max*100)+"%");commitMusicLibrarySeek()});
     const finishSeek=()=>{musicLibrarySeekDragging=false;commitMusicLibrarySeek();drawMusicLibraryProgress()};
@@ -888,10 +1039,10 @@ if(musicLibraryAudio){
       }
     });
   }
-  player.addEventListener("play",()=>{if(!musicLibraryAudio.paused)musicLibraryAudio.pause()});
+  player.addEventListener("play",()=>{musicWantsPlayback=false;if(!musicLibraryAudio.paused)musicLibraryAudio.pause()});
   if(_musicDetails?.open)loadMusicLibrary();
 }
-const projectAvatarUrl="assets/avatar.png";const loadProjectAvatar=()=>{const saved=localStorage.getItem("sidebarAvatar");const img=new Image();img.onload=()=>{localStorage.setItem("sidebarAvatarSource","project");applySidebarAvatar(projectAvatarUrl+"?v="+Date.now())};img.onerror=()=>{localStorage.removeItem("sidebarAvatarSource");if(saved&&saved.startsWith("data:"))applySidebarAvatar(saved)};img.src=projectAvatarUrl+"?v="+Date.now()};loadProjectAvatar();applyStyle(localStorage.getItem("stylePreset")||"apple");applyLayoutMode();applyLanguage(currentLanguage);controls();playModeUI();updateSidebarActive();
+const projectAvatarUrl="assets/avatar.png";const loadProjectAvatar=()=>{const saved=localStorage.getItem("sidebarAvatar");const img=new Image();img.onload=()=>{localStorage.setItem("sidebarAvatarSource","project");applySidebarAvatar(projectAvatarUrl+"?v="+Date.now())};img.onerror=()=>{localStorage.removeItem("sidebarAvatarSource");if(saved&&saved.startsWith("data:"))applySidebarAvatar(saved)};img.src=projectAvatarUrl+"?v="+Date.now()};loadProjectAvatar();applyStyle(localStorage.getItem("stylePreset")||"apple");localStorage.removeItem("layoutMode");syncAdaptiveSidebar();applyLanguage(currentLanguage);controls();playModeUI();updateSidebarActive();
 	/* 合成器预热：页面首次加载后 GPU 管线是冷的，第一次切风格时会同时创建图层+过渡导致卡顿。
 	   在空闲时短暂启用过渡追踪，触发浏览器预先建立合成图层和过渡管线，用户真正切换时就丝滑了。 */
 	const _warmupCompositor=()=>{
@@ -906,7 +1057,7 @@ const projectAvatarUrl="assets/avatar.png";const loadProjectAvatar=()=>{const sa
 	window.addEventListener("load",()=>setTimeout(_warmupCompositor,400),{once:true});
 const bgOn=true,bgRole=localStorage.getItem("bgCharacter")||"02";localStorage.setItem("bgEnabled","true");if(bgToggle)bgToggle.checked=bgOn;if(bgCharacterSelect)bgCharacterSelect.value=bgCount[bgRole]?bgRole:"02";if(bgPlayModeSelect)bgPlayModeSelect.value=bgPlayMode;if(_musicDetails?.open)applyBg(bgOn,bgRole);
 if(musicToggle)musicToggle.checked=musicEnabled;if(musicVolumeInput){musicVolumeInput.value=String(Math.round(player.volume*100));musicVolumeInput.style.setProperty("--vol",`${Math.round(player.volume*100)}%`)}[styleSelect,bgCharacterSelect,bgPlayModeSelect,live2dModelSelect].forEach(fit);applyLive2dVisibility();syncLive2dToggleUI();
-window.addEventListener("resize",()=>{applyLayoutMode();updateSidebarActive();syncMusicLibraryHeight()},{passive:true});
+window.addEventListener("resize",()=>{syncAdaptiveSidebar();updateSidebarActive();syncMusicLibraryHeight();syncMusicLyrics(true)},{passive:true});
 designStyleButtons.forEach(button=>button.addEventListener("click",()=>applyStyleSmooth(button.dataset.designStyle)));
 if(styleSelect)styleSelect.addEventListener("change",e=>applyStyleSmooth(e.target.value,()=>fit(styleSelect)));
 const isLocalEnv=()=>window.location.protocol==="file:"||window.location.hostname==="127.0.0.1"||window.location.hostname==="localhost";
@@ -978,15 +1129,41 @@ if("IntersectionObserver" in window){
 let live2dSettingsTimer=null,live2dControlsActive=false,live2dLayoutFrame=0;
 const queueLive2dFrame=window.requestAnimationFrame?.bind(window)||((callback)=>setTimeout(callback,16));
 const LIVE2D_EDGE_MARGIN=12;
+let live2dContentBounds=null;
 const getLive2dBaseSize=()=>{const w=Math.min(280,window.innerWidth*0.48),h=Math.min(560,window.innerHeight*0.82);return {width:w,height:h}};
 const getLive2dMaxScale=()=>{const {width,height}=getLive2dBaseSize();const maxW=(window.innerWidth-LIVE2D_EDGE_MARGIN*2)/Math.max(1,width),maxH=(window.innerHeight-LIVE2D_EDGE_MARGIN*2)/Math.max(1,height);return Math.max(0.6,Math.min(1.6,maxW,maxH))};
 const normalizeLive2dSizePercent=(value)=>{const requested=Math.min(160,Math.max(60,Number(value)||100));return Math.round(Math.min(requested,getLive2dMaxScale()*100))};
 const getLive2dScale=()=>Math.min(getLive2dMaxScale(),Math.max(0.6,Number(live2dWidget?.style.getPropertyValue("--live2d-size"))||normalizeLive2dSizePercent(localStorage.getItem("live2dSize"))/100));
 const getLive2dMetrics=(scale=getLive2dScale(),custom=live2dWidget?.classList.contains("live2d-custom-position"))=>{const {width,height}=getLive2dBaseSize();const visualWidth=width*scale,visualHeight=height*scale;return {scale,width,height,visualWidth,visualHeight,offsetX:0,offsetY:custom?0:height-visualHeight}};
-const clampLive2dVisualLeftTop=(x,y,scale=getLive2dScale())=>{const {visualWidth,visualHeight}=getLive2dMetrics(scale,true);const maxX=window.innerWidth-LIVE2D_EDGE_MARGIN-visualWidth,maxY=window.innerHeight-LIVE2D_EDGE_MARGIN-visualHeight;return {x:clamp(x,LIVE2D_EDGE_MARGIN,Math.max(LIVE2D_EDGE_MARGIN,maxX)),y:clamp(y,LIVE2D_EDGE_MARGIN,Math.max(LIVE2D_EDGE_MARGIN,maxY))}};
+const clampLive2dVisualLeftTop=(x,y,scale=getLive2dScale())=>{
+  const {visualWidth,visualHeight}=getLive2dMetrics(scale,true);
+  const bounds=live2dContentBounds?.model===live2dActiveModel?live2dContentBounds:{left:0,top:0,right:1,bottom:1};
+  const minX=LIVE2D_EDGE_MARGIN-bounds.left*visualWidth,minY=LIVE2D_EDGE_MARGIN-bounds.top*visualHeight;
+  const maxX=window.innerWidth-LIVE2D_EDGE_MARGIN-bounds.right*visualWidth;
+  const maxY=window.innerHeight-LIVE2D_EDGE_MARGIN-bounds.bottom*visualHeight;
+  return {x:clamp(x,minX,Math.max(minX,maxX)),y:clamp(y,minY,Math.max(minY,maxY))};
+};
+// While the size control is in use the settings panel holds its screen position.
+// A plain freeze argument is not enough: layout ticks, settle tails and model
+// refreshes re-enter with freezePanel=false, and each of those would re-derive
+// the position from a widget that just grew upward.
+let live2dPanelPinned=false;
+const releaseLive2dPanelPin=()=>{
+  live2dPanelPinned=false;
+  live2dWidget?.classList.remove("live2d-panel-pinned");
+  if(live2dWidget)live2dWidget.dataset.panelViewportX=live2dWidget.dataset.panelViewportY="";
+};
 const positionLive2dChrome=({freezePanel=false}={})=>{
   if(!live2dWidget)return;
   const rect=live2dWidget.getBoundingClientRect();
+  // Transparent canvas padding may sit outside the viewport; keep the resize
+  // handle reachable independently of the canvas rectangle.
+  const handle=live2dWidget.querySelector(".live2d-resize-handle");
+  if(handle){
+    handle.style.left=clamp(rect.right-40,8,window.innerWidth-48)-rect.left+"px";
+    handle.style.top=clamp(rect.bottom-48,8,window.innerHeight-48)-rect.top+"px";
+    handle.style.right="auto";handle.style.bottom="auto";
+  }
   const rightSpace=window.innerWidth-rect.right;
   const leftSpace=rect.left;
   const panelWidth=live2dSettingsPanel?.offsetWidth||264;
@@ -1007,15 +1184,32 @@ const positionLive2dChrome=({freezePanel=false}={})=>{
   live2dWidget.style.setProperty("--live2d-toggle-y",`${toggleY}px`);
   // Freeze in viewport coordinates: shrinking a bottom-anchored character moves
   // its top, so keeping a relative offset would push focused controls offscreen.
-  const previousX=Number(live2dWidget.dataset.panelViewportX);
-  const previousY=Number(live2dWidget.dataset.panelViewportY);
-  const desiredX=freezePanel&&Number.isFinite(previousX)?previousX:placeRight?rect.right+12:rect.left-panelWidth-12;
-  const desiredY=freezePanel&&Number.isFinite(previousY)?previousY:rect.top+toggleY+32;
-  const panelHeight=Math.max(live2dSettingsPanel?.offsetHeight||300,Math.ceil(live2dSettingsPanel?.getBoundingClientRect().height||300));
-  const panelX=clamp(desiredX,8,Math.max(8,window.innerWidth-panelWidth-8));
-  const panelY=clamp(desiredY,8,Math.max(8,window.innerHeight-panelHeight-8));
-  live2dWidget.dataset.panelViewportX=String(panelX);
-  live2dWidget.dataset.panelViewportY=String(panelY);
+  // A frame that arrives without freezePanel (layout tick, settle tail, model
+  // refresh) must not overwrite the frozen position: the widget is bottom
+  // anchored, so re-deriving it from the new rect would walk the panel upward a
+  // few pixels per frame. Once frozen, stay frozen until releaseLive2dPanelPin.
+  if(freezePanel||!live2dPanelPinned){
+    const previousX=Number(live2dWidget.dataset.panelViewportX);
+    const previousY=Number(live2dWidget.dataset.panelViewportY);
+    const pinned=freezePanel&&live2dWidget.classList.contains("live2d-settings-open")&&Number.isFinite(previousX)&&Number.isFinite(previousY);
+    const desiredX=pinned?previousX:placeRight?rect.right+12:rect.left-panelWidth-12;
+    const desiredY=pinned?previousY:rect.top+toggleY+32;
+    const panelHeight=Math.max(live2dSettingsPanel?.offsetHeight||300,Math.ceil(live2dSettingsPanel?.getBoundingClientRect().height||300));
+    const panelX=pinned?desiredX:clamp(desiredX,8,Math.max(8,window.innerWidth-panelWidth-8));
+    const panelY=pinned?desiredY:clamp(desiredY,8,Math.max(8,window.innerHeight-panelHeight-8));
+    live2dWidget.dataset.panelViewportX=String(panelX);
+    live2dWidget.dataset.panelViewportY=String(panelY);
+  }
+  const panelX=Number(live2dWidget.dataset.panelViewportX);
+  const panelY=Number(live2dWidget.dataset.panelViewportY);
+  if(freezePanel)live2dPanelPinned=true;
+  // While the size control is in use the panel must hold its screen position,
+  // not its offset inside the widget: the widget grows upward from a bottom
+  // anchor, so a relative offset drags the panel across the viewport on every
+  // frame. Component-scoped custom properties drive position: fixed.
+  live2dWidget.classList.toggle("live2d-panel-pinned",live2dPanelPinned);
+  live2dWidget.style.setProperty("--live2d-panel-viewport-x",`${panelX}px`);
+  live2dWidget.style.setProperty("--live2d-panel-viewport-y",`${panelY}px`);
   live2dWidget.style.setProperty("--live2d-panel-x",`${panelX-rect.left}px`);
   live2dWidget.style.setProperty("--live2d-panel-y",`${panelY-rect.top}px`);
 };
@@ -1071,10 +1265,9 @@ const setLive2dSettingsOpen=(open)=>{
   live2dWidget.classList.toggle("live2d-settings-open",open);
   if(live2dSettingsPanel)live2dSettingsPanel.inert=!open;
   if(live2dSettingsToggle)live2dSettingsToggle.setAttribute("aria-expanded",String(open));
+  // Reattach to the character once the panel closes, so it tracks the new size.
+  if(!open)releaseLive2dPanelPin();
   positionLive2dChrome();
-  if(open&&!prefersReducedMotion()&&window.Motion&&live2dSettingsPanel){
-    Motion.animate(live2dSettingsPanel,{opacity:[0,1]},{duration:.18,ease:[.22,1,.36,1]});
-  }
   showLive2dSettingsButton({keep:open});
   if(!open){unmarkLive2dControlsActive();live2dSettingsTimer=setTimeout(hideLive2dSettingsButton,3000)}
 };
@@ -1126,7 +1319,7 @@ if(live2dResizeHandle){
     live2dWidget?.classList.remove("live2d-resizing");
     unmarkLive2dControlsActive();
     try{live2dResizeHandle.releasePointerCapture?.(event?.pointerId)}catch{}
-    settleLive2dChrome({frames:3});
+    settleLive2dChrome({frames:3,freezePanel:true});
   };
   live2dResizeHandle.addEventListener("pointerdown",event=>{
     if(event.button!==undefined&&event.button!==0)return;
@@ -1176,9 +1369,26 @@ document.addEventListener("pointerdown",e=>{
   if(live2dSettingsToggle)live2dSettingsToggle.setAttribute("aria-expanded","false");
 },true);
 const live2dMessages=["好久不见，日子过得好快呢……","大坏蛋！你都多久没理人家了呀，嘤嘤嘤～","嗨～快来逗我玩吧！","拿小拳拳锤你胸口！","记得把小家加入收藏夹哦！","今天也要元气满满。","别戳啦，我在认真看家。","要不要听一首歌放松一下？","角色窗口和音乐现在会一起换啦。","欢迎来到 Sakura_Love 的小窝。","偷偷告诉你，点击页面也有惊喜。","哼，你刚刚是不是又在偷看我？","要摸头的话……只能一下下哦。","今天也要陪我玩一会儿嘛。"];
-const getCurrentLive2dName=()=>{
-  const selected=getLive2dModelKey(live2dModelSelect&&live2dModels[live2dModelSelect.value]?live2dModelSelect.value:localStorage.getItem("live2dModel"));
-  return live2dModels[selected]?.name||ui("live2dDefaultName");
+const getCurrentLive2dKey=()=>live2dActiveModelKey||getLive2dModelKey(localStorage.getItem("live2dModel"));
+const getCurrentLive2dName=()=>live2dModels[getCurrentLive2dKey()]?.name||ui("live2dDefaultName");
+const live2dQuoteQueues=new Map();
+const nextLive2dQuote=()=>{
+  const key=getCurrentLive2dKey(),bank=window.live2dCharacterQuotes?.characters[key];
+  if(!bank?.quotes.length)return null;
+  const state=live2dQuoteQueues.get(key)||{remaining:[],last:null};
+  if(!state.remaining.length){
+    state.remaining=[...bank.quotes];
+    for(let i=state.remaining.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [state.remaining[i],state.remaining[j]]=[state.remaining[j],state.remaining[i]];
+    }
+    const last=state.remaining.length-1;
+    if(last>0&&state.remaining[last]===state.last){
+      [state.remaining[0],state.remaining[last]]=[state.remaining[last],state.remaining[0]];
+    }
+  }
+  const quote=state.remaining.pop();state.last=quote;live2dQuoteQueues.set(key,state);
+  return {...quote,key,name:bank.name,source:window.live2dCharacterQuotes.sources[quote.source]};
 };
 const live2dHoverMessages=["干嘛呢你，快把手拿开～～","鼠…鼠标放错地方了！","你要干嘛呀？","喵喵喵？","怕怕(ノ≧∇≦)ノ","非礼呀！救命！","这样的话，只能使用武力了！","我要生气了哦","不要动手动脚的！","真…真的是不知羞耻！",()=>`${getCurrentLive2dName()}！`,"拿小拳拳锤你胸口！","嗨~快来逗我玩吧！","真……真的是不知羞耻！","再摸的话我可要报警了！","不要摸我了，我要叫我老婆来打你了！","是…是不小心碰到了吧…","干嘛碰我呀，小心我咬你！","哼，再靠近一点试试看？","你、你不要突然凑这么近啦！"];
 let clickTexts=["樱花落下的速度，是每秒五厘米。","愿你所到之处，遍地温柔。","今天也辛苦啦。","把热爱写进每一天。","风会带来新的故事。","愿所有长夜都有星光。","保持可爱，也保持锋芒。","世界很大，慢慢相遇。","念念不忘，必有回响。","人终会被年少不可得之物困其一生。","璞玉有缺便是王。","已知乾坤大，犹怜草木青。","追风赶月莫停留，平芜尽处是春山。","光而不耀，静水流深。","日拱一卒，功不唐捐。","沉舟侧畔千帆过，病树前头万木春。","放弃不难，但坚持一定很酷。","向前看，别烂在过去和梦里。","但行好事，莫问前程。","三里清风三里路，步步清风，再无你。"];
@@ -1189,8 +1399,25 @@ const sanitizeWaifuText=(text)=>{
   return /<script|<iframe|javascript:/i.test(clean)?"":clean;
 };
 const pick=(arr)=>arr[Math.floor(Math.random()*arr.length)];
-const showLive2dDialog=(text=pick(live2dMessages))=>{if(!live2dDialog||!live2dEnabled)return;const clean=sanitizeWaifuText(text)||pick(live2dMessages);clearTimeout(dialogTimer);live2dDialog.textContent=clean;live2dDialog.classList.add("visible");dialogTimer=setTimeout(()=>live2dDialog.classList.remove("visible"),2600)};
-const showNextLive2dHoverDialog=(force=false)=>{if(!live2dEnabled)return;const now=Date.now();if(!force&&now-lastLive2dHoverAt<350)return;lastLive2dHoverAt=now;const message=live2dHoverMessages[live2dHoverIndex++%live2dHoverMessages.length];showLive2dDialog(typeof message==="function"?message():message)};
+const showLive2dDialog=(text)=>{
+  if(!live2dDialog||!live2dEnabled)return;
+  const quote=text===undefined?nextLive2dQuote():null;
+  const clean=sanitizeWaifuText(quote?.text??text??pick(live2dMessages))||pick(live2dMessages);
+  clearTimeout(dialogTimer);
+  live2dDialog.textContent=clean;
+  if(quote){
+    live2dDialog.dataset.quoteCharacter=quote.key;
+    live2dDialog.dataset.quoteSource=quote.source;
+    live2dDialog.title=window.live2dCharacterQuotes.work+" · "+quote.name+" · TV总第"+quote.episode+"话（中文自译短摘）";
+  }else{
+    delete live2dDialog.dataset.quoteCharacter;
+    delete live2dDialog.dataset.quoteSource;
+    live2dDialog.removeAttribute("title");
+  }
+  live2dDialog.classList.add("visible");
+  dialogTimer=setTimeout(()=>live2dDialog.classList.remove("visible"),2600);
+};
+const showNextLive2dHoverDialog=(force=false)=>{if(!live2dEnabled)return;const now=Date.now();if(!force&&now-lastLive2dHoverAt<350)return;lastLive2dHoverAt=now;if(window.live2dCharacterQuotes?.characters[getCurrentLive2dKey()]?.quotes.length){showLive2dDialog();return}const message=live2dHoverMessages[live2dHoverIndex++%live2dHoverMessages.length];showLive2dDialog(typeof message==="function"?message():message)};
 let clickTextSeq=0,clickTextForward=true;
 const quoteOrderToggle=document.getElementById("quote-order-toggle");
 if(quoteOrderToggle){
@@ -1233,6 +1460,7 @@ const isAroundLive2dWidget=(event,{wide=false}={})=>{
 const applyLive2dSettings=()=>{
   if(!live2dWidget)return;
   const modelKey=getLive2dModelKey(localStorage.getItem("live2dModel"));
+  localStorage.setItem("live2dModel",modelKey);
   const size=normalizeLive2dSizePercent(localStorage.getItem("live2dSize"));
   const rawX=localStorage.getItem("live2dX"),rawY=localStorage.getItem("live2dY");
   const savedX=Number(rawX),savedY=Number(rawY);
@@ -1240,7 +1468,7 @@ const applyLive2dSettings=()=>{
   live2dWidget.classList.toggle("live2d-custom-position",hasCustomPosition);
   live2dWidget.style.setProperty("--live2d-size",String(size/100));
   if(hasCustomPosition){
-    const next=clampLive2dVisualLeftTop(savedX,savedY,size/100);
+    const next=live2dActiveModel?clampLive2dVisualLeftTop(savedX,savedY,size/100):{x:savedX,y:savedY};
     const nextX=`${next.x}px`;
     const nextY=`${next.y}px`;
     live2dWidget.style.setProperty("--live2d-x",nextX);
@@ -1301,6 +1529,7 @@ const initLive2d=async()=>{
     if(!live2dWidget.clientWidth||!live2dWidget.clientHeight)await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     const app=new PIXI.Application({view:live2dCanvas,autoStart:false,transparent:true,backgroundAlpha:0,width:live2dWidget.clientWidth,height:live2dWidget.clientHeight,antialias:true,resolution:Math.min(2,window.devicePixelRatio||1),autoDensity:true,preserveDrawingBuffer:true});
     live2dApp=app;
+    let preloadTimer=0;
     let model=null,modelConfig=null,naturalWidth=0,naturalHeight=0,loadToken=0,manualFocusFrame=0,manualFocusPoint={nx:0,ny:0},manualFocusTarget={nx:0,ny:0};
     const setModelParameter=(id,value,coreModel=model?.internalModel?.coreModel)=>{
       if(!id||!coreModel)return;
@@ -1477,6 +1706,32 @@ const initLive2d=async()=>{
       live2dWidget.style.setProperty("--live2d-dialog-shift","-50%");
       positionLive2dChrome({freezePanel:live2dControlsActive});
     };
+    const measureContentBounds=()=>{
+      const w=live2dWidget.clientWidth,h=live2dWidget.clientHeight;
+      if(model.alpha<1||app.stage.children.length!==1)return;
+      if(live2dContentBounds?.model===model&&live2dContentBounds.width===w&&live2dContentBounds.height===h)return;
+      const sample=document.createElement("canvas");
+      sample.width=Math.min(140,live2dCanvas.width);
+      sample.height=Math.max(1,Math.round(live2dCanvas.height*sample.width/live2dCanvas.width));
+      const context=sample.getContext("2d",{willReadFrequently:true});
+      context.drawImage(live2dCanvas,0,0,sample.width,sample.height);
+      const pixels=context.getImageData(0,0,sample.width,sample.height).data;
+      let left=sample.width,top=sample.height,right=-1,bottom=-1;
+      for(let y=0;y<sample.height;y++)for(let x=0;x<sample.width;x++){
+        if(pixels[(y*sample.width+x)*4+3]<=24)continue;
+        left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);
+      }
+      if(right<left)return;
+      // Two sample pixels leave a small safety margin around antialiased edges.
+      live2dContentBounds={model,width:w,height:h,left:Math.max(0,left-2)/sample.width,top:Math.max(0,top-2)/sample.height,right:Math.min(sample.width,right+3)/sample.width,bottom:Math.min(sample.height,bottom+3)/sample.height};
+      if(live2dWidget.classList.contains("live2d-custom-position")){
+        const rect=live2dWidget.getBoundingClientRect(),next=clampLive2dVisualLeftTop(rect.left,rect.top);
+        live2dWidget.style.left=next.x+"px";live2dWidget.style.top=next.y+"px";
+        live2dWidget.style.setProperty("--live2d-x",next.x+"px");live2dWidget.style.setProperty("--live2d-y",next.y+"px");
+        localStorage.setItem("live2dX",String(next.x));localStorage.setItem("live2dY",String(next.y));
+      }
+      positionLive2dChrome();
+    };
     const layout=()=>{
       const w=live2dWidget.clientWidth,h=live2dWidget.clientHeight;
       if(!model||!w||!h||!naturalWidth||!naturalHeight)return;
@@ -1489,26 +1744,29 @@ const initLive2d=async()=>{
       updateLive2dDialogAnchor();
       // Resizing clears the canvas; redraw before this frame can be displayed,
       // even when the animation ticker is paused.
-      if(isLive2dVisible())app.renderer.render(app.stage);
+      if(isLive2dVisible()){app.renderer.render(app.stage);measureContentBounds()}
     };
     live2dRelayout=layout;
     switchLive2dModel=async(modelKey)=>{
       const safeKey=getLive2dModelKey(modelKey);
+      ++loadToken;
       if(modelConfig===live2dModels[safeKey]&&model)return;
       const nextConfig=live2dModels[safeKey];
-      const token=++loadToken;
+      const token=loadToken;
       live2dWidget.classList.remove("live2d-hidden");
       try{
         const nextModel=await loadLive2dModel(nextConfig);
-        if(token!==loadToken){nextModel.destroy?.();return}
+        if(token!==loadToken){pruneLive2dModelCache();return}
         finishLive2dTransition?.();
         const prevModel=model;
         if(prevModel)prevModel.autoUpdate=false;
         model=nextModel;
         live2dActiveModel=model;
+        live2dActiveModelKey=safeKey;
+        if(live2dDialog?.dataset.quoteCharacter&&live2dDialog.dataset.quoteCharacter!==safeKey){clearTimeout(dialogTimer);live2dDialog.classList.remove("visible")}
         modelConfig=nextConfig;
-        naturalWidth=model.width;
-        naturalHeight=model.height;
+        naturalWidth=live2dModelSizes.get(model).width;
+        naturalHeight=live2dModelSizes.get(model).height;
         hideConfiguredModelMarks();
         installModelMarkGuard(model,nextConfig);
         // Initialize pose/physics before the first draw, including paused mode.
@@ -1533,9 +1791,11 @@ const initLive2d=async()=>{
           const finish=()=>{
             app.ticker.remove(_fadeTick);
             if(_fadeOut.parent)app.stage.removeChild(_fadeOut);
-            _fadeOut.destroy?.();
+
             _fadeIn.alpha=1;
             finishLive2dTransition=null;
+            layout();
+            pruneLive2dModelCache();
           };
           const _fadeTick=()=>{
             _elapsed+=app.ticker.deltaMS;
@@ -1547,13 +1807,21 @@ const initLive2d=async()=>{
           finishLive2dTransition=finish;
           app.ticker.add(_fadeTick);
         }else{
-          if(prevModel){app.stage.removeChild(prevModel);prevModel.destroy?.()}
+          if(prevModel){app.stage.removeChild(prevModel)}
           app.stage.addChild(model);
         }
         layout();
         applyLive2dVisibility();
         syncLive2dRuntime();
         if(live2dModelSelect)live2dModelSelect.value=safeKey;
+        pruneLive2dModelCache();
+        clearTimeout(preloadTimer);
+        preloadTimer=setTimeout(()=>{
+          if(!isLive2dVisible())return;
+          const keys=Object.keys(live2dModels),nextKey=keys[(keys.indexOf(safeKey)+1)%keys.length];
+          loadLive2dModel(live2dModels[nextKey]).then(pruneLive2dModelCache).catch(()=>{});
+        },250);
+
       }catch(err){
         if(token===loadToken&&!model)live2dWidget.classList.add("live2d-hidden");
         console.warn("Live2D model load failed:",err);
@@ -1583,43 +1851,21 @@ const initLive2d=async()=>{
         live2dHovering=false;
       }
     },{passive:true});
-    /*
-     * 像素命中测试（2026-10-06 修复）
-     * 旧实现：`app.renderer.extract.pixels(app.stage)` 直接按画布尺寸索引。
-     * 但 extract.pixels(target) 在没有 frame 时只截取 **target 的包围盒**——
-     * 实测返回 258×451（模型包围盒），而画布是 280×560，于是 (y*280+x) 的索引
-     * 整体错位，命中判定变成随机值：看板娘既拖不动、点击也没反应。
-     * 现在显式传入整块画布的 frame，并按返回缓冲的真实尺寸换算分辨率。
-     */
+    // Opaque pixels open settings; transparent pixels preserve underlying clicks.
+    const hitPixel=new Uint8Array(4);
     const hitLive2dPixel=(event)=>{
       const rect=live2dCanvas.getBoundingClientRect();
       if(!rect.width||!rect.height)return false;
-      const localX=event.clientX-rect.left;
-      const localY=event.clientY-rect.top;
-      // 便宜的矩形预判：绝大多数页面点击压根不在看板娘盒子里，不必去抽像素
+      const localX=event.clientX-rect.left,localY=event.clientY-rect.top;
       if(localX<0||localY<0||localX>=rect.width||localY>=rect.height)return false;
-      try{
-        const pixels=app.renderer.extract.pixels(app.stage,new PIXI.Rectangle(0,0,rect.width,rect.height));
-        const total=pixels.length/4;
-        if(!total)return false;
-        const scale=Math.sqrt(total/(rect.width*rect.height));
-        if(!Number.isFinite(scale)||scale<=0)return false;
-        const bufferWidth=Math.round(rect.width*scale);
-        const bufferHeight=Math.round(rect.height*scale);
-        if(bufferWidth<1||bufferHeight<1)return false;
-        const x=Math.min(bufferWidth-1,Math.max(0,Math.floor(localX*scale)));
-        const y=Math.min(bufferHeight-1,Math.max(0,Math.floor(localY*scale)));
-        return pixels[(y*bufferWidth+x)*4+3]>24;
-      }catch{
-        // 退化方案：抽像素失败时用模型包围盒做矩形命中，至少保证拖得动
-        try{
-          const bounds=model?.getBounds?.();
-          if(!bounds)return false;
-          return localX>=bounds.x&&localX<=bounds.x+bounds.width&&localY>=bounds.y&&localY<=bounds.y+bounds.height;
-        }catch{
-          return false;
-        }
-      }
+      // Read the preserved drawing buffer instead of re-rendering/extracting the stage.
+      // WebGL pixels start at the bottom-left; DOM CSS coordinates at the top-left.
+      const gl=app.renderer.gl;
+      if(gl.isContextLost()||!gl.drawingBufferWidth||!gl.drawingBufferHeight)return false;
+      const x=Math.min(gl.drawingBufferWidth-1,Math.floor(localX/rect.width*gl.drawingBufferWidth));
+      const y=gl.drawingBufferHeight-1-Math.min(gl.drawingBufferHeight-1,Math.floor(localY/rect.height*gl.drawingBufferHeight));
+      gl.readPixels(x,y,1,1,gl.RGBA,gl.UNSIGNED_BYTE,hitPixel);
+      return hitPixel[3]>24;
     };
     let live2dDragged=false,draggingLive2d=false,suppressLive2dClick=false,dragOffsetX=0,dragOffsetY=0,dragStartX=0,dragStartY=0,dragStartTarget=null;
     const moveLive2dTo=(x,y,{save=false}={})=>{
@@ -1709,17 +1955,22 @@ const initLive2d=async()=>{
     document.addEventListener("click",e=>{
       if(!isLive2dVisible())return;
       if(isLive2dSettingsTarget(e.target))return;
+      if(e.button!==0)return;
       if(suppressLive2dClick){suppressLive2dClick=false;live2dDragged=false;return}
       if(!hitLive2dPixel(e))return;
       // Canvas is transparent to pointer events. Capture opaque character hits
       // before the sidebar/link underneath receives the click.
       e.preventDefault();
       e.stopImmediatePropagation();
-      // 点本体 → 直接打开设置面板（一次点击就能调到尺寸滑块）。
-      // 原来只 showLive2dSettingsButton()，还得再点一次那个 3.6s 后会消失的小把手。
-      setLive2dSettingsOpen(true);
+      // Left click speaks; settings are opened by the context menu handler.
       showLive2dDialog();
       if(model?.motion)model.motion("TapBody").catch(()=>{});
+    },true);
+    document.addEventListener("contextmenu",e=>{
+      if(!isLive2dVisible()||isLive2dSettingsTarget(e.target)||!hitLive2dPixel(e))return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      setLive2dSettingsOpen(true);
     },true);
     await switchLive2dModel(getLive2dModelKey(localStorage.getItem("live2dModel")));
   }catch(err){

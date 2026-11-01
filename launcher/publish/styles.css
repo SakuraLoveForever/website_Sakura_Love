@@ -2639,10 +2639,10 @@ body.theme-dark .chips li {
   color: var(--ink);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-6px) scale(0.98);
-  backdrop-filter: saturate(var(--glass-saturate-strong)) blur(var(--glass-blur-compact));
-  -webkit-backdrop-filter: saturate(var(--glass-saturate-strong)) blur(var(--glass-blur-compact));
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transform: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: none;
 }
 
 .live2d-widget.live2d-settings-open .live2d-settings-panel {

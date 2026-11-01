@@ -45,7 +45,7 @@ test('Mao 首次加载和暂停重绘时只显示一套手臂姿势', async ({ p
   expect(await readArms()).toEqual([1, 0, 1, 0]);
 });
 
-test('看板娘覆盖侧栏时，点击角色打开切换面板且不导航', async ({ page }) => {
+test('看板娘覆盖侧栏时，右键角色打开切换面板且不导航', async ({ page }) => {
   test.setTimeout(90000);
   await page.goto('/');
   await page.waitForFunction(() => typeof live2dActiveModel !== 'undefined' && live2dActiveModel?.internalModel);
@@ -53,12 +53,26 @@ test('看板娘覆盖侧栏时，点击角色打开切换面板且不导航', as
     live2dWidget.classList.add('live2d-custom-position');
     live2dWidget.style.left = '12px'; live2dWidget.style.top = '120px';
     live2dWidget.style.bottom = 'auto';
-    const b = live2dActiveModel.getBounds(), r = live2dCanvas.getBoundingClientRect();
-    return { x: r.left + b.x + b.width / 2, y: r.top + b.y + b.height * .7 };
+    const r = live2dCanvas.getBoundingClientRect();
+    const sample = document.createElement('canvas');
+    sample.width = live2dCanvas.width; sample.height = live2dCanvas.height;
+    const context = sample.getContext('2d'); context.drawImage(live2dCanvas, 0, 0);
+    const pixels = context.getImageData(0, 0, sample.width, sample.height).data;
+    const alpha = (x, y) => pixels[(Math.floor(y / r.height * sample.height) * sample.width + Math.floor(x / r.width * sample.width)) * 4 + 3];
+    // The former bounds-center point fell between Tutu's legs. Sample the real
+    // visible torso, with a margin for the animated pose, rather than empty space.
+    for (let y = r.height * .4; y < r.height * .65; y += 4) {
+      for (let x = r.width * .35; x < r.width * .65; x += 4) {
+        if ([[-4,-4], [4,-4], [0,0], [-4,4], [4,4]].every(([dx,dy]) => alpha(x+dx,y+dy)>200)) {
+          return { x: r.left + x, y: r.top + y };
+        }
+      }
+    }
+    throw new Error('No opaque torso point found');
   });
-  await page.mouse.click(point.x, point.y);
+  await page.mouse.click(point.x, point.y, { button: 'right' });
   await expect(page.locator('#live2d-widget')).toHaveClass(/live2d-settings-open/);
-  await expect(page.locator('#live2d-model option')).toHaveCount(5);
+  await expect(page.locator('#live2d-model option')).toHaveCount(7);
   expect(new URL(page.url()).hash).toBe('');
 });
 
@@ -168,7 +182,7 @@ test('连续筛选的动效不残留透明卡片，减少动画时直接呈现�
   await page.evaluate(() => {
     for (const filter of ['web','tools','browser','all']) document.querySelector(`[data-project-filter="${filter}"]`).click();
   });
-  await expect(page.locator('#projects .card:not([hidden])')).toHaveCount(12);
+  await expect(page.locator('#projects .card:not([hidden])')).toHaveCount(11);
   await expect(page.locator('#projects .card-body').first()).toHaveCSS('opacity','1');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.evaluate(() => { window.__motionCalls=0; Motion.animate=()=>{window.__motionCalls++;}; });

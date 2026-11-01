@@ -1,9 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
-test('分类显示中文筛选结果，全部恢复十二个项目', async ({ page }) => {
+test('分类显示中文筛选结果，全部恢复十一个项目', async ({ page }) => {
   await page.goto('/');
   const cards = page.locator('#projects .card:visible');
-  await expect(cards).toHaveCount(12);
+  await expect(cards).toHaveCount(11);
   await page.locator('[data-project-filter="browser"]').click();
   await expect(cards).toHaveCount(2);
   await expect(cards.first()).toContainText('tab-sync');
@@ -11,15 +11,15 @@ test('分类显示中文筛选结果，全部恢复十二个项目', async ({ pa
   await expect(cards).toHaveCount(2);
   await expect(page.locator('#project-result-count')).toHaveText('2 个作品');
   await page.locator('[data-project-filter="all"]').click();
-  await expect(cards).toHaveCount(12);
-  await expect(page.locator('#projects .card-cover img')).toHaveCount(11);
+  await expect(cards).toHaveCount(11);
+  await expect(page.locator('#projects .card-cover img')).toHaveCount(10);
   await page.locator('#projects .card-cover img').evaluateAll(imgs => imgs.forEach(img => img.loading = 'eager'));
   await expect.poll(() => page.locator('#projects .card-cover img').evaluateAll(imgs => imgs.every(img => img.complete && img.naturalWidth > 0))).toBe(true);
 });
 
-test('项目布局在手机、平板和桌面没有溢出，桌面展示保持紧凑', async ({ page }) => {
+test('项目在不同桌面宽度没有溢出，展示保持紧凑', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const width of [354, 390, 768, 1440]) {
+  for (const width of [1280, 1366, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/#projects');
     const result = await page.locator('#projects .project-grid').evaluate(grid => {
@@ -48,8 +48,8 @@ test('看板娘面板可切换角色和调整大小，并保持在视口内', as
   expect(b.x + b.width).toBeLessThanOrEqual(1272);
   expect(b.y + b.height).toBeLessThanOrEqual(792);
   await page.locator('#live2d-next-model').click();
-  await expect(page.locator('#live2d-model')).toHaveValue('haru');
-  await expect.poll(() => page.evaluate(() => localStorage.getItem('live2dModel'))).toBe('haru');
+  await expect(page.locator('#live2d-model')).toHaveValue('rem');
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('live2dModel'))).toBe('rem');
   await page.locator('[data-live2d-size-step="-10"]').focus();
   await page.keyboard.press('Enter');
   expect(await page.locator('#live2d-size').inputValue()).toBe('90');

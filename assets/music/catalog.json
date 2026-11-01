@@ -1,0 +1,455 @@
+{
+  "updatedAt": "2026-10-27",
+  "tracks": [
+    {
+      "role": "02",
+      "trackNumber": 1,
+      "title": "Beautiful World",
+      "artist": "XX:me",
+      "album": "ダーリン・イン・ザ・フランキス エンディング集 vol.1",
+      "duration": 261.215,
+      "neteaseId": "547976226",
+      "onlineDuration": 258.586
+    },
+    {
+      "role": "02",
+      "trackNumber": 2,
+      "title": "トリカゴ (鸟笼)",
+      "artist": "XX:me",
+      "album": "ダーリン・イン・ザ・フランキス エンディング集 vol.1",
+      "duration": 221.535,
+      "neteaseId": "547971231",
+      "onlineDuration": 219.924
+    },
+    {
+      "role": "02",
+      "trackNumber": 3,
+      "title": "トリカゴ (鸟笼)",
+      "artist": "戸松遥、市之濑加那、山下七海、早見沙織、石上静香",
+      "album": null,
+      "duration": 106.998,
+      "neteaseId": null,
+      "onlineDuration": null
+    },
+    {
+      "role": "02",
+      "trackNumber": 4,
+      "title": "KISS OF DEATH (Produced by HYDE)",
+      "artist": "中島美嘉",
+      "album": "KISS OF DEATH（Produced by HYDE）",
+      "duration": 250.41,
+      "neteaseId": "543988784",
+      "onlineDuration": 249.753
+    },
+    {
+      "role": "akame",
+      "trackNumber": 1,
+      "title": "Skyreach",
+      "artist": "雨宮天",
+      "album": "Skyreach",
+      "duration": 270.002,
+      "neteaseId": "28936241",
+      "onlineDuration": 269.931
+    },
+    {
+      "role": "akame",
+      "trackNumber": 2,
+      "title": "月灯り",
+      "artist": "雨宮天",
+      "album": "月灯り",
+      "duration": 261.329,
+      "neteaseId": "29744626",
+      "onlineDuration": 261.27
+    },
+    {
+      "role": "akame",
+      "trackNumber": 3,
+      "title": "こんな世界、知りたくなかった",
+      "artist": "沢井美空",
+      "album": "こんな世界、知りたくなかった。",
+      "duration": 257.985,
+      "neteaseId": "28854949",
+      "onlineDuration": 257.927
+    },
+    {
+      "role": "akame",
+      "trackNumber": 4,
+      "title": "ライアーマスク",
+      "artist": "真山りか",
+      "album": "Liar Mask",
+      "duration": 293.695,
+      "neteaseId": "29758107",
+      "onlineDuration": 291.271
+    },
+    {
+      "role": "chitanda",
+      "trackNumber": 1,
+      "title": "優しさの理由",
+      "artist": "ChouCho",
+      "album": "J-アニソン神曲祭り -パラダイス- [DJ和 in No.1胸熱MIX]",
+      "duration": 91.011,
+      "neteaseId": "28050619",
+      "onlineDuration": 90.984
+    },
+    {
+      "role": "chitanda",
+      "trackNumber": 2,
+      "title": "まどろみの約束",
+      "artist": "佐藤聡美, 茅野愛衣",
+      "album": "まどろみの約束",
+      "duration": 267.912,
+      "neteaseId": "27552690",
+      "onlineDuration": 267.84
+    },
+    {
+      "role": "chtholly",
+      "trackNumber": 1,
+      "title": "DEAREST DROP",
+      "artist": "田所あずさ",
+      "album": "AZUSA TADOKORO 10th Anniversary Best Album HARE",
+      "duration": 304.091,
+      "neteaseId": "2721051837",
+      "onlineDuration": 304.026
+    },
+    {
+      "role": "elaina",
+      "trackNumber": 1,
+      "title": "リテラチュア（《魔女之旅》OP）",
+      "artist": "凉悦Suzuya",
+      "album": "リテラチュア",
+      "duration": 238.054,
+      "neteaseId": "1938041211",
+      "onlineDuration": 238.0
+    },
+    {
+      "role": "eriyi",
+      "trackNumber": 1,
+      "title": "最后的旅行 - 记《龙族》绘梨衣（日语版）",
+      "artist": "Rainton桐",
+      "album": "最后的旅行 - 记《龙族》绘梨衣",
+      "duration": 287.138,
+      "neteaseId": "423703393",
+      "onlineDuration": 286.839
+    },
+    {
+      "role": "eriyi",
+      "trackNumber": 2,
+      "title": "IVORY TOWER (龙族动画OP)",
+      "artist": "如释鸟Birdiee",
+      "album": "【龙族】IVORY TOWER -Birdiee翻唱",
+      "duration": 177.864,
+      "neteaseId": "2617935584",
+      "onlineDuration": 177.802
+    },
+    {
+      "role": "esdeath",
+      "trackNumber": 1,
+      "title": "Skyreach",
+      "artist": "雨宮天",
+      "album": "Skyreach",
+      "duration": 270.002,
+      "neteaseId": "28936241",
+      "onlineDuration": 269.931
+    },
+    {
+      "role": "esdeath",
+      "trackNumber": 2,
+      "title": "月灯り",
+      "artist": "雨宮天",
+      "album": "月灯り",
+      "duration": 261.329,
+      "neteaseId": "29744626",
+      "onlineDuration": 261.27
+    },
+    {
+      "role": "esdeath",
+      "trackNumber": 3,
+      "title": "こんな世界、知りたくなかった",
+      "artist": "沢井美空",
+      "album": "こんな世界、知りたくなかった。",
+      "duration": 257.985,
+      "neteaseId": "28854949",
+      "onlineDuration": 257.927
+    },
+    {
+      "role": "esdeath",
+      "trackNumber": 4,
+      "title": "ライアーマスク",
+      "artist": "真山りか",
+      "album": "Liar Mask",
+      "duration": 293.695,
+      "neteaseId": "29758107",
+      "onlineDuration": 291.271
+    },
+    {
+      "role": "iroha",
+      "trackNumber": 1,
+      "title": "星降る海",
+      "artist": "Aqu3ra, 早見沙織",
+      "album": "超かぐや姫！",
+      "duration": 253.512,
+      "neteaseId": "3340112782",
+      "onlineDuration": 253.441
+    },
+    {
+      "role": "kaguya",
+      "trackNumber": 1,
+      "title": "星降る海",
+      "artist": "Aqu3ra, 早見沙織",
+      "album": "超かぐや姫！",
+      "duration": 253.512,
+      "neteaseId": "3340112782",
+      "onlineDuration": 253.441
+    },
+    {
+      "role": "krul",
+      "trackNumber": 1,
+      "title": "X.U.",
+      "artist": "SawanoHiroyuki[nZk], R!N, Gemie",
+      "album": "X.U. / scaPEGoat",
+      "duration": 283.92,
+      "neteaseId": "32102071",
+      "onlineDuration": 283.858
+    },
+    {
+      "role": "mine",
+      "trackNumber": 1,
+      "title": "Skyreach",
+      "artist": "雨宮天",
+      "album": "Skyreach",
+      "duration": 270.002,
+      "neteaseId": "28936241",
+      "onlineDuration": 269.931
+    },
+    {
+      "role": "mine",
+      "trackNumber": 2,
+      "title": "月灯り",
+      "artist": "雨宮天",
+      "album": "月灯り",
+      "duration": 261.329,
+      "neteaseId": "29744626",
+      "onlineDuration": 261.27
+    },
+    {
+      "role": "mine",
+      "trackNumber": 3,
+      "title": "こんな世界、知りたくなかった",
+      "artist": "沢井美空",
+      "album": "こんな世界、知りたくなかった。",
+      "duration": 257.985,
+      "neteaseId": "28854949",
+      "onlineDuration": 257.927
+    },
+    {
+      "role": "mine",
+      "trackNumber": 4,
+      "title": "ライアーマスク",
+      "artist": "真山りか",
+      "album": "Liar Mask",
+      "duration": 293.695,
+      "neteaseId": "29758107",
+      "onlineDuration": 291.271
+    },
+    {
+      "role": "shinoa",
+      "trackNumber": 1,
+      "title": "X.U.",
+      "artist": "SawanoHiroyuki[nZk], R!N, Gemie",
+      "album": "X.U. / scaPEGoat",
+      "duration": 283.92,
+      "neteaseId": "32102071",
+      "onlineDuration": 283.858
+    },
+    {
+      "role": "sora",
+      "trackNumber": 1,
+      "title": "比翼の羽根",
+      "artist": "eufonius",
+      "album": "比翼の羽根",
+      "duration": 284.082,
+      "neteaseId": "718551",
+      "onlineDuration": 284.013
+    },
+    {
+      "role": "sora",
+      "trackNumber": 2,
+      "title": "ヨスガノソラ メインテーマ -記憶-",
+      "artist": "市川淳",
+      "album": "『ヨスガノソラ』オリジナルサウンドトラック-New-",
+      "duration": 180.312,
+      "neteaseId": "477931",
+      "onlineDuration": 180.244
+    },
+    {
+      "role": "sora",
+      "trackNumber": 3,
+      "title": "ヨスガノソラ メインテーマ -遠い空へ-",
+      "artist": "市川淳",
+      "album": "『ヨスガノソラ』オリジナルサウンドトラック-New-",
+      "duration": 211.2,
+      "neteaseId": "477913",
+      "onlineDuration": 211.133
+    },
+    {
+      "role": "toki",
+      "trackNumber": 1,
+      "title": "Departures ~あなたにおくるアイの歌~",
+      "artist": "EGOIST",
+      "album": "ノイタミナ FAN BEST",
+      "duration": 253.623,
+      "neteaseId": "31649312",
+      "onlineDuration": 253.0
+    },
+    {
+      "role": "toki",
+      "trackNumber": 2,
+      "title": "Euterpe",
+      "artist": "EGOIST",
+      "album": "Departures~あなたにおくるアイの歌~",
+      "duration": 228.963,
+      "neteaseId": "722932",
+      "onlineDuration": 228.902
+    },
+    {
+      "role": "toki",
+      "trackNumber": 3,
+      "title": "エウテルペ",
+      "artist": "EGOIST",
+      "album": null,
+      "duration": 228.911,
+      "neteaseId": "722932",
+      "onlineDuration": 228.902
+    },
+    {
+      "role": "toki",
+      "trackNumber": 4,
+      "title": "βios",
+      "artist": "小林未郁",
+      "album": "ギルティクラウン オリジナルサウンドトラック",
+      "duration": 273.868,
+      "neteaseId": "498096",
+      "onlineDuration": 273.809
+    },
+    {
+      "role": "violet",
+      "trackNumber": 1,
+      "title": "Sincerely（钢琴版）",
+      "artist": "Noriチャ",
+      "album": "紫罗兰永恒花园",
+      "duration": 293.376,
+      "neteaseId": "1957279659",
+      "onlineDuration": 293.326
+    },
+    {
+      "role": "violet",
+      "trackNumber": 2,
+      "title": "Sincerely",
+      "artist": "TRUE",
+      "album": "TRUE the BEST",
+      "duration": 275.252,
+      "neteaseId": "2668592477",
+      "onlineDuration": 275.2
+    },
+    {
+      "role": "violet",
+      "trackNumber": 3,
+      "title": "《紫罗兰永恒花园》ED 交响版 纯音乐",
+      "artist": "大白梨SoDa",
+      "album": "《紫罗兰永恒花园》ED 交响版 纯音乐",
+      "duration": 209.136,
+      "neteaseId": "1824725160",
+      "onlineDuration": 209.081
+    },
+    {
+      "role": "violet",
+      "trackNumber": 4,
+      "title": "莱顿，无战事（双笛琴重奏Edit.）",
+      "artist": "神隐归宗",
+      "album": "莱顿，无战事（紫罗兰永恒花园 EDみちしるべ 改编曲）",
+      "duration": 163.004,
+      "neteaseId": "534512244",
+      "onlineDuration": 162.933
+    },
+    {
+      "role": "yachiyo",
+      "trackNumber": 1,
+      "title": "星降る海",
+      "artist": "Aqu3ra, 早見沙織",
+      "album": "超かぐや姫！",
+      "duration": 253.512,
+      "neteaseId": "3340112782",
+      "onlineDuration": 253.441
+    },
+    {
+      "role": "emilia",
+      "trackNumber": 1,
+      "title": "Stay Alive",
+      "artist": "EMILIA (CV: 高橋李依)",
+      "album": "Re:ゼロから始める異世界生活",
+      "duration": 267.3,
+      "neteaseId": null,
+      "onlineDuration": null
+    },
+    {
+      "role": "emilia",
+      "trackNumber": 2,
+      "title": "STYX HELIX",
+      "artist": "MYTH & ROID",
+      "album": "Re:ゼロから始める異世界生活",
+      "duration": 289.7,
+      "neteaseId": null,
+      "onlineDuration": null
+    },
+    {
+      "role": "rem",
+      "trackNumber": 1,
+      "title": "STRAIGHT BET",
+      "artist": "MYTH & ROID",
+      "album": "Re:ゼロから始める異世界生活",
+      "duration": 251.5,
+      "neteaseId": null,
+      "onlineDuration": null
+    },
+    {
+      "role": "rem",
+      "trackNumber": 2,
+      "title": "Stay Alive (Stella ver.)",
+      "artist": "高橋李依",
+      "album": "Re:ゼロから始める異世界生活",
+      "duration": 267.3,
+      "neteaseId": null,
+      "onlineDuration": null
+    },
+    {
+      "role": "rem",
+      "trackNumber": 3,
+      "title": "STYX HELIX (Rem ver.)",
+      "artist": "MYTH & ROID",
+      "album": "Re:ゼロから始める異世界生活",
+      "duration": 291.4,
+      "neteaseId": null,
+      "onlineDuration": null
+    },
+    {
+      "role": "rem",
+      "trackNumber": 4,
+      "title": "Wishing",
+      "artist": "レム (CV: 水瀬いのり)",
+      "album": "Re:ゼロから始める異世界生活",
+      "duration": 311.2,
+      "neteaseId": null,
+      "onlineDuration": null
+    },
+    {
+      "role": "rem",
+      "trackNumber": 5,
+      "title": "Re:ゼロから始める異世界生活 OST",
+      "artist": "末廣健一郎",
+      "album": "Re:ゼロから始める異世界生活",
+      "duration": 259.7,
+      "neteaseId": null,
+      "onlineDuration": null
+    }
+  ]
+}

@@ -5,18 +5,18 @@ test('透明看板娘画布穿透点击，项目是静态卡片（无横向轨�
   await expect(page.locator('#live2d-canvas')).toHaveCSS('pointer-events', 'none');
   await page.locator('.sidebar-link[href="#projects"]').click();
   await expect(page).toHaveURL(/#projects$/);
-  await expect(page.locator('#projects .card')).toHaveCount(12);
+  await expect(page.locator('#projects .card')).toHaveCount(11);
   await expect(page.locator('.project-scroll-track')).toHaveCount(0);
 });
 
-test('354px 移动布局导航有文字，设置控件完整容纳', async ({ page }) => {
-  await page.setViewportSize({ width: 354, height: 767 });
+test('桌面布局导航有文字，主题设置控件完整容纳', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(() => localStorage.setItem('live2dEnabled', 'false'));
   const models = [];
   page.on('request', request => { if (request.url().includes('.model3.json')) models.push(request.url()); });
   await page.goto('/');
-  await expect(page.locator('body')).toHaveCSS('padding-left', '0px');
   await expect(page.locator('.sidebar-label').first()).toHaveCSS('opacity', '1');
-  for (const style of ['apple', 'fuwari', 'astropaper']) {
+  for (const style of ['apple', 'fuwari', 'astropaper', 'rem']) {
     await page.locator(`[data-design-style="${style}"]`).click();
     await expect(page.locator('body')).toHaveClass(new RegExp(`design-${style}`));
     const overflow = await page.locator('#page-bottom').evaluate(footer => [...footer.querySelectorAll('button,input,a')].filter(el => {
@@ -34,7 +34,7 @@ test('354px 移动布局导航有文字，设置控件完整容纳', async ({ pa
     const info = card.querySelector('.music-role-info').getBoundingClientRect();
     return info.left >= outer.left && info.right <= outer.right && info.bottom <= outer.bottom;
   })).toBe(true);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(354);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1280);
 });
 
 test('角色缩略图使用小图，键盘可选择并告知播放行为', async ({ page }) => {

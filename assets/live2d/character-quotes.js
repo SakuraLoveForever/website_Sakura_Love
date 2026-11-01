@@ -1,0 +1,45 @@
+// Short dialogue excerpts, translated into Chinese; not an official subtitle track.
+// Episode numbers are cumulative TV episode numbers. See CHARACTER-QUOTES.md.
+window.live2dCharacterQuotes={
+  work:"Re:从零开始的异世界生活",
+  checked:"2026-10-27",
+  sources:[
+    "https://animemanga33.com/archives/431",
+    "https://live-the-way.com/anime-comic/remu/",
+    "https://animemanga33.com/archives/16335",
+    "https://animemanga33.com/archives/16298",
+    "https://daruma.link/rezero-starting-life-in-another-world-meigen"
+  ],
+  characters:{
+    rem:{name:"雷姆",quotes:[
+      {text:"从这里开始吧。一……不，从零开始！",episode:18,source:0},
+      {text:"昴是雷姆的英雄。",episode:18,source:1},
+      {text:"雷姆爱着昴。",episode:18,source:1},
+      {text:"放弃很简单，但那不适合昴。",episode:18,source:1},
+      {text:"雷姆相信昴的全部。",episode:19,source:0},
+      {text:"未来的事，要笑着说才行。",episode:18,source:1},
+      {text:"雷姆的英雄是世界第一！",episode:21,source:0},
+      {text:"言质，取到了。",episode:21,source:0}
+    ]},
+    ram:{name:"拉姆",quotes:[
+      {text:"拉姆的拿手菜是蒸红薯。",episode:4,source:2},
+      {text:"拉姆也觉得坦率是自己的优点。",episode:5,source:2},
+      {text:"但拉姆是那孩子的姐姐。",episode:10,source:2},
+      {text:"拉姆大人。",episode:40,source:2},
+      {text:"你变强了呢，加菲。",episode:40,source:2},
+      {text:"不过，要按拉姆的方式来。",episode:40,source:2},
+      {text:"爱上了，也是没办法的事。",episode:48,source:2},
+      {text:"拉姆的评价，全凭拉姆自己的判断。",episode:51,source:2}
+    ]},
+    emilia:{name:"艾米利亚",quotes:[
+      {text:"我叫艾米利亚，只是艾米利亚。",episode:3,source:3},
+      {text:"愿精灵的祝福与你同在。",episode:9,source:3},
+      {text:"比起许多次对不起，一句谢谢更让人开心。",episode:8,source:4},
+      {text:"已经很辛苦了吧。",episode:8,source:3},
+      {text:"昴，真是个笨蛋。",episode:1,source:3},
+      {text:"到此为止了，坏人！",episode:23,source:3},
+      {text:"谢谢你，昴。谢谢你救了我。",episode:25,source:3},
+      {text:"这一次，我也要成为能帮助别人的人。",episode:27,source:3}
+    ]}
+  }
+};

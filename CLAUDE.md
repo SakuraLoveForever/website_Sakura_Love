@@ -2,7 +2,9 @@
 
 ## Style switching (theme/design) — do not regress
 
-The site supports 3 dark design styles (apple/fuwari/astropaper) switchable at runtime. Apple is the default; retired or invalid saved styles (including shadcn/tailwind) fall back to Apple. New dark-only overrides are in `themes.css`, inspired by saicaca/fuwari and satnaing/astro-paper. All three use `color-scheme: dark` and `theme-dark`, including first paint. Switching must be smooth — no frame drops, no stutter.
+The site supports 4 dark design styles (apple/fuwari/astropaper/rem) switchable at runtime. Apple is the default; retired or invalid saved styles (including shadcn/tailwind) fall back to Apple. New dark-only overrides are in `themes.css`, inspired by saicaca/fuwari, satnaing/astro-paper and (for the blue palette) jerryc127/hexo-theme-butterfly. All four use `color-scheme: dark` and `theme-dark`, including first paint. Switching must be smooth — no frame drops, no stutter.
+
+`rem` (Rem Dark) is the Re:Zero style: ice-blue tokens in `body.design-rem`, plus a hero character card `.rem-character` that only renders in this style. The card sits in the **left** hero column on desktop — anything on the right collides with the bottom-right mascot and the 顶部/底部 jump buttons. The artwork `assets/character/rem/rem-portrait.jpg` is third-party fan art: keep the repo private or swap the file before publishing. Adding a 5th style means touching **six** places: the two inline `styleMap`/`bgMap` blocks in `index.html` (first paint + body class), `script.js` `styleMap`/`rootThemeTokens`, the footer buttons, the `body:is(...)` selectors in `themes.css`, and the theme arrays in `tests/*.spec.js`.
 
 The interface is Chinese-only. Do not restore the language toggle. `currentLanguage` is fixed to `zh`, and `applyLanguage()` normalizes old `languageMode=en` storage to Chinese. Keep project/brand names as proper names.
 
@@ -146,12 +148,12 @@ to 0, runs one real model frame, and expects 1 — with the assertion that the t
 - 内容锚点统一走 `scrollToSidebarTarget`：按距离 360–1100ms 的可中断滚动；测量前固定内容坐标，导航时不叠加整块入场动画；不要恢复默认锚点与页脚二次滚动并行处理，也不要恢复光圈。834–1100px 无手动偏好时默认紧凑侧栏，手动偏好优先。
 - Upscayl 使用蓝灰背景 `#3c5369`，面板 `#425b72`，强调色 `#bedff2`，去除独立黑色 UI 色块。修改配色时同时维护 index.html 的首帧 bgMap 与 script.js 的 rootThemeTokens，避免加载或切换时闪黑。
 
-### 看板娘尺寸 — 点击一次到面板 + 可拖拽手柄（2026-10-06）
+### 看板娘尺寸 — 左键语录、右键面板 + 可拖拽手柄（2026-10-27）
 
 需求「点击后要能调整大小」。原交互要两次点击：点本体 → 弹出小把手（3.6s 后自动消失）→
 再点把手才开面板。现在：
 
-- **点本体直接 `setLive2dSettingsOpen(true)`**（一次点击到尺寸滑块），同时保留对话与 TapBody。
+- **左键本体只显示语录并触发 TapBody；右键本体 `setLive2dSettingsOpen(true)`**。仅在角色不透明像素处拦截浏览器右键菜单，透明区域与其他页面位置保留原行为。
 - `#live2d-resize-handle`：右下角圆形手柄，与设置把手同一套显隐规则（点过看板娘才出现）。
   尺寸按 **指针到看板娘左边缘的距离 ÷ 基准宽度** 换算，不用位移量 —— 看板娘底部锚定时
   （默认 `bottom:0`）长高会让上边缘上移，用位移量会出现「往下拖反而变小」。
@@ -207,7 +209,7 @@ its 280×560 panel (measured: 9 of 18 grab points missed, so it felt「拖不动
 - **Drag** (`beginLive2dDrag`): starts whenever the pointer is inside the canvas box
   (`isInsideLive2dBox`) — no pixel extraction at all, which also removes a per-pointerdown
   `extract.pixels` of the whole stage.
-- **Click** (`hitLive2dPixel` → dialog / settings button / TapBody): stays pixel-accurate, so
+- **Click** (`hitLive2dPixel` → left-click dialog / TapBody, right-click settings): stays pixel-accurate, so
   clicking empty panel space falls through to the page instead of popping the mascot dialog.
 
 Two rules keep this safe:
@@ -221,17 +223,13 @@ Two rules keep this safe:
 `tests/live2d-toggle.spec.js` asserts exactly this contract: a pointerdown on a transparent pixel
 gives `{ prevented: false, dragging: true }`.
 
-### `extract.pixels()` 坐标陷阱（曾让拖拽完全失效）
+### 点击命中与拖动边界（2026-10-27）
 
-`app.renderer.extract.pixels(target)` **without a frame returns only the target's bounding box**
-(measured 258×451 for the mascot) while the canvas is 280×560 — indexing it with renderer dimensions
-reads out of range and the hit test degrades to noise. Always pass an explicit full-canvas frame and
-derive the scale from the returned length:
+点击仅从 preserveDrawingBuffer 的 WebGL 当前画面读取 1×1 像素，使用 drawingBufferWidth/Height 换算 CSS 坐标并翻转 Y；不要在点击中重新 render/extract 整个 stage。旧 extract 的坐标还会把角色腿间空隙误判为不透明。
 
-```js
-const pixels = app.renderer.extract.pixels(app.stage, new PIXI.Rectangle(0, 0, rect.width, rect.height));
-const scale = Math.sqrt(pixels.length / 4 / (rect.width * rect.height));
-```
+拖动边界以角色实际非透明范围为准，允许 canvas 的透明留白超出视口。live2dContentBounds 仅在角色加载或画布尺寸变化后从缩小的画布采样，并留两个采样像素的余量；不要在每次 pointermove 中抽取整图。淡入期间等待新角色独占舞台且 alpha=1 后再采样，避免用旧角色或透明帧计算边界。
+
+自定义位置允许负 canvas 坐标。刷新时先保留保存坐标，模型加载并测量完成后再约束；不要在模型尚未加载时将负坐标重置到 12px。设置面板和缩放手柄独立夹在视口内，不能因 canvas 移出视口而失去操作入口。tests/live2d-drag-bounds.spec.js 覆盖真实拖动事件、缩放、留白越界、手柄可达和刷新恢复。
 
 ### 语录浮层 — 存活 1s，半透明，测试用 MutationObserver 测量
 

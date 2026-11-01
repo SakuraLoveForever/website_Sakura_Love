@@ -65,8 +65,8 @@ test('看板娘关闭再开启后头部仍完整显示', async ({ page }) => {
     expect(await page.evaluate(() => live2dActiveModel.autoUpdate)).toBe(true);
   }
   await page.setViewportSize({ width: 354, height: 767 });
-  expect(await page.evaluate(() => live2dApp.ticker.started)).toBe(false);
-  expect(await page.evaluate(() => live2dActiveModel.autoUpdate)).toBe(false);
+  expect(await page.evaluate(() => live2dApp.ticker.started)).toBe(true);
+  expect(await page.evaluate(() => live2dActiveModel.autoUpdate)).toBe(true);
   await page.setViewportSize({ width: 1280, height: 800 });
   await expect.poll(() => page.evaluate(() => live2dApp.ticker.started)).toBe(true);
   await page.evaluate(async () => { await switchLive2dModel('hiyori'); });

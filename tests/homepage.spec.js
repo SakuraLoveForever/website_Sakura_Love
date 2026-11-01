@@ -79,7 +79,7 @@ test.describe('页面导航', () => {
   test('所有风格的阅读区隐藏粒子且不遮挡内容', async ({ page }) => {
     await page.goto('/');
     const heading = page.locator('#projects h2');
-    for (const style of ['apple', 'fuwari', 'astropaper']) {
+    for (const style of ['apple', 'fuwari', 'astropaper', 'rem']) {
       await page.locator(`[data-design-style="${style}"]`).evaluate(button => button.click());
       await expect(page.locator('body')).toHaveClass(new RegExp(`design-${style}`));
       await heading.evaluate(el => el.scrollIntoView({ behavior: 'instant', block: 'center' }));

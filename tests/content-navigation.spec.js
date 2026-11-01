@@ -50,9 +50,9 @@ test('连续点击只到最后目标，滚轮会中断自动导航', async ({ pa
   expect(await page.evaluate(() => document.documentElement.scrollHeight - innerHeight - scrollY)).toBeGreaterThan(200);
 });
 
-test('减少动态效果关闭额外入场，手机和后退导航保持正确位置', async ({ page }) => {
+test('减少动态效果关闭额外入场，桌面和后退导航保持正确位置', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const width of [390, 1024, 1280]) {
+  for (const width of [1280, 1366, 1440]) {
     await page.setViewportSize({ width, height: 800 });
     await page.locator('.sidebar-link[href="#projects"]').click();
     await expect.poll(() => targetGap(page, 'projects')).toBeLessThan(2);

@@ -2,6 +2,9 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
+const { resolveMusicTrack } = require("./music-api");
+const musicIds = new Set(require("./assets/music/catalog.json").tracks.map(track => track.neteaseId).filter(Boolean));
+const musicCache = new Map();
 
 const root = __dirname;
 const portArgIndex = process.argv.indexOf("--port");
@@ -123,6 +126,29 @@ const server = http.createServer(async (req, res) => {
     pathname = decodeURIComponent(requestUrl.pathname);
   } catch (error) {
     sendText(res, 400, "Bad request");
+    return;
+  }
+
+  // Resolve only the site's known tracks; the browser then plays the HTTPS CDN URL.
+  if (pathname === "/api/music/track") {
+    if (req.method !== "GET") { sendText(res, 405, "Method not allowed"); return; }
+    const id = requestUrl.searchParams.get("id") || "";
+    if (!/^\d{1,12}$/.test(id)) { sendText(res, 400, "Invalid song id"); return; }
+    if (!musicIds.has(id)) { sendText(res, 404, "Unknown song"); return; }
+    try {
+      let entry = musicCache.get(id);
+      if (!entry || entry.expiresAt <= Date.now()) {
+        entry = { expiresAt: Date.now() + 10000, promise: resolveMusicTrack(id) };
+        musicCache.set(id, entry);
+        entry.promise.then(track => { entry.expiresAt = track.expiresAt; });
+      }
+      const track = await entry.promise;
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+      res.end(JSON.stringify(track));
+    } catch {
+      musicCache.delete(id);
+      sendText(res, 502, "Music provider unavailable");
+    }
     return;
   }
 
